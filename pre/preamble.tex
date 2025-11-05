@@ -1,0 +1,32 @@
+% CONFIGURAZIONE
+\documentclass[12pt]{article} % tipo di documento
+\usepackage[italian]{babel} % lingua italiana
+\usepackage{fontspec}
+\setmainfont{Times New Roman} % font principale
+\usepackage[
+  backend=biber,
+  style=numeric,
+  language=italian
+]{biblatex}
+\addbibresource{bibliografia.bib}
+\usepackage{graphicx} % gestione immagini
+\usepackage{caption} % gestione didascalie
+\usepackage{amsmath} % simboli matematici
+\usepackage{subcaption} % sottodidascalie
+\usepackage[a4paper, left=2cm, top=3cm, right=2cm, bottom=3cm]{geometry} % margini pagina
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\fontsize{16}{15}\bfseries}{\makebox[25pt][1]{\thesection}}{0pt}{} % formattazione sezioni
+\titleformat{\subsection}{\normalfont\fontsize{14}{15}\bfseries}{\makebox[25pt][1]{\thesubsection}}{0pt}{} % formattazione sottosezioni
+\titleformat{\subsubsection}{\normalfont\fontsize{12}{15}\bfseries}{\makebox[25pt][1]{\thesubsubsection}}{0pt}{} % formattazione sottosottosezioni
+\usepackage{setspace} % gestione spaziatura
+\usepackage{ragged2e}
+\titlespacing*{\section}{0.75cm}{12pt}{12pt}
+\titlespacing*{\subsection}{0.75cm}{10pt}{10pt}
+\setlength{\parindent}{0pt} % rientro paragrafo a 0
+\setlength{\parskip}{6pt} % spazio tra paragrafi
+\usepackage[hidelinks]{hyperref} % gestione collegamenti ipertestuali
+
+
+
+
+
