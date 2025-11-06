@@ -1,0 +1,45 @@
+\setlength{\parindent}{0pt}  % niente rientro
+\setlength{\parskip}{6pt}
+\section{Requisiti funzionali}
+\subsection{Requisiti comuni}
+\subsubsection*{RF-01-Registrazione utente}
+Il sistema deve consentire agli utenti di potersi registrare autonomamente direttamente dalla webapp. L'utente accede ad una sezione dedicata alla registrazione. Il sistema deve richiedere i dati necessari:
+\begin{itemize}
+    \item Nome
+    \item Cognome
+    \item Email
+    \item Codice fiscale
+    \item Numero di telefono
+    \item Comune di residenza
+    \item Password
+\end{itemize}
+Il sistema deve validare i dati inseriti dall'utente, verificando che:
+\begin{itemize}
+    \item Tutti i campi obbligatori siano stati compilati
+    \item Il nome e il cognome non contengano numeri o caratteri speciali
+    \item La email sia in un formato valido e che non sia già registrata nel sistema
+    \item Il codice fiscale sia in un formato valido e che non sia già registrato nel sistema
+    \item Il numero di telefono sia in un formato valido
+    \item La password rispetti i criteri di sicurezza (lunghezza minima, presenza di caratteri speciali, ecc.)
+\end{itemize}
+Conclusa la validazione, vengono creati i profili utente e inviata una mail di conferma all'indirizzo fornito.
+%TODO: aggiungere requisito per accettazione termini e condizioni/privacy policy?
+%TODO: aggiungere requisito per captcha?
+%TODO: aggiungere verifica del numero di telefono tramite sms con codice OTP?
+\subsubsection*{RF-02-Login utente}
+Il sistema deve consentire agli utenti di effettuare il login alla webapp utilizzando le credenziali fornite in fase di registrazione (email e password) o tramite autenticazione OAuth2 con provider esterni (Google, Facebook, AppleID, ecc.) se collegato. Il sistema deve verificare le credenziali inserite e, in caso di successo, reindirizzare l'utente alla sua homepage personalizzata. In caso di fallimento, il sistema deve mostrare un messaggio di errore appropriato.
+%TODO: verificare se sia meglio dire "recupero password" o "cambio password", o creare due requisiti distinti, il cambio password potrebbe essere fatto anche da utente loggato dal proprio profilo utente, mentre recupero password non e' un vero e proprio recupero ma un cambio password tramite link inviato via email
+\subsubsection*{RF-02.1-Recupero password}
+Il sistema deve fornire una funzionalità di recupero password per gli utenti che hanno dimenticato le loro credenziali di accesso. L'utente deve poter richiedere il reset della password inserendo il proprio indirizzo email. Il sistema deve inviare una email con un link sicuro per reimpostare la password. Una volta cliccato il link, l'utente deve essere reindirizzato ad una pagina dove può inserire una nuova password, che deve rispettare i criteri di sicurezza definiti nel requisito RF-01.
+\subsubsection*{RF-03-Accesso all'area personale}
+Il sistema deve consentire agli utenti autenticati di accedere ad un'area personale dedicata, dove possono visualizzare le informazioni del proprio profilo e gestire le impostazioni dell'account. L'area personale deve essere protetta e accessibile solo agli utenti autenticati.
+\subsubsection*{RF-03.1-Modifica dati personali}
+Il sistema deve consentire agli utenti di poter modificare o eliminare, a patto che non siano dati obbligatori, i propri dati personali, tramite l'area personale dedicata come specificato da requisito RF-03.
+\subsubsection*{RF-03.2-Modifica email}
+Il sistema deve consentire agli utenti di modificare l'indirizzo email associato al loro account, tramite l'area personale dedicata come specificato da requisito RF-03. Il sistema deve inviare una email di conferma al nuovo indirizzo per verificare la validità dello stesso. Una volta confermato, il sistema deve aggiornare l'indirizzo email nel profilo dell'utente.
+%TODO: prevedere inoltre una verifica del nuovo numero di telefono tramite sms con codice OTP?
+\subsubsection*{RF-03.3-Modifica numero di telefono}
+Il sistema deve consentire agli utenti di modificare il numero di telefono associato al loro account, tramite l'area personale dedicata come specificato da requisito RF-03. Il sistema deve validare il nuovo numero di telefono per assicurarsi che sia in un formato corretto prima di aggiornare le informazioni dell'utente.
+\subsubsection*{RF-03.4-Cancellazione dell'account}
+Il sistema deve consentire agli utenti di poter cancellare il proprio account in modo permanente, tramite l'area personale dedicata come specificato da requisito RF-03. Prima di procedere con la cancellazione, il sistema deve richiedere una conferma esplicita dall'utente per evitare cancellazioni accidentali. Una volta confermata, il sistema deve eliminare tutti i dati associati all'account dell'utente in conformità con le normative sulla protezione dei dati.
+%TODO: cambiare numerazione
