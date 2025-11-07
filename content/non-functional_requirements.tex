@@ -1,0 +1,54 @@
+\setcounter{section}{1}
+\setlength{\parindent}{0pt}  % niente rientro
+\setlength{\parskip}{6pt}
+\section{Requisiti non funzionali}
+\subsection*{RNF-01-Compatibilità}
+Il sistema deve essere compatibile e utilizzabile al pieno delle sue potenzialita
+con i seguenti broswer web:
+\begin{itemize}
+    \item Google Crome (versione 120 o superiori)
+    \item Mozilla Firefox (versione 120 o superiori)
+    \item Microsoft Edge (versione 124 o superiori)
+    \item Safari (versione 15 o superiori)
+    \item Opera (versione 120 o superiori)
+\end{itemize}
+Il software deve garantire un esperienza fluida e funzionale su tutte le
+piattaforme supportate indipendentemente dal broswer utilizzato, assicurando
+una corretta visualizzazione delle interfacce ed il corretto
+funzionamento di tutte le funzionalità presenti.
+\subsection*{RNF-02-Performance}
+Il sistema deve garantire tempi di risposta rapidi in modo da completare
+tutte le principali operazioni (accesso, caricamento dashboard, consultazione dati)
+in un tempo inferiore ai 2 secondi o nel caso di operazioni pesanti (grosse aggregazioni/grossi resoconti territoriali)
+inferiore ai 5 secondi con un feedback visivo di caricamento.
+Questi tempi devono essere rispettati anche durante i picchi di utilizzo dell'applicazione
+che deve supportare un carico massimo di X utenti. La struttura del sistema deve 
+inoltre essere scalabile in modo da essere facilemente adattata per supportare eventuali
+aumenti di utenza.
+\subsection*{RNF-03-Scalabilità}
+L'architettura del sistema deve essere scalabile così da poter supportare una crescita
+del numero di:
+\begin{itemize}
+    \item utenti (cittadini, enti, CER e comuni)
+    \item richieste simultanee ai servizi offerti dal software
+    \item dati energetici
+\end{itemize}
+Il sistema deve poter essere facilmente esteso a nuovi \textbf{comuni o regioni} senza modifiche
+sostanziali all'infrastruttura.
+\subsection*{RNF-04-Affidabilità}
+Il sistema deve garantire un livello di disponibilità non inferiore al XX\%,
+che corrisponde ad un downtime massimo di X ore, Y minuti, Z secondi.
+Il sistema deve essere progettato per garantire accessibilità anche durante i
+periodi di picco d'utilizzo. Deve inoltre essere previsto un piano di ripristino
+automatico dei dati in caso di guasto (disaster recovery).
+
+\subsection*{RNF-05-Sicurezza}
+\subsection*{RNF-06-Privacy e conformità normativa}
+\subsection*{RNF-07-Lingua}
+\subsection*{RNF-08-Manutentibilità}
+\subsection*{RNF-09-Usabilità}
+\subsection*{RNF-10-Interoperabilità}
+\subsection*{RNF-11-Tracciabilità delle operazioni}
+
+
+
