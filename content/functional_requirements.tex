@@ -47,17 +47,17 @@ Il sistema deve consentire agli utenti di poter cancellare il proprio account in
 \subsubsection*{RF-04-Logout utente}
 Il sistema deve consentire agli utenti autenticati di effettuare il logout dalla webapp in modo sicuro. Una volta effettuato il logout, l'utente deve essere reindirizzato alla pagina di login o alla homepage pubblica del sito e non deve piu' avere accesso alle funzionalità riservate agli utenti autenticati senza effettuare nuovamente il login.
 \subsection{Requisiti per Admin della CER}
-\subsubsection*{RF-**-Gestione membri della CER}
+\subsubsection*{RF-05-Gestione membri della CER}
 Il sistema deve consentire all’amministratore della comunità di visualizzare l’elenco dei membri appartenenti alla CER, aggiungere nuovi membri e modificare o rimuovere quelli esistenti. Per ogni membro devono essere mostrati i dati identificativi, i punti di consumo o produzione associati e lo stato della loro partecipazione (attivo, in attesa, sospeso). Le operazioni di modifica e rimozione devono essere tracciate nel registro delle attività.
-\subsubsection*{RF-**-Approvazione richieste di adesione}
+\subsubsection*{RF-06-Approvazione richieste di adesione}
 Il sistema deve consentire all’amministratore di approvare o rifiutare le richieste di adesione alla CER. Le richieste devono contenere i dati dell’utente e le informazioni necessarie alla valutazione (es. indirizzo dell’abitazione, disponibilità di impianto, codice POD). In caso di approvazione, il sistema deve inviare una notifica email all’utente e aggiornarne lo stato a “membro attivo”.
-\subsubsection*{RF-**-Gestione impianti energetici}
+\subsubsection*{RF-07-Gestione impianti energetici}
 Il sistema deve consentire all’amministratore di registrare nuovi impianti produttivi di energia rinnovabile (es. fotovoltaico, eolico), associarli ai membri della comunità e modificarne i dati tecnici. Ogni impianto deve avere almeno: un codice identificativo, potenza nominale, posizione geografica, stato operativo e data di installazione. L’amministratore deve poter sospendere temporaneamente un impianto per manutenzione o rimuovere un impianto non piu' operativo.
-\subsubsection*{RF-**-Monitoraggio stato impianti}
+\subsubsection*{RF-08-Monitoraggio stato impianti}
 Il sistema deve consentire all’amministratore di monitorare lo stato di funzionamento degli impianti della CER. Devono essere visualizzate metriche aggiornate (produzione istantanea, totale giornaliero, eventuali errori di lettura). In caso di anomalie o mancata comunicazione dei dati, il sistema deve mostrare un avviso all’amministratore tramite mail o notifica.
-\subsubsection*{RF-**-Gestione dati energetici e reportistica}
+\subsubsection*{RF-09-Gestione dati energetici e reportistica}
 Il sistema deve consentire all’amministratore di visualizzare report aggregati sulla produzione e il consumo energetico della CER. L’interfaccia deve permettere la selezione di un intervallo temporale (giornaliero, mensile, annuale) e la visualizzazione di grafici e tabelle riassuntive. I dati devono poter essere esportati in formato CSV o PDF.
-\subsubsection*{RF-**-Analisi dei benefici energetici ed economici}
+\subsubsection*{RF-10-Analisi dei benefici energetici ed economici}
 Il sistema deve consentire all’amministratore di consultare il bilancio energetico ed economico della comunità, mostrando indicatori come:
 \begin{itemize}
     \item energia condivisa
@@ -67,20 +67,20 @@ Il sistema deve consentire all’amministratore di consultare il bilancio energe
 \end{itemize}
 I dati devono essere presentati con dashboard con possibilità di esportazione.
 \subsection{Requisiti per il Rappresentante del Comune}
-\subsubsection*{RF-**-Gestione e supervisione delle CER comunali}
+\subsubsection*{RF-11-Gestione e supervisione delle CER comunali}
 Il sistema deve consentire al rappresentante del Comune di visualizzare tutte le CER attive nel territorio comunale, accedendo a informazioni sintetiche come numero di membri, produzione complessiva, energia condivisa e stato operativo. Il rappresentante deve poter consultare i dettagli di ciascuna CER ma non modificarne la configurazione interna.
-\subsubsection*{RF-**-Visualizzazione dati aggregati}
+\subsubsection*{RF-12-Visualizzazione dati aggregati}
 Il sistema deve fornire al rappresentante del Comune una dashboard riepilogativa con i principali indicatori energetici aggregati sul territorio comunale: energia prodotta, energia condivisa, numero di cittadini coinvolti e riduzione totale di emissioni. I dati devono poter essere filtrati per periodo o per singola CER.
-\subsubsection*{RF-**-Gestione richieste di approvazione o supporto}
+\subsubsection*{RF-13-Gestione richieste di approvazione o supporto}
 Il sistema deve consentire al rappresentante del Comune di visualizzare le richieste provenienti dalle CER per attività che necessitano di supervisione (es. nuove comunità da validare, segnalazioni tecniche o amministrative). Il rappresentante deve poter aggiornare lo stato della richiesta e lasciare un commento visibile agli amministratori della CER.
-\subsubsection*{RF-**-Comunicazioni istituzionali}
+\subsubsection*{RF-14-Comunicazioni istituzionali}
 Il sistema deve consentire al rappresentante del Comune di inviare comunicazioni o avvisi a tutte le CER registrate nel territorio. Le comunicazioni devono poter includere testo e allegati (PDF, immagini) e devono essere visibili nell’area notifiche delle rispettive comunità.
 \subsection{Requisiti per i membri della CER}
-\subsubsection*{RF-**-Visualizzazione dati energetici personali}
+\subsubsection*{RF-15-Visualizzazione dati energetici personali}
 Il sistema deve consentire ai membri della CER di visualizzare i propri dati energetici personali, comprendenti energia consumata, quota di energia condivisa, produzione (se prosumer) e andamento temporale. I dati devono essere presentati tramite grafici e valori numerici, con aggiornamento periodico o in tempo reale se disponibile.
-\subsubsection*{RF-**-Confronto con la comunità}
+\subsubsection*{RF-16-Confronto con la comunità}
 Il sistema deve consentire ai membri di confrontare i propri consumi o la propria produzione energetica con la media della comunità, in forma anonima e aggregata. Questo confronto deve essere disponibile come grafico comparativo o tabella riassuntiva.
-\subsubsection*{RF-**-Notifiche e avvisi}
+\subsubsection*{RF-17-Notifiche e avvisi}
 Il sistema deve notificare ai membri eventi rilevanti, come l’aggiunta di un nuovo impianto, l’approvazione di una richiesta o eventuali anomalie nei dati energetici. Le notifiche devono essere consultabili nell’area personale (come specificato da RF-***) e visualizzate con un contatore di elementi non letti.
-\subsubsection*{RF-**-Partecipazione e segnalazioni}
+\subsubsection*{RF-18-Partecipazione e segnalazioni}
 Il sistema deve consentire ai membri di inviare segnalazioni o richieste di supporto tecnico/amministrativo all’amministratore della CER o al rappresentante del Comune. Le segnalazioni devono includere titolo, descrizione, eventuali allegati, e devono essere tracciate con uno stato (inviata, presa in carico, risolta).
