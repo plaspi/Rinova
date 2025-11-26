@@ -1,10 +1,10 @@
-import { ForgotPasswordForm } from "@/components/forgot-password-form"
+import { NewPasswordForm } from "@/components/new-password-form"
 
-export default function ForgotPasswordPage() {
+export default function NewPasswordPage() {
   return (
     <div className="bg-muted flex flex-col items-center justify-center h-screen w-screen max-h-screen max-w-screen">
       <div className="flex w-full flex-col">
-        <ForgotPasswordForm />
+        <NewPasswordForm/>
       </div>
     </div>
   )

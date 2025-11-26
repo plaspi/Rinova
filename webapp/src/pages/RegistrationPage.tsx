@@ -50,7 +50,7 @@ export default function RegistrationPage() {
 
       <CarouselItem className="w-full h-full">
         <img
-          src="/images/penzo.png"
+          src="/images/carousel3.jpg"
           alt="slide2"
           className="w-full h-full object-contain max-h-screen"
         />

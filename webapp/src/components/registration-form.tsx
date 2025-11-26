@@ -49,7 +49,7 @@ export function RegistrationForm({
   <div className="flex gap-4">
     <Field className="gap-1">
       <FieldLabel htmlFor="email">Email</FieldLabel>
-      <Input id="email" type="email" placeholder="Enrico.melopuppa@..." className="border-2" required />
+      <Input id="email" type="email" placeholder="enrico.example@..." className="border-2" required />
     </Field>
     <Field className="gap-1">
       <FieldLabel htmlFor="id">Codice fiscale</FieldLabel>

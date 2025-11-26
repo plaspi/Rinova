@@ -4,6 +4,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import { ForgotPasswordForm } from './components/forgot-password-form';
+import OTPPage from './pages/OtpPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import OtpPage from './pages/OtpPage';
+import NewPasswordPage from './pages/NewPasswordPage';
 // import RegisterPage from './RegisterPage';
 
 function App() {
@@ -13,7 +17,9 @@ function App() {
         <Route index element={<Navigate to="login" replace />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="registration" element={<RegistrationPage />} /> 
-        <Route path="forgotpw" element={<ForgotPasswordForm />} /> 
+        <Route path="forgotpw" element={<ForgotPasswordPage />} /> 
+        <Route path="otpverification" element={<OtpPage/>} /> 
+        <Route path="newpw" element={<NewPasswordPage/>} /> 
         {/* <Route path="register" element={<RegisterPage />} /> */}
 
         {/* wrong redirect to wrongRoutePage */}

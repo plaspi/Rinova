@@ -52,7 +52,7 @@ export function LoginForm({
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
-                    href="#"
+                    href="forgotpw"
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
                     Password dimenticata?
