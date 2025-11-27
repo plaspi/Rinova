@@ -8,6 +8,7 @@ import OTPPage from './pages/OtpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import OtpPage from './pages/OtpPage';
 import NewPasswordPage from './pages/NewPasswordPage';
+import TablePage from './pages/TablePage';
 // import RegisterPage from './RegisterPage';
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
         <Route path="forgotpw" element={<ForgotPasswordPage />} /> 
         <Route path="otpverification" element={<OtpPage/>} /> 
         <Route path="newpw" element={<NewPasswordPage/>} /> 
+        <Route path="table" element={<TablePage/>} /> 
+
         {/* <Route path="register" element={<RegisterPage />} /> */}
 
         {/* wrong redirect to wrongRoutePage */}
