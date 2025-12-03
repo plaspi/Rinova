@@ -1,13 +1,14 @@
 @import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "flowbite";
+@import "tw-animate-css";
+
 
 @plugin "tailwindcss-animate";
-@tailwind base;
-@tailwind components;
+
+
 @tailwind utilities;
 
-@import "flowbite";
-
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -69,7 +70,7 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  display: grid;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
