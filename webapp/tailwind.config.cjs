@@ -10,7 +10,6 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require("flowbite/plugin"),
     require("tw-animate-css")
   ],
 }
