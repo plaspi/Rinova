@@ -1,5 +1,4 @@
 "use client"
-
 import React from "react";
 import {cn} from "@/lib/utils";
 
@@ -10,17 +9,16 @@ const NavLayout = React.forwardRef<
         return (
             <div 
                 ref={ref} 
+                // Rimosse classi specifiche di griglia, lasciamo solo quelle passate dal padre
                 className={cn(
-                    "bg-black col-start-2 row-start-1 w-full h-full",
+                    "w-full", 
                     className
                 )}
                 {...props}
             >
+                {props.children}
             </div>
         )
     })
 
-export{
-    NavLayout,
-
-}
+export { NavLayout }
