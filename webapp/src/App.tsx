@@ -1,14 +1,15 @@
-import {ThemeProvider} from 'next-themes';
+import {ThemeProvider} from './components/themeProvider';
 import { Routes, Route, Navigate } from 'react-router-dom';
 //import HomePage from './HomePage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
-import { ForgotPasswordForm } from './components/forgot-password-form';
+import { ForgotPasswordForm } from './components/forms/forgot-password-form';
 import OTPPage from './pages/OtpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import OtpPage from './pages/OtpPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import TablePage from './pages/TablePage';
+import UserAreaPage from './pages/UserAreaPage';
 // import RegisterPage from './RegisterPage';
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
         <Route path="otpverification" element={<OtpPage/>} /> 
         <Route path="newpw" element={<NewPasswordPage/>} /> 
         <Route path="table" element={<TablePage/>} /> 
+        <Route path="user-area" element={<UserAreaPage/>} /> 
+
 
         {/* <Route path="register" element={<RegisterPage />} /> */}
 

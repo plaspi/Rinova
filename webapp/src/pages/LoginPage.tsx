@@ -1,9 +1,9 @@
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/forms/login-form"
 
 export default function LoginPage() {
   return (
-    <div className="bg-muted flex flex-col items-center justify-center h-screen w-screen p-6 md:p-10">
-      <div className="w-screen md:max-w-4xl">
+    <div className="bg-muted flex flex-col items-center justify-center h-screen w-screen ">
+      <div className="w-full h-full">
         <LoginForm />
       </div>
     </div>

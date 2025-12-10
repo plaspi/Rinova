@@ -1,10 +1,10 @@
-import { OTPForm } from "@/components/otp-form"
+import { OTPForm } from "@/components/forms/otp-form"
 
 export default function OtpPage() {
   return (
-    <div className="flex flex-col w-screen h-screen max-w-screen max-h-screen bg-muted items-center justify-center">
-      <div className="w-full max-w-xs">
-        <OTPForm />
+    <div className="bg-muted flex flex-col items-center justify-center h-screen w-screen max-h-screen max-w-screen">
+      <div className="flex w-full flex-col">
+        <OTPForm/>
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ import {
   DropdownMenu, DropdownMenuTrigger,
   DropdownMenuContent, DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
-import { ImpiantoDetails } from "./impiantoDetails"
+import { ImpiantoDetails } from "../details/impiantoDetails"
 
 // Mock data
 const mockImpianti = [
