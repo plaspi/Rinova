@@ -159,7 +159,7 @@ function SidebarContent() {
       </nav>
 
       {/* 3. USER FOOTER */}
-      <div className="mt-auto border-t border-border/40 shrink-0 bg-card"> 
+      <div className="mt-auto border-t border-border/40 shrink-0 bg-card!"> 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
