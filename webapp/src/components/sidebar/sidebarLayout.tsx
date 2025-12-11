@@ -165,7 +165,7 @@ function SidebarContent() {
             <Button 
                 variant="ghost" 
                 className={cn(
-                    "bg-card! w-full h-20 p-0  transition-all flex items-center",
+                    "w-full h-20 p-0 hover:bg-muted/30 transition-all flex items-center rounded-none border-0 focus-visible:ring-0 focus-visible:bg-muted/30 justify-start data-[state=open]:bg-muted/30",
                 )}
             >
                 <div className="flex items-center justify-center w-20 min-w-20 h-full shrink-0">
@@ -288,8 +288,8 @@ export function Sidebar() {
 export function SidebarTrigger({ className }: { className?: string }) {
   const { toggleSidebar } = useSidebar();
   return (
-    <Button variant="ghost" size="icon" onClick={toggleSidebar} className={cn("h-9 w-9 bg-card!", className)}>
-      <PanelLeft className="h-5 w-5 text-muted-foreground bg-card!" />
+    <Button variant="ghost" size="icon" onClick={toggleSidebar} className={cn("h-9 w-9 hover:bg-muted/50", className)}>
+      <PanelLeft className="h-5 w-5 text-muted-foreground" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
