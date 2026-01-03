@@ -3,12 +3,12 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import  HomePage  from '@/pages/homePage'
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
-import { ForgotPasswordForm } from './components/forms/forgot-password-form';
-import OTPPage from './pages/OtpPage';
+import OtpPage from './pages/OtpPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import NewPasswordPage from './pages/NewPasswordPage';
 import TablePage from './pages/TablePage';
 import UserAreaPage from './pages/UserAreaPage';
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
   return (
@@ -28,6 +28,7 @@ function App() {
         // TODO: creare una pagina 404
         <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
+      <Toaster />
     </ThemeProvider>
   );
 }

@@ -8,12 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,

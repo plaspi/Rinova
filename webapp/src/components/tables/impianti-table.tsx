@@ -1,11 +1,11 @@
 // components/ImpiantiTable.tsx
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import {
   Table, TableBody, TableCell, TableHead,
   TableHeader, TableRow, TableFooter, TableCaption
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react"
+import { MoreVertical } from "lucide-react"
 import {
   DropdownMenu, DropdownMenuTrigger,
   DropdownMenuContent, DropdownMenuItem
@@ -81,8 +81,8 @@ const mockImpianti = [
 
 export function ImpiantiTable() {
 
-  const [page, setPage] = useState(0)
-  const [impianti, setImpianti] = useState<any[]>([])
+  //const [page, setPage] = useState(0)
+  const [/*impianti*/_, setImpianti] = useState<any[]>([])
   const [selected, setSelected] = useState<any | null>(null)
 
   useEffect(() => {

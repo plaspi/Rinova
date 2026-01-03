@@ -1,16 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { 
   Home, 
   Settings, 
   User, 
-  Leaf, 
-  LogOut, 
-  Menu, 
-  X, 
+  Leaf,
   Phone, 
   MapPin, 
-  Mail, 
-  CreditCard, 
   Shield, 
   Zap, 
   Edit2,
@@ -150,7 +145,7 @@ function HomeContent({ setActiveTab }: any) {
         <Button 
           size="lg" 
           onClick={() => setActiveTab('profile')} 
-          className="shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 !bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 bg-primary! hover:bg-primary/90 text-primary-foreground"
         >
           Gestisci Profilo
         </Button>
@@ -201,7 +196,7 @@ function SettingsContent() {
                <Label className="text-base">Elimina account</Label>
                <p className="text-sm text-muted-foreground">Elimina definitivamente il tuo account Rinova</p>
              </div>
-             <Button variant="outline" size="sm" className="!border-destructive !bg-destructive text-destructive-foreground hover:bg-destructive/90 transform
+             <Button variant="outline" size="sm" className="border-destructive! bg-destructive! text-destructive-foreground hover:bg-destructive/90 transform
                     transition-transform
                     duration-200
                     hover:-translate-y-1
@@ -322,10 +317,10 @@ function ProfileContent() {
                   <p className="text-xs text-muted-foreground">mario.rossi@example.com</p>
                 </div>
                 <Button variant="outline" size="sm" className="h-8
-                    !bg-brand-soft
+                    bg-brand-soft!
                     text-primary!
-                    hover:!bg-brand-soft
-                    hover:!border-brand-soft
+                    hover:bg-brand-soft!
+                    hover:border-brand-soft!
                     hover:text-primary
                     transform
                     transition-transform
@@ -342,10 +337,10 @@ function ProfileContent() {
                 </div>
                 <Button variant="outline" size="sm" className="
                     h-8
-                    !bg-brand-soft
+                    bg-brand-soft!
                     text-primary!
-                    hover:!bg-brand-soft
-                    hover:!border-brand-soft
+                    hover:bg-brand-soft!
+                    hover:border-brand-soft!
                     hover:text-primary
                     transform
                     transition-transform
@@ -424,10 +419,11 @@ function ProfileContent() {
 
               <Separator className="my-4" />
 
-              <Button className="w-full  !bg-brand-soft
+              <Button className="w-full 
+                    bg-brand-soft!
                     text-primary!
-                    hover:!bg-brand-soft
-                    hover:!border-brand-soft
+                    hover:bg-brand-soft!
+                    hover:border-brand-soft!
                     transform
                     transition-transform
                     duration-200

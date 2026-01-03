@@ -1,4 +1,3 @@
-import React from "react"
 import { cn } from "@/lib/utils"
 
 interface MemberDetailsProps {
@@ -86,7 +85,7 @@ export function MemberDetails({ member, onClose }: MemberDetailsProps) {
         <div className="mt-8 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md !bg-[#2c6e29] text-white hover:bg-primary/90 transition"
+            className="px-4 py-2 rounded-md bg-[#2c6e29]! text-white hover:bg-primary/90 transition"
           >
             Chiudi
           </button>

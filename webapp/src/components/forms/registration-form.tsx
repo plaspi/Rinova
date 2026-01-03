@@ -1,223 +1,179 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { Separator } from "@radix-ui/react-separator";
-import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
-import {Lock} from "lucide-react";
-import { ArrowRight, Eye, EyeOff, FileText, Mail, MapPin, Phone, User } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { TermsModal } from "../modals/termsModal";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { supabase } from "@/services/supabase_client";
+import { cn } from "@/lib/utils";
+
+// --- VALIDAZIONE ---
+const phoneRegex = /^\d{8,15}$/; 
+const fiscalCodeRegex = /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/i;
+
+const registrationSchema = z.object({
+  name: z.string().min(2, "Nome corto"),
+  surname: z.string().min(2, "Cognome corto"),
+  address: z.string().min(2, "Indirizzo richiesto"), 
+  fiscalCode: z.string().regex(fiscalCodeRegex, "CF errato").toUpperCase(),
+  phoneNumber: z.string().regex(phoneRegex, "Num. errato"),
+  email: z.string().email("Email non valida"),
+  password: z.string().min(8, "Min 8 car.").regex(/[0-9]/, "Serve numero"),
+});
+
+type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
 export function RegistrationForm({ className, ...props }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false);
-  const isMobile = useIsMobile();
-
-  // 1. STATO UNICO PER TUTTI I CAMPI
-  const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    id: "",
-    phonenumber: "",
-    place: "",
-    password: ""
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationFormValues>({
+    resolver: zodResolver(registrationSchema),
   });
 
-  // 2. FUNZIONE PER AGGIORNARE LO STATO
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
+  const onSubmit = async (data: RegistrationFormValues) => {
+    setIsLoading(true);
+    const fullPhoneNumber = `+39${data.phoneNumber}`;
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            surname: data.surname,
+            ssn: data.fiscalCode,
+            phone: fullPhoneNumber,
+            address: data.address,
+          },
+        },
+      });
+
+      if (error) throw error;
+      toast.success("Registrazione completata! Controlla la mail.");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Errore registrazione.");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  // 3. FUNZIONE DI INVIO FORM
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Blocca il refresh della pagina
-    console.log("Dati inviati:", formData);
-    // Qui puoi fare la chiamata API: await registerUser(formData);
-  };
-
-  // --- CONTENUTO DEL FORM (Trasformato in funzione render per accedere allo stato) ---
-  const renderFormContent = () => (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      {/* RIGA 1: NOME & COGNOME */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nome</Label>
-          <div className="relative">
-            <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              type="text" 
-              placeholder="Mario" 
-              className="pl-10 bg-card!" 
-              required 
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="surname">Cognome</Label>
-          <div className="relative">
-            <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="surname" 
-              value={formData.surname} 
-              onChange={handleChange} 
-              type="text" 
-              placeholder="Rossi" 
-              className="pl-10 bg-card!" 
-              required 
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* RIGA 2: EMAIL & CODICE FISCALE */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="email" 
-              value={formData.email} 
-              onChange={handleChange} 
-              type="email" 
-              placeholder="mario.rossi@example.com" 
-              className="pl-10 bg-card!" 
-              required 
-            />
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="id">Codice Fiscale</Label>
-          <div className="relative">
-            <FileText className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="id" 
-              value={formData.id} 
-              onChange={handleChange} 
-              type="text" 
-              placeholder="RSSMRA..." 
-              className="pl-10 bg-card! uppercase" 
-              required 
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* RIGA 3: TELEFONO & COMUNE */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="phonenumber">Telefono</Label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="phonenumber" 
-              value={formData.phonenumber} 
-              onChange={handleChange} 
-              type="tel" 
-              placeholder="+39 333..." 
-              className="pl-10 bg-card!" 
-              required 
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="place">Comune</Label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              id="place" 
-              value={formData.place} 
-              onChange={handleChange} 
-              type="text" 
-              placeholder="Roma" 
-              className="pl-10 bg-card!" 
-              required 
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* PASSWORD */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              id="password" // IMPORTANTE: l'id deve coincidere con la chiave nello stato formData
-              value={formData.password}
-              onChange={handleChange}
-              type={showPassword ? "text" : "password"}
-              className="pl-10 pr-10 h-10 bg-card!"
-              placeholder="••••••••"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground bg-card! focus:outline-none flex items-center justify-center p-2"
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </div>
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full h-10 text-sm font-semibold bg-primary! text-primary-foreground! hover:bg-primary/90 transition-all shadow-md"
-        >
-          Registrati <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* FOOTER */}
-      <div className="text-center text-xs mt-2 text-muted-foreground px-6">
-        Cliccando Registrati, accetti i nostri <a href="#" className="underline hover:text-primary">Termini</a> e <a href="#" className="underline hover:text-primary">Privacy</a>.
-      </div>
-
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center"><Separator /></div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background md:bg-card px-2 text-muted-foreground font-medium">
-            Hai già un account? <a href="/login" className="hover:underline underline-offset-4 text-nuance!">Accedi al tuo profilo</a>
-          </span>
-        </div>
-      </div>
-    </form>
-  );
-
-  // --- RENDER ---
-  if (isMobile) {
-    return (
-      <div className={cn("min-h-screen w-full bg-background flex flex-col justify-center justify-items-center p-6 font-sans text-foreground", className)} {...props}>
-        <div className="flex flex-col gap-6 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Registrati</h1>
-            <p className="text-sm text-muted-foreground mt-1">Inserisci i tuoi dati per creare un nuovo account.</p>
-          </div>
-        </div>
-        {renderFormContent()}
-      </div>
-    );
-  }
 
   return (
-    <div className={cn("w-full bg-muted/30 flex flex-col items-center justify-center font-sans text-foreground", className)} {...props}>
-      <div className="mb-6 text-center">
-        <h2 className="text-5xl font-bold mb-3 tracking-tight text-foreground">Registrati</h2>
-        <p className="text-sm text-muted-foreground">Inizia il tuo percorso di risparmio energetico.</p>
-      </div>
-      {renderFormContent()}
-    </div>
+    <Card className={cn("w-full shadow-none border-0 bg-transparent", className)} {...props}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="grid gap-4 p-0">
+          
+          {/* RIGA 1: NOME & COGNOME */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="name" className="text-xs">Nome</Label>
+              <Input id="name" placeholder="Mario" className="h-10" {...register("name")} />
+              {errors.name && <p className="text-[10px] text-destructive font-medium">{errors.name.message}</p>}
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="surname" className="text-xs">Cognome</Label>
+              <Input id="surname" placeholder="Rossi" className="h-10" {...register("surname")} />
+              {errors.surname && <p className="text-[10px] text-destructive font-medium">{errors.surname.message}</p>}
+            </div>
+          </div>
+
+          {/* RIGA 2: CODICE FISCALE & TELEFONO */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="fiscalCode" className="text-xs">Codice Fiscale</Label>
+              <Input 
+                id="fiscalCode" 
+                placeholder="RSSMRA..." 
+                className="h-10 uppercase font-mono" 
+                maxLength={16} 
+                {...register("fiscalCode")} 
+              />
+              {errors.fiscalCode && <p className="text-[10px] text-destructive font-medium">{errors.fiscalCode.message}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="phoneNumber" className="text-xs">Telefono</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium pointer-events-none select-none">
+                  +39
+                </div>
+                <Input 
+                  id="phoneNumber" 
+                  type="tel" 
+                  placeholder="333 123456" 
+                  className="h-10 pl-11"
+                  {...register("phoneNumber")} 
+                />
+              </div>
+              {errors.phoneNumber && <p className="text-[10px] text-destructive font-medium">{errors.phoneNumber.message}</p>}
+            </div>
+          </div>
+
+          {/* RIGA 3: COMUNE */}
+          <div className="space-y-1">
+            <Label htmlFor="address" className="text-xs">Comune / Indirizzo</Label>
+            <Input id="address" placeholder="Roma, Via..." className="h-10" {...register("address")} />
+            {errors.address && <p className="text-[10px] text-destructive font-medium">{errors.address.message}</p>}
+          </div>
+
+          {/* RIGA 4: EMAIL & PASSWORD */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="email" className="text-xs">Email</Label>
+              <Input id="email" type="email" placeholder="mail@example.com" className="h-10" {...register("email")} />
+              {errors.email && <p className="text-[10px] text-destructive font-medium">{errors.email.message}</p>}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="password" className="text-xs">Password</Label>
+              <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    className="h-10 pr-9"
+                    {...register("password")}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-10 w-10 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+              </div>
+              {errors.password && <p className="text-[10px] text-destructive font-medium">{errors.password.message}</p>}
+            </div>
+          </div>
+
+        </CardContent>
+        
+        <CardFooter className="flex flex-col gap-4 p-0 pt-4">
+          
+          {/* MODIFICA QUI: PULSANTE VERDE VIBRANTE */}
+          <Button 
+            type="submit" 
+            className="w-full h-10 text-sm font-semibold bg-primary! text-card! transition-all shadow-md mt-2" 
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Registrati <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+
+          <div className="text-center text-xs text-muted-foreground">
+            Hai già un account? <a href="/login" className="font-semibold text-green-600 hover:underline underline-offset-4">Accedi</a>
+          </div>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

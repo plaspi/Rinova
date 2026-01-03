@@ -1,4 +1,4 @@
-  import React, { useEffect, useState } from "react"
+  import { useEffect, useState } from "react"
   import {
     Table,
     TableBody,
@@ -10,8 +10,6 @@
     TableRow,
   } from "@/components/ui/table"
   import { Button } from "@/components/ui/button"
-  import { ChevronLeft, ChevronRight } from "lucide-react"
-  import {cn} from "@/lib/utils"
   import { MemberDetails } from "../details/memberDetails"
   import {
     DropdownMenu,
@@ -136,7 +134,7 @@
 
 
   export function TableSection() {
-    const [page, setPage] = useState(0)
+    //const [page, setPage] = useState(0)
     const [members, setMembers] = useState<any[]>([])
     const [selectedRow, setSelectedRow] = useState<any>(null)
 
@@ -153,11 +151,11 @@
     const handleRowClick = (row: any) => {
       setSelectedRow(row)
     }
-    const handleEdit = (row: any) =>{
-      alert("al momento non è possibile modificare le informazioni dell'utente")
+    const handleEdit = (row: { id: string }) =>{
+      alert("al momento non è possibile modificare le informazioni dell'utente in row: " + row.id)
     }
-    const handleMessage = (row: any) =>{
-      alert("al momento non è possibile inviare messaggi all'utente")
+    const handleMessage = (row: { id: string }) =>{
+      alert("al momento non è possibile inviare messaggi all'utente in row: " +row.id)
     }
     const updateStatus = (id: number, newStatus: string) =>{
       setMembers(prev=>

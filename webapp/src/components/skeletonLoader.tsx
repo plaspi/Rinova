@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function SkeletonLoader() {
   return (
     <div className="animate-pulse space-y-4 p-4">

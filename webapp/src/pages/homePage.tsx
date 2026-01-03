@@ -1,6 +1,5 @@
 import { SidebarProvider, Sidebar, SidebarTrigger } from "@/components/sidebar/sidebarLayout"
 import { NavLayout } from "@/components/nav/navLayout"
-import { ContentLayout } from "@/components/content/mainLayout"
 import { ModeToggle } from "@/components/modeToggle"
 
 import {
@@ -90,7 +89,7 @@ export default function HomePage() {
 }
 
 // Componente Demo per le Card (giusto per vedere il layout)
-function CardDemo({ title, value, change, icon }: { title: string, value: string, change: string, icon: string }) {
+function CardDemo({ title, value, change }: { title: string, value: string, change: string, icon: string }) {
     return (
         <div className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2">

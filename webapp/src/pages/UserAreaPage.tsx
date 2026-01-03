@@ -49,7 +49,6 @@ export default function UserAreaPage(){
                             </div>
                         </div>
                     </main>
-                
             </SidebarProvider>
         </div>
 
