@@ -2,10 +2,71 @@
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}  
 \section{Analisi dei componenti}
-Le API sono state documentate secondo le specifiche OpenAPI 3.0.
+Questa sezione è dedicata alla presentazione dell'architettura
+adottata in termini di componenti(CMP), definiti
+sulla base dei requisiti funzionali descritti precedentemente.
+Per rappresentare la loro interconnessione è utilizzato un
+diagramma dei componenti, identificando le interfacce fornite
+tra i componenti e verso sistemi esterni
+
 
 \subsection{Definizione dei componenti}
 %DESCRIZIONE COMPONENTI PRINCIPALI, SPECIFICANDO GLI INPUT GLI OUTPUT
+\subsubsection*{CMP1: Gestione autenticazione}
+\textbf{Descrizione:} il componente si occupa della funzionalità
+di registrazione di un account e accesso tramite delle credenziali
+Comprende la pagina di registrazione, login e la funzionalità di
+logout. Permette di identificare coloro che effettuano l'accesso
+al sistema. Permettendogli di accedere alle funzionalità e delle
+risorse a loro riservate in base al loro ruolo nell'applicazione.
+L'utente può selezionare una modalità di accesso alternativo(google, apple)
+così da velocizzarne il processo.
 
+\textbf{Interfaccia richiesta - credenziali di accesso:}
+le credenziali includono e-mail, password, dati anagrafici ed eventualmente
+tecnici del proprio impianto di produzione. Questi sono richiesti in fase di
+registrazione. Quando si effettua l'accesso sono richieste solo email e
+password.
+
+%\textbf{Interfaccia richiesta - credenziali d'autenticazione di ruolo:}
+
+\textbf{Interfaccia richiesta - autorizzazione autenticazione da Google:}
+autorizzazione all’accesso al sistema proveniente dall’SSO di Google che, previo controllo
+delle credenziali inserite dall’utente nei sistemi Google, conferma che tali credenziali sono
+corrette.
+
+\textbf{Interfaccia richiesta - autorizzazione autenticazione da Apple:}
+autorizzazione all’accesso al sistema proveniente dall’SSO di Apple che, previo controllo
+delle credenziali inserite dall’utente nei sistemi Google, conferma che tali credenziali sono
+corrette.
+
+\textbf{Interfaccia fornita - richiesta autenticazione verso Google:}
+indirizzamento dell’utente verso i sistemi SSO Google per l’inserimento delle credenziali Google.
+
+\textbf{Interfaccia fornita - richiesta autenticazione verso Apple:}
+indirizzamento dell’utente verso i sistemi SSO Apple per l’inserimento delle credenziali Apple.
+
+\textbf{Interfaccia fornita - richiesta registrazione:}
+l’utente richiede di effettuare la registrazione al portale fornendo i propri dati
+(nome, cognome, indirizzo, telefono, email, password) i quali vengono salvati nel database.
+
+\textbf{Interfaccia fornita - data di registrazione:}
+la data della prima registrazione viene salvata all'interno del database così da ottenere una maggior
+storicità dell'account.
+
+\textbf{Interfaccia fornita - richiesta di accesso:}
+l’utente richiede di effettuare l'accesso all' applicazione fornendo le credenziali d'accesso.
+
+\textbf{Interfaccia fornita - autenticazione:}
+permette a colui che effettua l’accesso di accedere all’applicazione in modo tale che possa
+spostarsi agevolmente tra le varie sezioni della stessa utilizzandone i servizi e le funzioni,
+permettendo l’accesso ai dati a lui riferiti e la visualizzazione di sezioni a lui concesse.
+
+\subsubsection{CMP2: Gestione account}
+\textbf{Descrizione} il componente si occupa delle funzionalità di gestione dell'account, visualizzazione
+    e modifica delle proprie informazioni. Comprende la pagina dell'area personale e le
+    funzionalità di modifica password, email, numero telefonico o informazioni personali, oltre a quella di
+    cancellazione del profilo. Donando il pieno controllo dei propri dati e del proprio account
+    all'utente autenticato.
 \subsection{Diagramma dei componenti}
 %RAPPRESENTAZIONE GRAFICA DELLE INTERCONNESSIONE FRA I COMPONENTI
