@@ -62,11 +62,170 @@ permette a colui che effettua l’accesso di accedere all’applicazione in modo
 spostarsi agevolmente tra le varie sezioni della stessa utilizzandone i servizi e le funzioni,
 permettendo l’accesso ai dati a lui riferiti e la visualizzazione di sezioni a lui concesse.
 
-\subsubsection{CMP2: Gestione account}
+\subsubsection*{CMP2: Gestione account}
 \textbf{Descrizione} il componente si occupa delle funzionalità di gestione dell'account, visualizzazione
-    e modifica delle proprie informazioni. Comprende la pagina dell'area personale e le
-    funzionalità di modifica password, email, numero telefonico o informazioni personali, oltre a quella di
-    cancellazione del profilo. Donando il pieno controllo dei propri dati e del proprio account
-    all'utente autenticato.
+e modifica delle proprie informazioni personali e di contratto attraverso l'area personale dell'applicazione.
+Include le funzionalità di modifica delle credenziali di accesso(password, email),
+del numero telefonico e degli altri dati anagrafici, nonchè la possibilità di cancellazione
+del proprio profilo. Il componente garantisce all’utente il pieno controllo dei propri dati personali e del
+proprio account, nel rispetto delle politiche di sicurezza e privacy del sistema.
+
+\textbf{Interfaccia richiesta – sessione autenticata:}
+accesso alle funzionalità consentito solo in presenza di una sessione utente valida,
+fornita dal componente di gestione dell’autenticazione.
+
+\textbf{Interfaccia richiesta - dati account:}
+recupero delle informazioni dell'account associate all'utente autenticato dal database.
+
+\textbf{Interfaccia fornita - visualizzazione area personale:}
+mostra i dati personali dell’utente, tra cui nome, cognome, email, numero di telefono,
+indirizzo di residenza e ruolo all’interno dell’applicazione ed eventuale numero di serie dell'impianto.
+
+\textbf{Interfaccia fornita - modifica informazioni personali:}
+consente all’utente di aggiornare i propri dati anagrafici e di contatto.
+
+\textbf{Interfaccia fornita - modifica credenziali d'accesso:}
+permette la modifica della password e dell’indirizzo email associati all’account,
+previa verifica dell’identità dell’utente.
+
+\textbf{Interfaccia fornita – cancellazione account:}
+consente all’utente di richiedere la cancellazione del proprio profilo dal sistema,
+con conseguente rimozione dei dati associati per garantirne la privacy.
+
+\subsubsection*{CMP3: Gestione impostazioni utente e di sistema:}
+\textbf{Descrizione:} Il componente si occupa della gestione delle impostazioni
+e delle preferenze configurabili dagli utenti autenticati.
+Permette di personalizzare il comportamento dell’applicazione, la visualizzazione dei dati
+e le modalità di notifica, di modificare il tema dell'applicazione e la lingua impostata.
+
+\textbf{Interfaccia richiesta - input preferenza tema:}
+riceve l'input inserito dall'utente sulla preferenza del tema da impostare.
+
+\textbf{Interfaccia richiesta - input preferenza notifiche:}
+riceve l'input inserito dall'utente sulla preferenza per quanto riguarda la ricezione delle notifiche.
+
+\textbf{Interfaccia fornita - salvataggio preferenze:}
+Comunica al Database le modifiche apportate dall'utente affinché vengano.
+
+\textbf{Interfaccia fornita - configurazione visuale del tema:}
+Fornisce all'interfaccia utente i parametri necessari per il rendering corretto
+delle pagine in base al tema selezionato.
+
+\textbf{Interfaccia fornita – stato abilitazione notifiche:}
+Fornisce agli altri componenti del sistema (es. Gestione Notifiche)
+l'informazione sullo stato delle preferenze dell'utente, inibendo o consentendo l'invio di comunicazioni.
+
+\subsubsection*{CMP4: Gestione notifiche}
+\textbf{Descrizione:} Il componente gestisce le funzioni di comunicazioni verso l'utente.
+Ha il compito di generare e inviare avvisi tempestivi in caso di rilevamento di
+anomalie nell'impianto o di informare gli utenti della pubblicazione di annunci e news di
+servizio. Gestisce inoltre lo stato delle notifiche ricevute e si
+interfaccia con i sistemi esterni di invio.
+
+\textbf{Interfaccia richiesta - sengalazione anomalie:}
+Riceve dai componenti di monitoraggio i dati relativi ai malfunzionamenti o ai valori fuori soglia
+rilevati nell'impianto. Questi dati includono il codice di errore, la gravità e il timestamp
+dell'evento.
+
+\textbf{Interfaccia richiesta - dati annunci:}
+Riceve dai componenti amministrativi i dati degli annunci inseriti (titolo, data, orario, mittente,
+corpo del messaggio...).
+
+\textbf{Interfaccia fornita - invio email/notifiche:}
+basandosi sulle preferenze di notifiche selezionate dall'utente si interfaccia con i servizi esterni
+per spedire fisicamente la notifica.
+
+\textbf{Interfaccia fornita - aggiornamento stato lettura:}
+permette al sistema di marcare lo stato della notifica, se letta o no, così da aggiornare il contatore
+delle notifiche non visualizzate.
+
+\subsubsection*{CMP5: Gestione annunci}
+\textbf{Descrizione: }il componente si occupa dell'intero ciclo di vita delle comunicazioni di
+servizio e delle news all'interno della propria comunità energetica. Permette agli utenti con ruoli
+amministrativi di pubblicare, modificare ed eliminare annunci. Gestisce inoltre la visualizzazione
+di tali comunicazioni nella dashboard degli utenti (non amministratori), permettendo di filtrare
+gli annunci presenti nella bacheca per data o importanza.
+
+\textbf{Interfaccia richiesta - dati nuovo annuncio:}
+sono i dati che caratterizzano l'annuncio e venogno inseriti dall'utente prima di pubblicare l'annuncio.
+
+\textbf{Interfaccia fornita - pubblicazione annuncio:}
+invia i dati al database e formalizza la pubblicazione dell'annuncio, comunicando ai componenti di gestione del
+databse e gestione delle notifiche.
+
+\textbf{Interfaccia fornita - visualizzazione annuncio:}
+fornisce al front-end il necessario per riempire la bacheca annunci da mostrare all'utente
+
+\subsubsection*{CMP6: Monitoraggio impianto personale}
+
+\textbf{Descrizione: }Il componente è responsabile della gestione dei dati energetici relativi al
+singolo impianto di produzione o utenza di consumo. Si occupa di acquisire i flussi di dati provenienti
+dai dispositivi di misurazione, di normalizzarli e di renderli disponibili per
+la visualizzazione. Permette all'utente di monitorare la potenza istantanea in tempo reale e di
+analizzare lo storico di produzione e consumo attraverso grafici interattivi, filtrando i dati per
+diversi intervalli temporali.
+
+\textbf{Interfaccia richiesta - selezione impianto:}
+riceve impianto l'utente desidera analizzare così da poter recuperare i dati dal componente di gestione
+del database.
+
+\textbf{Interfaccia richiesta - filtri temporali:}
+riceve dall'interfaccia utente i parametri temporali del periodo d'analisi
+al fine di gestire l'aggregazione dei dati.
+
+\textbf{Interfaccia richiesta - dati real-time:}
+fornisce dati real time per il popolamento delle dashboard con dati di produzione e percentuali
+di risparmio per l'ambiente.
+
+\textbf{Interfaccia fornita - visualizzazione grafici:}
+fornisce al front-end i dati energetici opportunamente aggregati secondo la granuralità richiesta
+sotto forma di grafici interattivi.
+
+\textbf{Interfaccia fornita - opzioni d'interattività:}
+fornisce la possibilità attraverso l'interfaccia utente (grafici interattivi) di impostare i periodi
+temporali d'analisi così da aggiornare grafici e dashboard in tempo reale.
+
+\textbf{Interfaccia fornita - creazione report:}
+fornisce la possibilità di esportare come file pdf i dati energetici analizzati.
+
+%CMP per la gestione dati di comunità?
+
+\subsubsection*{CMP7: Gestione database}
+\textbf{Descrizione: }Il componente funge da corpo centrale per l'intera
+applicazione. Ha il compoto di memorizzare, aggiornare e recuperare tutte le informazioni
+gestite dal sistema, garantendo l'integrità, la sicurezza e la disponibilità dei dati. Si interfaccia
+con tutti i componenti del sistema. Comprende il database, tutti i dati memorizzati e le query
+che agiscono su di essi.
+
+\textbf{Interfaccia richiesta - dati registrazione/personali:}
+la componente deve avere accesso ai dati dal componente di gestione dell'autenticazione
+(email, password e dati personali) così da memorizzarli.
+
+\textbf{Interfaccia richiesta - dati degli impianti:}
+la componente deve avere accesso ai dati tecnici degli impianti associati ad un utente.
+
+\textbf{Interfaccia richiesta - dati annunci:}
+la componente deve ricevere i dati relativi a nuovi annunci pubblicati.
+
+\textbf{Interfaccia richiesta - dati accesso:}
+la componente riceve i dati inseriti da un utente che desidera autenticarsi.
+
+\textbf{Interfaccia richiesta - dati modificati:}
+riceve le modifica apportate ai dati personali, d'autenticazione, o degli impianti dall'utente.
+
+\textbf{Interfaccia fornita - attività personali:}
+si occupa di fornire i dati degli utenti nelle operazioni che ne necessitano(visualizzazione, autenticazione).
+
+\textbf{Interfaccia fornita - modifiche database:}
+garantisce l'applicazione delle richieste di modifica, scongiurando anomalie.
+
+\textbf{Interfaccia fornita - lista annunci:}
+comunicazione degli annunci presenti nella bacheca personale di un utente alla componente di gestione
+degli annunci.
+
+\textbf{Interfaccia fornita - dati energetici:}
+comunicazione dei dati energetici associati ad uno o più impianti alle componenti di monitoraggio.
+
+
 \subsection{Diagramma dei componenti}
 %RAPPRESENTAZIONE GRAFICA DELLE INTERCONNESSIONE FRA I COMPONENTI
