@@ -12,17 +12,35 @@
     import { Input } from "@/components/ui/input"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Label } from "@radix-ui/react-label"
-import { CheckCircle2, ArrowLeft, Leaf, Mail, ArrowRight } from "lucide-react"
+import { CheckCircle2, ArrowLeft, Mail, ArrowRight } from "lucide-react"
+import { supabase } from "@/services/supabase_client"
+import { toast } from "sonner"
+import { Link } from "react-router-dom"
+import { RinovaLogo } from "@/components/rinova-logo"
 
-    export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
+export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
     const [emailSent, setEmailSent] = useState(false);
     const isMobile = useIsMobile();
     const [email, setEmail] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulazione invio
-        setTimeout(() => setEmailSent(true), 500);
+        
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: 'http://localhost:5173/update-password',
+            });
+
+            if(error) throw error;
+
+            setEmailSent(true);
+            console.log(email);
+            console.log(window.location.origin);
+            toast.success("Email di recupero inviata");
+        } catch(err: any) {
+            console.error(err);
+            toast.error(err.message || "Errore nell'invio. Riprova.");
+        }
     };
 
     // --- STATO DI SUCCESSO (Condiviso) ---
@@ -57,7 +75,7 @@ import { CheckCircle2, ArrowLeft, Leaf, Mail, ArrowRight } from "lucide-react"
                     <ArrowLeft className="w-6 h-6 text-foreground" />
                 </a>
                 <div className="flex items-center gap-2">
-                    <Leaf className="w-5 h-5 text-primary" />
+                    <RinovaLogo className="w-6 h-6 text-black" />
                     <span className="font-bold text-primary">Rinova</span>
                 </div>
                 <div className="w-8" /> {/* Spacer per centrare */}
@@ -118,9 +136,9 @@ import { CheckCircle2, ArrowLeft, Leaf, Mail, ArrowRight } from "lucide-react"
         {/* LOGO INTERNO ALLA CARD (Top Left) */}
         <div className="p-6 pb-0 flex items-center gap-2">
           <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-            <Leaf className="text-primary-foreground w-4 h-4" />
+            <RinovaLogo className="text-black w-8 h-8" />
           </div>
-          <span className="text-lg font-bold text-primary tracking-tight">Rinova</span>
+          <span className="text-2xl font-bold text-primary tracking-tight">Rinova</span>
         </div>
 
         {emailSent ? (
@@ -161,9 +179,9 @@ import { CheckCircle2, ArrowLeft, Leaf, Mail, ArrowRight } from "lucide-react"
                 </CardContent>
 
                 <CardFooter className="justify-center border-t bg-muted/10 py-4">
-                    <a href="/login" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors">
+                    <Link to="/login" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors">
                         <ArrowLeft className="w-4 h-4" /> Torna al login
-                    </a>
+                    </Link>
                 </CardFooter>
             </>
         )}

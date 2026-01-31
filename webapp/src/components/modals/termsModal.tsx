@@ -7,6 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface TermsModalProps {
   children: React.ReactNode;
@@ -17,12 +18,17 @@ export function TermsModal({ children, title }: TermsModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <span className="cursor-pointer font-semibold hover:underline hover:text-primary transition-colors">
+        <span className="cursor-pointer font-semibold underline hover:text-primary transition-colors">
           {children}
         </span>
       </DialogTrigger>
-      {/* max-w-md per mobile/tablet, max-h-[80vh] per evitare overflow schermo */}
-      <DialogContent className="max-w-md md:max-w-lg h-[80vh] flex flex-col p-0 gap-0 overflow-hidden bg-card border-border">
+      <DialogContent className={cn(
+        "max-w-md md:max-w-lg h-[80vh] flex flex-col p-0 gap-0 bg-card border-border sm:rounded-xl",
+        "fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]",
+        "data-[state=open]:animate-slide-up-fade",
+        "data-[state=open]:slide-in-from-left-0 data-[state=open]:zoom-in-0 fade-in-0",
+        "duration-200"
+      )}>
         <DialogHeader className="p-6 pb-2 shrink-0">
           <DialogTitle className="text-xl font-bold text-foreground">{title}</DialogTitle>
           <DialogDescription>
@@ -31,7 +37,7 @@ export function TermsModal({ children, title }: TermsModalProps) {
         </DialogHeader>
         
         <ScrollArea className="flex-1 p-6 pt-2">
-          <div className="text-sm text-muted-foreground space-y-4 pr-4">
+          <div className="text-sm text-muted-foreground space-y-4 pr-4 text-justify">
             <p>
               <strong>1. Introduzione</strong><br/>
               Benvenuto in Rinova. Questo documento disciplina l'utilizzo dell'applicazione e dei servizi connessi.

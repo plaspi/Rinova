@@ -1,67 +1,77 @@
-import React, { useState } from "react";
-import { 
-  Leaf, 
-  Mail, 
-  Lock, 
+import React, { useState, useEffect} from "react";
+import { useForm } from "react-hook-form";
+import {
   Eye, 
   EyeOff, 
   ArrowRight,
-  CheckCircle2,
-  BarChart3,
-  ShieldCheck
+  Loader2
 } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Separator } from "@radix-ui/react-separator";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { Input } from "../ui/input";
-import { useIsMobile } from "@/hooks/use-mobile"; 
-import { supabase } from "@/services/supabase_client"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/services/supabase_client";
+import { cn } from "@/lib/utils";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { useNavigate, Link } from "react-router-dom";
+ 
+const loginSchema = z.object({
+  email: z.string().min(2, "Inserisci una mail valida"),
+  password: z.string().min(2, "Inserisci una password valida")
+});
 
-// Helper per le classi
-const cn = (...classes: (string | undefined | null | boolean)[]) => classes.filter(Boolean).join(" ");
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false);
-  const isMobile = useIsMobile();
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null> (null)
+  const [isLoading, setIsLoading] = useState(false);
 
-  // --- 1. LOGICA AGGIUNTA: Stato per salvare i dati ---
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
+  //redirect after login success
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate("/home");
+    });
+  }, [navigate]);
+
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) throw error;
+
+      toast.success("Bentornato!");
+      navigate("/home");
+
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Errore login");
+      setIsLoading(false);
+    }
+  };
+
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit", 
+    reValidateMode: "onChange" 
   });
 
-  // --- 2. LOGICA AGGIUNTA: Funzione per aggiornare lo stato quando scrivi ---
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
-  };
-
-  // --- 3. LOGICA AGGIUNTA: Funzione invio form ---
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Blocca il refresh della pagina
-    console.log("Dati Login:", formData); // Qui hai i dati pronti per il backend
-  };
-
-  // --- 4. LOGICA AGGIUNTA: Login con social ---
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
-    setLoading(true)
-    setError(null)
+    setIsLoading(true)
 
     try{
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          //redirect dell'utente dopo il login
-          //in locale sarà localhost, in produzione sarà il dominio
-          //nel dubbio per ora window.location.origin prende in automatico quello attuale
           redirectTo: `${window.location.origin}/home`,
-
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -70,328 +80,112 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       })
 
       if (error) throw error
-      
-      // Nota: Con OAuth, l'utente viene reindirizzato via browser,
-      // quindi il codice qui sotto potrebbe non essere eseguito subito
-      // se non in caso di errore immediato.
     } catch (err: any) {
-      setError(err.message || "Errore durante il login")
-      setLoading(false)
+      console.error(err);
+      toast.error(err.message || "Errore durante il login.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  // --- 1. VERSIONE MOBILE (Return anticipato) ---
-  // Nessuna modifica grafica, solo collegamento dati
-  if (isMobile) {
-    return (
-      <div className={cn("min-h-screen w-full bg-background flex flex-col justify-center p-6 font-sans text-foreground", className)} {...props}>
-        
-        {/* Header Mobile */}
-        <div className="flex flex-col gap-6 mb-8">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-               <Leaf className="text-primary-foreground w-4 h-4" />
-            </div>
-            <span className="text-lg font-bold text-primary tracking-tight">Rinova</span>
+  return(
+    <Card className={cn("w-full shadow-none border-0 bg-transparent", className)} {...props}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="grid gap-4 p-0">
+
+          {/* EMAIL */}
+          <div className="space-y-1">
+            <Label htmlFor="email" className="text-xs font-medium">Email</Label>
+            <Input id="email" type="email" placeholder="mail@example.com" className="h-10" {...register("email")} />
+            {errors.email && <p className="text-[10px] text-destructive">{errors.email.message}</p>}
           </div>
 
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Accedi</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Inserisci le tue credenziali per gestire la tua energia.
-            </p>
-          </div>
-        </div>
-
-        {/* Form Mobile - Collegato handleSubmit */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                // Collegamento dati
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="mario.rossi@example.com"
-                className="pl-10 h-12" // Stile mantenuto
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
+          {/* PASSWORD */}
+          <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <a href="/forgotpw" className="text-sm font-medium text-primary hover:underline">
-                Password dimenticata?
-              </a>
+              <Label htmlFor="password" className="text-xs font-medium">Password</Label>
+              <Link 
+                  to="/forgotpw" 
+                  className="text-[11px] text-primary font-medium hover:underline focus:outline-none"
+                  tabIndex={-1}
+                >
+                  Password dimenticata?
+              </Link>
             </div>
-              <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      // Collegamento dati
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="pl-10 pr-10 h-10" // Stile mantenuto
-                      placeholder="••••••••"
-                      required
-                    />
-                    
-                    {/* PULSANTE OCCHIO */}
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none flex items-center justify-center"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                </div>
-          </div>
 
-          <Button type="submit" className="w-full h-12 text-sm font-semibold bg-primary! text-card!">
-            Accedi <ArrowRight className="ml-2 h-4 w-4 text-card!" />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className="h-10 pr-9"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground bg-transparent focus:outline-none flex items-center justify-center transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            {errors.password && <p className="text-[10px] text-destructive">{errors.password.message}</p>}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-4 p-0 pt-6">
+          <Button 
+            type="submit" 
+            className="w-full h-10 font-semibold shadow-md" 
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Accedi <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center"><Separator /></div>
+          {/* SEPARATORE */}
+          <div className="relative w-full">
+            <div className="absolute inset-0 flex items-center"><Separator className="w-full border-t border-border" /></div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground font-medium">o continua con</span>
+              <span className="bg-card px-2 text-muted-foreground font-medium">o continua con</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          {/* SOCIAL BUTTONS */}
+          <div className="grid grid-cols-2 gap-3 w-full">
             <Button 
-              variant="outline" 
-              type="button" 
-              className="h-12 bg-primary! border-border hover:bg-muted/50"
-            >
-              Apple
-            </Button>
-            <Button 
-              variant="outline" 
-              type="button" 
-              className="h-9 text-xs bg-primary! text-card border-border hover:text-card! hover:bg-muted/50"
-              onClick={()=> handleSocialLogin('google')}
-              disabled={loading}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path
-                  d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                  fill="currentColor"
-                />
+                variant="outline" 
+                type="button" 
+                className="w-full h-10 bg-white! text-neutral-900! border-neutral-200! hover:bg-neutral-100! hover:text-neutral-900! font-medium"
+                onClick={()=> handleSocialLogin('google')}
+                disabled={isLoading}
+              >
+              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
               Google
             </Button>
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="w-full h-10 font-medium"
+              onClick={() => handleSocialLogin('apple')}
+              disabled={isLoading}
+            >
+              <svg className="w-5 h-5 mr-2 text-foreground" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.62 4.37-1.62 1.71.12 3.03.84 3.75 2.07-3.27 1.99-2.73 5.98.59 7.46-.57 1.63-1.65 3.23-2.92 4.32zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+              </svg>
+              Apple
+            </Button>
           </div>
-
-          <div className="text-center text-sm mt-6">
-            Non hai un account?{" "}
-            <a href="/registration" className="font-semibold text-primary hover:underline">
-              Registrati ora
-            </a>
-          </div>
-        </form>
-
-        <div className="mt-auto pt-8 text-center px-4">
-           <p className="text-xs text-muted-foreground">
-              Cliccando Accedi, accetti i nostri <a href="#" className="underline hover:text-primary">Termini</a> e <a href="#" className="underline hover:text-primary">Privacy</a>.
-           </p>
-        </div>
-      </div>
-    );
-  
-  }
-
-  // --- 2. VERSIONE DESKTOP (Default Return) ---
-  // Nessuna modifica grafica, solo collegamento dati
-  return (
-    <div 
-      className={cn(
-        "h-screen w-full overflow-hidden bg-muted/30 flex flex-col items-center justify-center p-4 font-sans text-foreground", 
-        className
-      )} 
-      {...props}
-    >
-      {/* WRAPPER CENTRATO */}
-      <div className="flex flex-col items-center w-full max-w-4xl h-full max-h-[95vh]">
-        
-        {/* CARD PRINCIPALE */}
-        <Card className="w-full flex-1 overflow-hidden grid md:grid-cols-2 animate-in fade-in zoom-in-95 duration-400 border-0 shadow-2xl ring-1 ring-border/50 bg-card">
           
-          {/* COLONNA SINISTRA (Form) */}
-          <div className="p-3 md:p-6 flex flex-col justify-center h-full overflow-y-auto relative"> 
-            
-            {/* Header Compatto */}
-            <div className="flex items-center h-auto gap-2 shrink-0">
-              <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-                 <Leaf className="text-primary-foreground w-4 h-4" />
-              </div>
-              <span className="text-lg font-bold text-primary tracking-tight">Rinova</span>
-            </div>
-
-            <div className="flex flex-col gap-1 mb-2 shrink-0">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Accedi</h1>
-              <p className="text-sm text-muted-foreground">
-                Inserisci le tue credenziali per gestire la tua energia.
-              </p>
-            </div>
-
-            {/* Form compattato - Collegato handleSubmit */}
-            <form className="space-y-4 flex-1 flex-col justify-center" onSubmit={handleSubmit}>
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    // Collegamento dati
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="mario.rossi@example.com" 
-                    className="pl-10 h-10 bg-card!" // Stile mantenuto
-                    required 
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <a href="/forgotpw" className="text-xs font-medium text-primary hover:underline underline-offset-2">
-                    Password dimenticata?
-                  </a>
-                </div>
-                <div className="relative">
-                  {/* LUCCHETTO */}
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    // Collegamento dati
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="pl-10 pr-10 h-10 bg-card!" // Stile mantenuto
-                    placeholder="••••••••"
-                    required
-                  />
-                  
-                  {/* PULSANTE OCCHIO */}
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground bg-card! focus:outline-none flex items-center justify-center"
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full h-10 text-sm font-semibold bg-primary! text-card! mt-2">
-                Accedi <ArrowRight className="ml-2 h-4 w-4 text-card!" />
-              </Button>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center"><Separator /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card text-muted-foreground font-medium">o continua con</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" type="button" className="h-9 text-xs bg-primary! text-card border-border hover:text-card! hover:bg-muted/50">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Apple
-                </Button>
-                <Button 
-                  variant="outline" 
-                  type="button" 
-                  className="h-9 text-xs bg-primary! text-card border-border hover:text-card! hover:bg-muted/50"
-                  onClick={()=> handleSocialLogin('google')}
-                  disabled={loading}
-                >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path
-                    d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                    fill="currentColor"
-                  />
-                </svg>
-                  Google
-                </Button>
-              </div>
-
-              <div className="text-center text-xs pt-2">
-                Non hai un account?{" "}
-                <a href="/registration" className="font-semibold text-primary hover:underline underline-offset-4">
-                  Registrati ora
-                </a>
-              </div>
-            </form>
+          <div className="text-center text-xs text-muted-foreground mt-2">
+            Non hai un account?{" "} <Link to="/registration" className="font-semibold text-primary hover:underline underline-offset-4">Registrati ora</Link>
           </div>
-
-          {/* COLONNA DESTRA (Visual) */}
-          <div className="hidden md:flex flex-col relative bg-linear-to-br from-primary to-nuanceCard text-primary-foreground p-8 items-start justify-between overflow-hidden h-full">
-            {/* Pattern Sfondo */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-               <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full border-50 border-white blur-3xl"></div>
-               <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full border-50 border-accent blur-3xl"></div>
-            </div>
-
-            <div className="relative z-10 w-full shrink-0">
-              <div className="bg-white/10 backdrop-blur-md inline-flex p-2 rounded-xl border border-white/20 shadow-lg mb-6">
-                 <BarChart3 className="w-5 h-5 text-yellow-300 fill-yellow-300/20" />
-              </div>
-              
-              <h2 className="text-2xl font-bold mb-4 leading-tight">
-                Bentornato.<br/>
-                Riprendi il controllo dei tuoi <span className="text-brand-soft">consumi</span>.
-              </h2>
-              
-              <div className="space-y-3">
-                 <div className="flex items-center gap-3">
-                   <div className="bg-primary-foreground/20 p-1 rounded-full"><CheckCircle2 className="w-3.5 h-3.5 text-brand-soft" /></div>
-                   <p className="font-medium text-sm text-primary-foreground/90">Visualizza i tuoi risparmi in tempo reale</p>
-                 </div>
-                 <div className="flex items-center gap-3">
-                   <div className="bg-primary-foreground/20 p-1 rounded-full"><CheckCircle2 className="w-3.5 h-3.5 text-brand-soft" /></div>
-                   <p className="font-medium text-sm text-primary-foreground/90">Gestisci i pagamenti e le scadenze</p>
-                 </div>
-                 <div className="flex items-center gap-3">
-                   <div className="bg-primary-foreground/20 p-1 rounded-full"><CheckCircle2 className="w-3.5 h-3.5 text-brand-soft" /></div>
-                   <p className="font-medium text-sm text-primary-foreground/90">Accedi ai dati della tua CER</p>
-                 </div>
-              </div>
-            </div>
-
-            <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10 w-full mt-auto">
-              <div className="flex items-center gap-3">
-                 <div className="bg-card rounded-full p-1.5"><ShieldCheck className="w-4 h-4 text-primary" /></div>
-                 <div>
-                    <p className="text-sm font-bold">Accesso Sicuro</p>
-                    <p className="text-xs text-brand-soft/80">I tuoi dati energetici sono protetti con crittografia end-to-end.</p>
-                 </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Footer Ridotto */}
-        <div className="mt-3 text-center px-4 shrink-0">
-           <p className="text-[10px] text-muted-foreground max-w-sm mx-auto">
-              Cliccando Accedi, accetti i nostri <a href="#" className="underline hover:text-primary">Termini</a> e <a href="#" className="underline hover:text-primary">Privacy</a>.
-           </p>
-        </div>
-      </div>
-    </div>
+        </CardFooter>
+      </form>
+    </Card>
   );
 }

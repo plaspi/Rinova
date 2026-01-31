@@ -1,12 +1,14 @@
 import { RegistrationForm } from "@/components/forms/registration-form";
 import { RegistrationCarousel } from "@/components/registrationCarousel";
 import { Card } from "@/components/ui/card";
-import { Leaf } from "lucide-react";
+import { TermsModal } from "@/components/modals/termsModal"; 
+import { RinovaLogo } from "@/components/rinova-logo";
 
 export default function RegistrationPage() {
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-muted/20 p-4 lg:p-0">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-muted/20 p-4 lg:p-0">
       
+      {/* CARD PRINCIPALE */}
       <Card className="
         w-full max-w-5xl 
         h-full lg:h-auto lg:max-h-[90vh] 
@@ -19,20 +21,16 @@ export default function RegistrationPage() {
       ">
         
         {/* COLONNA SINISTRA (Form) */}
-        <div className="flex-1 flex flex-col justify-center p-6 lg:p-12 overflow-y-auto scrollbar-hide relative">
+        <div className="flex-1 flex flex-col p-6 lg:p-12 overflow-y-auto scrollbar-hide relative pb-6">
           
-          <div className="flex items-center gap-2 mb-6 shrink-0">
+          <div className="flex items-center gap-2 mb-4 shrink-0">
             <div className="bg-green-500 p-2 rounded-lg shadow-sm">
-               <Leaf className="text-white w-5 h-5 fill-current" />
+               <RinovaLogo className="text-black w-8 h-8" />
             </div>
-            <span className="text-xl font-bold text-foreground tracking-tight">Rinova</span>
+            <span className="text-2xl font-bold text-foreground tracking-tight">Rinova</span>
           </div>
 
-          {/* MODIFICA QUI: 
-              1. max-w-[520px] invece di max-w-sm: Allarga il form orizzontalmente.
-              2. mx-auto: Lo centra perfettamente nella colonna bianca.
-          */}
-          <div className="w-full max-w-[520px] mx-auto space-y-6">
+          <div className="w-full max-w-130 mx-auto space-y-6 my-auto">
               <div className="flex flex-col space-y-1">
                 <h1 className="text-3xl font-bold tracking-tight text-foreground">Crea un account</h1>
                 <p className="text-sm text-muted-foreground">
@@ -46,16 +44,20 @@ export default function RegistrationPage() {
 
         {/* COLONNA DESTRA (Visual) */}
         <div className="hidden lg:flex flex-col relative bg-linear-to-br from-green-500 to-emerald-900 text-white overflow-hidden items-center justify-center">
-           
-           {/* Pattern di sfondo */}
-           <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl pointer-events-none" />
-           <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] bg-emerald-900/20 rounded-full blur-3xl pointer-events-none" />
-
-           {/* Componente Carousel */}
+           <div className="absolute top-[-20%] right-[-10%] w-125 h-125 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+           <div className="absolute bottom-[-20%] left-[-10%] w-100 h-100 bg-emerald-900/20 rounded-full blur-3xl pointer-events-none" />
            <RegistrationCarousel className="w-full h-full z-10" />
         </div>
 
       </Card>
+
+      {/* FOOTER ESTERNO (Stile Login) */}
+      <div className="mt-4 text-center px-4 shrink-0">
+           <p className="text-[12px] text-muted-foreground max-w-sm mx-auto">
+              Cliccando registrati accetti i nostri <TermsModal title="Termini">Termini</TermsModal> e <TermsModal title="Privacy">Privacy</TermsModal>.
+           </p>
+      </div>
+
     </div>
   );
 }

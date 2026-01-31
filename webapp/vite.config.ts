@@ -16,13 +16,21 @@ export default defineConfig({
         name: 'Rinova Energy',
         short_name: 'Rinova',
         description: 'Gestione Comunità Energetiche Rinnovabili',
-        theme_color: '#064e3b',
-        background_color: '#ffffff',
+        theme_color: '#020617',
+        background_color: '#020617',
         display: 'standalone',
         orientation: 'portrait',
         id: '/',
         start_url: '/',
         icons: [
+          //new svg icon
+          {
+            src: 'manifest/logo_rinova.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          },
+          //png fallbacks  NOTICE: kept these for compatibility
           {
             src: 'manifest/android_chrome_192x192.png',
             sizes: '192x192',
@@ -39,7 +47,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         cleanupOutdatedCaches: true,
-        navigateFallback: 'index.html', // Fondamentale per SPA
+        navigateFallback: 'index.html', //fondamentale per SPA
       }
     })
   ],

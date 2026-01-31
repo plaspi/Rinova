@@ -1,19 +1,29 @@
 import os
 from typing import Optional
 from fastapi import Header, HTTPException, status
-import jwt # Libreria PyJWT
+import jwt # PyJWT
+from dotenv import load_dotenv
 
-# PRENDI QUESTO DALLA DASHBOARD SUPABASE -> SETTINGS -> API -> JWT SECRET
-# (Non usare la Anon Key, serve il JWT Secret che inizia per "super-secret-...")
+# Carica le variabili d'ambiente SUBITO
+load_dotenv()
+
+# Recupera il JWT Secret da .env
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
 ALGORITHM = "HS256"
 
 def get_current_user(authorization: Optional[str] = Header(None)):
     """
-    Verifica il JWT localmente usando la crittografia.
-    Zero chiamate di rete a Supabase = Velocità massima e nessun rate limit.
+    Verifica il token JWT di Supabase localmente.
     """
     
+    # Controllo di sicurezza: se manca la chiave nel .env, ferma tutto
+    if not SUPABASE_JWT_SECRET:
+        print("ERRORE CRITICO: SUPABASE_JWT_SECRET mancante nel file .env!")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Server configuration error: Missing JWT Secret"
+        )
+
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -21,37 +31,34 @@ def get_current_user(authorization: Optional[str] = Header(None)):
         )
 
     try:
-        # 1. Pulisci il token
+        # Pulisci il token (rimuovi 'Bearer ')
         token = authorization.replace("Bearer ", "")
         
-        # 2. VERIFICA MATEMATICA (Locale)
-        # Se il secret è giusto e il token non è scaduto, decodifica il payload.
-        # Se qualcuno ha manomesso il token, questa funzione esplode in un errore.
+        # Verifica e decodifica il token
         payload = jwt.decode(
             token,
             SUPABASE_JWT_SECRET,
             algorithms=[ALGORITHM],
-            audience="authenticated", # Supabase usa questo audience
-            options={"verify_exp": True} # Controlla automaticamente se è scaduto
+            audience="authenticated", # Audience standard di Supabase Auth
+            options={"verify_exp": True}
         )
         
-        # 3. Ritorna i dati dell'utente (UUID, email, ruolo) contenuti nel token
         return payload
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token scaduto (fai refresh nel frontend)"
+            detail="Token scaduto"
         )
     except jwt.InvalidTokenError as e:
-        print(f"Errore token: {e}")
+        print(f"Token invalido: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token non valido"
         )
     except Exception as e:
-        print(f"Errore generico auth: {e}")
+        print(f"Errore auth generico: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Errore verifica autenticazione"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Errore di autenticazione"
         )

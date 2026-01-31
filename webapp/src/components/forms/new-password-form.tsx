@@ -1,151 +1,147 @@
-import { useState } from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { Label } from "@radix-ui/react-label"
-import { EyeOff, Eye, CheckCircle2, ArrowRight, ArrowLeft, Leaf, KeyRound, Lock } from "lucide-react"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { EyeOff, Eye, CheckCircle2, ArrowRight, ArrowLeft, KeyRound, Loader2, Lock } from "lucide-react";
+import { supabase } from "@/services/supabase_client";
+import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { RinovaLogo } from "@/components/rinova-logo";
+
+// --- 1. SCHEMA ZOD (Validazione + Match) ---
+const passwordSchema = z.object({
+  newPassword: z.string()
+      .min(8, "Inserire almeno 8 caratteri")
+      .regex(/[A-Z]/, "Inserire almeno una maiuscola")
+      .regex(/[a-z]/, "Inserire almeno una minuscola")
+      .regex(/[0-9]/, "Inserire almeno un numero")
+      .regex(/[^a-zA-Z0-9]/, "Inserire almeno un carattere speciale"), // Catch-all per simboli,
+  confirmPassword: z.string()
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Le password non coincidono",
+  path: ["confirmPassword"],
+});
+
+type NewPasswordValues = z.infer<typeof passwordSchema>;
 
 export function NewPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
-  // --- STATI ---
-  // Stati per la visibilità (UI)
+  // UI States
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  // Stati per la logica (Dati e Errori)
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState("");
-  
-  // Stato unico per i dati del form (LOGICA AGGIUNTA)
-  const [formData, setFormData] = useState({
-    newPassword: "",
-    confirmPassword: ""
+
+  // --- 2. HOOK FORM CON ZOD ---
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<NewPasswordValues>({
+    resolver: zodResolver(passwordSchema),
+    mode: "onSubmit", // Valida quando premi invio
   });
 
-  // --- HANDLERS (LOGICA AGGIUNTA) ---
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    
-    // Mappatura degli ID degli input alle chiavi dello stato
-    // Nota: Ho cambiato gli id negli input sotto per farli coincidere (password -> newPassword)
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
+  // --- 3. SUBMIT (Supabase gestisce la sessione in automatico) ---
+  const onSubmit = async (data: NewPasswordValues) => {
+    try {
+        // Supabase ha già recuperato il token dall'URL automaticamente
+        const { error } = await supabase.auth.updateUser({
+          password: data.newPassword,
+        });
 
-    if (error) setError("");
+        if (error) throw error;
+
+        setIsSuccess(true);
+        toast.success("Password aggiornata con successo!");
+        
+        // Redirect al login dopo 1.2 secondi
+        setTimeout(() => navigate("/login"), 1200);
+
+    } catch (err: any) {
+        console.error(err);
+        toast.error("Errore aggiornamento: " + (err.message || "Sessione scaduta o invalida"));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError("Le password non coincidono");
-      return;
-    }
-    if (formData.newPassword.length < 8) {
-      setError("La password deve essere di almeno 8 caratteri");
-      return;
-    }
-
-    setError("");
-    console.log("Password Reset Data:", formData); // Dati pronti per il backend
-    setIsSuccess(true);
-  };
-
-  // --- CONTENUTO DEL FORM (Render Function) ---
-  // Trasformato in funzione per leggere lo stato aggiornato
+  // --- RENDER CONTENT ---
   const renderFormContent = () => (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       
       {/* CAMPO 1: NUOVA PASSWORD */}
       <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-              <Label htmlFor="newPassword">Nuova Password</Label>
-          </div>
+          <Label htmlFor="newPassword">Nuova Password</Label>
           <div className="relative">
-              {/* LUCCHETTO */}
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          
               <Input
-                  id="newPassword" // ID aggiornato per coincidere con formData
+                  id="newPassword"
                   type={showNewPassword ? "text" : "password"}
-                  value={formData.newPassword} // Collegamento dati
-                  onChange={handleChange}      // Collegamento handler
                   className="pl-10 pr-10 h-10 bg-card!"
                   placeholder="••••••••"
-                  required
+                  {...register("newPassword")}
               />
-                          
-              {/* PULSANTE OCCHIO (Tuo stile originale mantenuto) */}
               <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  // Stile originale preservato esattamente come richiesto
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground bg-card! focus:outline-none flex items-center justify-center"
+                  className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground focus:outline-none flex items-center justify-center"
               >
                   {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
           </div>
+          {/* Errore Zod */}
+          {errors.newPassword && (
+            <p className="text-[10px] text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+              {errors.newPassword.message}
+            </p>
+          )}
       </div>
 
       {/* CAMPO 2: CONFERMA PASSWORD */}
       <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-              <Label htmlFor="confirmPassword">Conferma Password</Label>
-          </div>
+          <Label htmlFor="confirmPassword">Conferma Password</Label>
           <div className="relative">
-              {/* LUCCHETTO */}
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          
               <Input
-                  id="confirmPassword" // ID aggiornato per coincidere con formData
+                  id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  value={formData.confirmPassword} // Collegamento dati
-                  onChange={handleChange}          // Collegamento handler
                   className="pl-10 pr-10 h-10 bg-card!"
                   placeholder="••••••••"
-                  required
+                  {...register("confirmPassword")}
               />
-                          
-              {/* PULSANTE OCCHIO (Tuo stile originale mantenuto) */}
               <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  // Stile originale preservato esattamente come richiesto
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground bg-card! focus:outline-none flex items-center justify-center"
+                  className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground focus:outline-none flex items-center justify-center"
               >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
           </div>
+          {/* Errore Zod (Match) */}
+          {errors.confirmPassword && (
+            <p className="text-[10px] text-destructive font-medium animate-in fade-in slide-in-from-top-1">
+              {errors.confirmPassword.message}
+            </p>
+          )}
       </div>
 
-      {error && (
-        <p className="text-xs text-destructive font-medium text-center animate-in fade-in slide-in-from-top-1">
-          {error}
-        </p>
-      )}
-
-      <Button type="submit" className="w-full h-10 bg-primary! hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm mt-2">
-        Imposta Password
+      <Button 
+        type="submit" 
+        className="w-full h-11 bg-primary! text-card! hover:bg-primary/90 mt-2 font-semibold shadow-sm"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {isSubmitting ? "Salvataggio..." : "Imposta Password"}
       </Button>
     </form>
   );
 
-  // --- VISTA SUCCESSO (Invariata) ---
+  // --- VISTA SUCCESSO ---
   const SuccessView = () => (
-    <div className="text-center space-y-4 py-4 animate-in zoom-in-95 duration-300">
-      <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+    <div className="text-center space-y-6 py-4 animate-in zoom-in-95 duration-300">
+      <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center ring-1 ring-primary/20">
         <CheckCircle2 className="w-8 h-8 text-primary" />
       </div>
       <div>
@@ -155,26 +151,24 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
         </p>
       </div>
       <Button 
-        className="w-full bg-primary! text-primary-foreground!" 
-        onClick={() => window.location.href = '/login'}
+        className="w-full" 
+        onClick={() => navigate('/login')}
       >
         Vai al Login <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
     </div>
   );
 
-  // --- 1. VERSIONE MOBILE (Invariata nella struttura) ---
+  // --- MOBILE LAYOUT ---
   if (isMobile) {
     return (
       <div className={cn("min-h-screen w-full bg-background flex flex-col p-6 font-sans text-foreground", className)} {...props}>
-        
-        {/* Mobile Header */}
         <div className="flex items-center justify-between mb-8">
-            <a href="/login" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
+            <Link to="/login" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
                 <ArrowLeft className="w-6 h-6 text-foreground" />
-            </a>
+            </Link>
             <div className="flex items-center gap-2">
-                <Leaf className="w-5 h-5 text-primary" />
+                <RinovaLogo className="h-8 w-8 text-primary"/>
                 <span className="font-bold text-primary">Rinova</span>
             </div>
             <div className="w-8" />
@@ -186,15 +180,14 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
             ) : (
               <>
                 <div className="mb-8 text-center sm:text-left">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4 text-primary">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4 text-primary ring-1 ring-primary/20">
                       <KeyRound className="w-6 h-6" />
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight mb-2">Nuova Password</h1>
                     <p className="text-muted-foreground">
-                        Scegli una password sicura per proteggere il tuo account.
+                        Scegli una password sicura per il tuo account.
                     </p>
                 </div>
-                {/* Qui richiamiamo la funzione renderFormContent */}
                 {renderFormContent()}
               </>
             )}
@@ -203,18 +196,15 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
     );
   }
 
-  // --- 2. VERSIONE DESKTOP COMPATTA (Invariata nella struttura) ---
+  // --- DESKTOP LAYOUT ---
   return (
     <div className={cn("flex flex-col min-h-screen w-full items-center justify-center bg-muted/30 p-4", className)} {...props}>
-      
       <Card className="w-full max-w-sm shadow-2xl border-0 ring-1 ring-border/50 bg-card">
-        
-        {/* LOGO INTERNO ALLA CARD */}
         <div className="p-5 pb-0 flex items-center gap-2">
           <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-            <Leaf className="text-primary-foreground w-4 h-4" />
+            <RinovaLogo className="h-8 w-8 text-black"/>
           </div>
-          <span className="text-lg font-bold text-primary tracking-tight">Rinova</span>
+          <span className="text-2xl font-bold text-primary tracking-tight">Rinova</span>
         </div>
 
         {isSuccess ? (
@@ -223,9 +213,8 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
           </div>
         ) : (
           <>
-            {/* HEADER COMPATTO */}
             <CardHeader className="text-center space-y-1 pb-2 pt-2">
-                <div className="mx-auto w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                <div className="mx-auto w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1 ring-1 ring-primary/20">
                   <KeyRound className="w-5 h-5 text-primary" />
                 </div>
                 <CardTitle className="text-xl">Nuova Password</CardTitle>
@@ -234,23 +223,19 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
                 </CardDescription>
             </CardHeader>
             
-            {/* CONTENT COMPATTO */}
             <CardContent className="pb-6">
-                {/* Qui richiamiamo la funzione renderFormContent */}
                 {renderFormContent()}
             </CardContent>
 
-            {/* FOOTER COMPATTO */}
-            <CardFooter className="justify-center border-t bg-muted/10 py-3">
-                <a href="/login" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors">
-                    <ArrowLeft className="w-3.5 h-3.5" /> Annulla e torna al Login
-                </a>
+            <CardFooter className="justify-center border-t bg-muted/10 py-4">
+                <Link to="/login" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 transition-colors">
+                    <ArrowLeft className="w-4 h-4" /> Annulla e torna al Login
+                </Link>
             </CardFooter>
           </>
         )}
       </Card>
       
-      {/* Footer credits */}
       <div className="mt-8 text-xs text-muted-foreground">
         &copy; 2024 Rinova Energy. Tutti i diritti riservati.
       </div>
