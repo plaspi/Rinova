@@ -1,10 +1,10 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.4) (preloaded format=xelatex 2025.11.10)  28 JAN 2026 18:27
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.4) (preloaded format=xelatex 2025.11.10)  3 FEB 2026 19:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Users/utente/Documents/GitHub/Rinova/D2/pre/preamble.tex
-(c:/Users/utente/Documents/GitHub/Rinova/D2/pre/preamble.tex
+**c:/Users/utente/Documents/GitHub/Rinova/D3/pre/preamble.tex
+(c:/Users/utente/Documents/GitHub/Rinova/D3/pre/preamble.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
 (C:\Users\utente\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -695,7 +695,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 \Hy@SectionHShift=\skip92
 ))
 ! Emergency stop.
-<*> ...Documents/GitHub/Rinova/D2/pre/preamble.tex
+<*> ...Documents/GitHub/Rinova/D3/pre/preamble.tex
                                                   
 *** (job aborted, no legal \end found)
 
