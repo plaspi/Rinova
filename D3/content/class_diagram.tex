@@ -2,5 +2,134 @@
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}
 \section{Diagramma delle classi}
-%TRADUZIONE COMPONENTI IN UNA STRUTTURA ORIENTATA AGLI OGGETTI
+In questo capitolo vengono illustrate le classi progettate per il sistema Rinova. Ciascuna classe
+rappresenta le entità e gli attori principali del sistema, definendone la struttura attraverso
+attributi ed il comportamento mediante metodi che ne descrivono le funzionalità.
+Vengono inoltre esplicitate associazioni fra le diverse classi, utili a comprendere come le classi
+si relazionino tra loro.
+Sono riportate di seguito le classi individuate.
+
+\subsubsection*{1 - Utente}
+Rappresenta l'attore principale del sistema, questa classe gestisce i dati anagrafici, le
+credenziali di accesso e funge da punto di ingresso per la navigazione verso le entità collegate
+(Impianti, Notifiche, CER). È responsabile della gestione e personalizzazione del proprio profilo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_utente.jpeg}
+    \caption{classe Utente (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{2 - Amministratore}
+È una specializzazione della classe Utente che possiede i privilegi per la gestione delle CER, oltre
+alle funzionalità base ha la possibilità di moderare i membri e gestire la comunicazione all'interno
+della CER.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_amministratore.jpeg}
+    \caption{classe Amministratore (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{3 - Impianto}
+Rappresenta l'entità fisica del sistema fotovoltaico. Contiene le specifiche tecniche fisse e lo
+stato operativo corrente. Funge da contenitore per lo storico delle misurazioni energetiche.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_impianto.jpeg}
+    \caption{classe Impianto (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{4 - Misurazioni}
+Rappresenta il singolo pacchetto di dati energetici inviato dallo Smart Meter in un preciso istante
+temporale. È l'unità fondamentale per la costruzione dei grafici storici e del monitoraggio live.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_misurazioni.jpeg}
+    \caption{classe Misurazioni (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+
+
+\subsubsection*{5 - CER}
+Rappresenta l'entità CER, ha accesso alla lista dei membri, alla bacheca avvisi ed è in grado di aggregare
+i dati di produzione di tutti i membri per calcolare le performance collettive.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_CER.jpeg}
+    \caption{classe CER (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{6 - Membro}
+Classe d'associazione fra utente e CER, gestisce le azioni all'interno della CER e ne memorizza lo stato
+di partecipazione ed il ruolo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_membro.jpeg}
+    \caption{classe Membro (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{7 - Annuncio}
+Rappresenta un post pubblicato nella bacheca della Comunità Energetica, utilizzato dagli amministratori
+come mezzo di comunicazione verso i Membri.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_annuncio.jpeg}
+    \caption{classe Annuncio (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{8 - Impostazioni}
+Permette il salvataggio e la modifica delle preferenze di configurazione dell'applicazione
+associate all'utente, Separa la logica di visualizzazione e notifica dai dati anagrafici dell'utente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_impostazioni.jpeg}
+    \caption{classe Impostazioni (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{9 - Notifica}
+Rappresenta un messaggio asincrono inviato dal sistema all'utente, può essere un allarme tecnico o un
+avviso informativo. E' tenuto traccia del suo stato di lettura.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_notifica.jpeg}
+    \caption{classe Notifica (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{10 - Attività}
+Rappresenta il log di database, offre sicurezza registrando ogni operazione di modifica sul database
+(chi ha eseguito l'azione?, cosa è stato fatto?, quando?) garantendo la tracciabilità delle azioni.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/class_attivita.jpeg}
+    \caption{classe Attività (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
 \subsection{Diagramma delle classi complessivo}
+Riportiamo di seguito il diagramma delle classi con tutte le classi fino ad ora presentate così da offrire
+una visione d'insieme delle associazioni e delle loro cardinalità.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/classdiagram_rinova.svg}
+    \caption{class diagram}
+    \label{fig:class_diagram}
+\end{figure}
