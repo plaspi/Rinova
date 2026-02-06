@@ -1,0 +1,44 @@
+name: Rinova Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Get the code
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    # Set up Python
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: 'pip'
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pytest httpx pytest-asyncio
+
+    # Create Dummy .env
+    - name: Create .env file
+      run: |
+        echo "SUPABASE_URL=https://ci-placeholder.supabase.co" >> .env
+        echo "SUPABASE_KEY=ci-placeholder-key" >> .env
+        echo "SUPABASE_JWT_SECRET=test-secret" >> .env
+        echo "VITE_SUPABASE_ANON_KEY=ci-placeholder-anon" >> .env
+        echo "VITE_SUPABASE_URL=https://ci-placeholder.supabase.co" >> .env
+
+    # Run Tests
+    - name: Run Tests
+      run: |
+        python -m pytest -v backend/tests
