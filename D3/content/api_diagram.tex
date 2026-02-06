@@ -1,5 +1,192 @@
 \setcounter{section}{3}
-\setlength{\parindent}{0pt}  % niente rientro
+\setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}
 \section{Dal class diagram alle API}
-%SUBSECTION SULLE VARIE SEZIONI
+\subsection*{Nota sulla Architettura}
+
+L'architettura del sistema è stata realizzata seguendo il paradigma BaaS (Backend as a Service), utilizzando React per lo sviluppo dell'interfaccia utente (Frontend) e Supabase come piattaforma di gestione dati e autenticazione.
+
+È importante notare che, sebbene le tabelle seguenti descrivano le interfacce in formato API REST (con relativi metodi HTTP ed endpoint), l'implementazione tecnica nel codice React avviene prevalentemente tramite la Supabase Client SDK. Questa libreria JavaScript agisce da livello di astrazione (wrapper), convertendo le invocazioni di metodi locali (es. \texttt{supabase.from('table').select()}) nelle corrispondenti richieste HTTP/HTTPS verso i servizi RESTful di PostgREST esposti da Supabase.
+
+Questa scelta architetturale permette di mantenere la documentazione standardizzata e indipendente dalla tecnologia client, pur sfruttando la semplicità sintattica e la gestione ottimizzata della connessione (WebSocket/HTTP) offerta dall'SDK. Le chiamate verso il motore di calcolo FastAPI, invece, sono effettuate tramite richieste HTTP asincrone standard.
+
+Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Class Diagram e gli endpoint esposti dai servizi.
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
+
+% SUPABASE AUTH
+\textbf{Utente} & login() & POST & /auth/v1/token & \{email, password\} & \textbf{Supabase Auth}: Ritorna Sessione + Token JWT. \\ \hline
+ & logout() & POST & /auth/v1/logout & - & \textbf{Supabase Auth}: Revoca token (Status 204). \\ \hline
+ & cambia\_password() & PUT & /auth/v1/user & \{password: "..."\} & \textbf{Supabase Auth}: Ritorna oggetto Utente aggiornato. \\ \hline
+
+% SUPABASE CRUD (Operazioni semplici)
+ & cambia\_residenza() & PATCH & /rest/v1/users?id=eq.\{id\} & \{via, citta, cap...\} & \textbf{Supabase}: Ritorna JSON anagrafica aggiornata. \\ \hline
+ & cambia\_avatar() & POST & /rest/v1/users?id=eq.\{id\} & \{avatar\_url = "nuovo avatar"\} & \textbf{Storage}: Ritorna path/URL del file caricato. \\ \hline
+ & elimina\_account() & DELETE & /rest/v1/users?id=eq.\{id\} & - & \textbf{Supabase}: Cancellazione a cascata (Status 204). \\ \hline
+ & visualizza\_impianti() & GET & /rest/v1/impianti?user\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array JSON Impianto[]. \\ \hline
+ & aggiungi\_impianto() & POST & /rest/v1/impianti & \begin{tabular}[c]{@{}l@{}} \{"user\_id": "...", "nome": "...", \\ "pod\_code": "...", "potenza": "...", \\ "lat": "...", "long": "..."\} \end{tabular} & 
+\textbf{Supabase}: Ritorna l'oggetto JSON creato. \\ \hline & visualizza\_piani() & - & - & - & \textbf{Frontend}: Ritorna lista statica o JSON array. \\ \hline
+ & modifica\_piano() & PATCH & /rest/v1/users?id=eq.\{id\} & \{piano: "nuovo piano"\} & \textbf{Supabase}: Ritorna utente con nuovo piano. \\ \hline
+
+% FASTAPI (Intelligenza e Calcoli)
+ & visualizza\_produzione\_live() & da riempire & da riempire & - & \textbf{Realtime}: Flusso continuo eventi (WSS). \\ \hline
+ & visualizza\_panoramica() & GET & /api/v1/analytics/dashboard/\{id\} & - & \textbf{FastAPI}: Ritorna JSON aggregato (KPI, CO2). \\ \hline
+ & visualizza\_storico() & GET & /api/v1/analytics/history/\{id\} & ?periodo=mese\&type=prod & \textbf{FastAPI}: Ritorna serie temporale JSON. \\ \hline
+ & get\_produzione\_live() & GET & /api/v1/plants/\{id\}/status & - & \textbf{FastAPI}: Ritorna stato istantaneo e anomalie. \\ \hline
+ & scarica\_report() & POST & /api/v1/reports/pdf & \{periodo: "2023-10"\} & \textbf{FastAPI}: Restituisce file binario (PDF). \\ \hline
+
+ & cerca\_cer() & GET & /rest/v1/cer?codice\_fiscale=eq.\{codice\} & - & \textbf{Supabase}: Ritorna lista CER corrispondenti. \\ \hline
+ & cerca\_impianto() & GET & /rest/v1/impianti?user\_id=eq.\{id\}\&pod\_code=eq.\{code\} & - & \textbf{Supabase}: Ritorna oggetto Impianto singolo. \\ \hline
+
+\end{tabular}%
+}
+\caption{API Utente: Integrazione Supabase (CRUD) e FastAPI (Analytics)}
+\label{tab:api_utente_hybrid}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
+
+% GESTIONE MEMBRI
+\textbf{Admin} & accetta\_membro() & PATCH & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\user\_id=eq.\{uid\}\&cer\_id=eq.\{cid\}\end{tabular} & \{stato: "ATTIVO"\} & \textbf{Supabase}: Ritorna Membro con stato 'ATTIVO'. \\ \hline
+
+ & rifiuta\_membro() & PATCH & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\user\_id=eq.\{uid\}\&cer\_id=eq.\{cid\}\end{tabular} & \{stato: "RIFIUTATO"\} & \textbf{Supabase}: Ritorna stato aggiornato o 204. \\ \hline
+
+ & aggiorna\_stato\_membro() & PATCH & /rest/v1/membri?id=eq.\{id\} & \{stato: "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna oggetto modificato. \\ \hline
+
+% GESTIONE BACHECA
+ & pubblica\_annuncio() & POST & /rest/v1/annunci & \{cer\_id, author\_id, titolo, messaggio, tipo, is\_pinned\} & \textbf{Supabase}: Crea post. Trigger genera 'Attività'. \\ \hline
+
+ & rimuovi\_annuncio() & DELETE & /rest/v1/annunci?id=eq.\{id\} & - & \textbf{Supabase}: Conferma eliminazione (Status 204). \\ \hline
+
+\end{tabular}%
+}
+\caption{API per le funzionalità di Amministrazione (Supabase)}
+\label{tab:api_admin}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
+% SUPABASE (CRUD)
+\textbf{Impianto} & aggiorna\_stato() & PATCH & /rest/v1/impianti?id=eq.\{id\} & \{stato: "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna impianto con nuovo stato. \\ \hline
+ & get\_dati\_tecnici() & GET & /rest/v1/impianti?id=eq.\{id\}\&select=pod\_code & - & \textbf{Supabase}: Ritorna JSON parziale (select). \\ \hline
+
+% FASTAPI (Analytics & Calcoli)
+ & get\_statistiche() & GET & /api/v1/plants/\{id\}/kpi & - & \textbf{FastAPI}: Ritorna metriche calcolate (kWh, \%). \\ \hline
+ & get\_grafico\_andamento() & GET & /api/v1/plants/\{id\}/live & - & \textbf{FastAPI}: Ritorna dati normalizzati per chart. \\ \hline
+ & get\_grafici\_storici() & GET & /api/v1/plants/\{id\}/history & ?start=\textit{date}\&end=\textit{date} & \textbf{FastAPI}: Ritorna dataset storico aggregato. \\ \hline
+
+\end{tabular}%
+}
+\caption{API della classe Impianto (Gestione e Analytics)}
+\label{tab:api_impianto}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Gestore / Ritorno} \\ \hline
+
+% SUPABASE (Liste e Dati)
+\textbf{CER} & get\_membri() & GET & /rest/v1/membri?cer\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna lista JSON Membri. \\ \hline
+
+ & get\_bacheca() & GET & /rest/v1/annunci?cer\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array Annunci (ordinati). \\ \hline
+
+% FASTAPI (Calcoli Complessi)
+ & get\_statistiche() & GET & /api/v1/communities/\{id\}/kpi & - & \textbf{FastAPI}: Ritorna JSON aggregato (Totali, Incentivi). \\ \hline
+
+ & get\_grafici() & GET & /api/v1/communities/\{id\}/charts & ?periodo=\textit{mese} & \textbf{FastAPI}: Ritorna struttura dati per grafici. \\ \hline
+
+\end{tabular}%
+}
+\caption{Specifiche API per la classe CER}
+\label{tab:api_cer}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
+
+\textbf{Membro} & visualizza\_cer() & GET & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\ user\_id=eq.\{id\}\&select=*,cer(*)\end{tabular} & - & \textbf{Supabase}: Ritorna Membro con CER annidata (JSON). \\ \hline
+ & abbandona\_cer() & DELETE & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\user\_id=eq.\{uid\}\end{tabular} & - & \textbf{Supabase}: Elimina associazione (Status 204). \\ \hline
+
+ & aggiorna\_stato() & PATCH & /rest/v1/membri?user\_id=eq.\{uid\} & \{"stato": "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna lo stato aggiornato. \\ \hline
+
+\end{tabular}%
+}
+\caption{Specifiche API per la classe Membro (Gestione Associazione)}
+\label{tab:api_membro}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
+
+% UPDATE SPECIFICI (Modifica JSONB)
+\textbf{Settings} & salva\_modifiche() & PATCH & /rest/v1/users?id=eq.\{id\} & \{"settings": \{"..."\}\} & \textbf{Supabase}: Ritorna JSON Utente aggiornato. \\ \hline
+
+ & modifica\_tema() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+
+ & modifica\_lingua() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+
+ & modifica\_fusoOrario() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+
+ & modifica\_notifiche() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+
+% DOCUMENTI LEGALI (Statici)
+ & visualizza\_termini() & - & - & - & \textbf{Frontend}: Renderizza asset statico (PDF/HTML). \\ \hline
+
+ & visualizza\_privacy() & - & - & - & \textbf{Frontend}: Renderizza asset statico (PDF/HTML). \\ \hline
+
+\end{tabular}%
+}
+\caption{API per la gestione Impostazioni (colonna JSONB) e Documenti}
+\label{tab:api_settings}
+\end{table}
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Gestore / Ritorno} \\ \hline
+
+\textbf{Notifica} & segna\_come\_letta() & PATCH & /rest/v1/notifiche?id=eq.\{id\} & \{"letta": \textit{true}\} & \textbf{Supabase}: Ritorna notifica aggiornata (UI sync). \\ \hline
+
+ & elimina() & DELETE & /rest/v1/notifiche?id=eq.\{id\} & - & \textbf{Supabase}: Elimina riga (Status 204). \\ \hline
+
+\end{tabular}%
+}
+\caption{Specifiche API per la gestione delle Notifiche}
+\label{tab:api_notifiche}
+\end{table}
+
+\vspace{1em} % Un po' di spazio dopo le tabelle
+
+\subsection*{Nota sulla gestione della classe Attività}
+È necessario specificare che la classe \textbf{Attività}, definita nel diagramma delle classi per modellare lo storico delle operazioni, presenta una gestione particolare rispetto alle altre entità.
+
+Non sono stati definiti endpoint di scrittura (POST, PATCH, DELETE) nelle tabelle poiché la creazione dei log di attività non è delegata al client (Frontend), ma avviene in modo automatico e trasparente a livello di Database. Il sistema utilizza dei \textbf{Database Triggers} su PostgreSQL che intercettano gli eventi di modifica e generano automaticamente il record di attività corrispondente.
+
