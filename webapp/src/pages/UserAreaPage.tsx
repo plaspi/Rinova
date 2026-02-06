@@ -11,7 +11,7 @@ export default function UserAreaPage() {
                 <main className="flex-1 flex flex-col min-h-screen w-full transition-all duration-300 ease-in-out">
                     <NavLayout className="sticky top-0 z-20 h-16 border-b bg-background/80 backdrop-blur-md flex items-center px-6 gap-4 justify-between shrink-0">
                         <div className="flex items-center gap-4">
-                            <SidebarTrigger/>
+                            <SidebarTrigger className="bg-card!" />
                             <div className="h-6 w-px bg-border/60 mx-2 hidden md:block" />
                             <Breadcrumb>
                                 <BreadcrumbList>

@@ -1,7 +1,7 @@
 import { RegistrationForm } from "@/components/forms/registration-form";
 import { RegistrationCarousel } from "@/components/registrationCarousel";
 import { Card } from "@/components/ui/card";
-import { TermsModal } from "@/components/modals/termsModal"; 
+import { TermsOfServiceModal, PrivacyPolicyModal } from "@/components/modals/termsModal"; 
 import { RinovaLogo } from "@/components/rinova-logo";
 
 export default function RegistrationPage() {
@@ -54,7 +54,7 @@ export default function RegistrationPage() {
       {/* FOOTER ESTERNO (Stile Login) */}
       <div className="mt-4 text-center px-4 shrink-0">
            <p className="text-[12px] text-muted-foreground max-w-sm mx-auto">
-              Cliccando registrati accetti i nostri <TermsModal title="Termini">Termini</TermsModal> e <TermsModal title="Privacy">Privacy</TermsModal>.
+              Cliccando registrati accetti i nostri <TermsOfServiceModal>Termini</TermsOfServiceModal> e <PrivacyPolicyModal>Privacy</PrivacyPolicyModal>.
            </p>
       </div>
 

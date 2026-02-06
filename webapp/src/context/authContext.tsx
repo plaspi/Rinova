@@ -7,6 +7,22 @@ import type { Session, User } from "@supabase/supabase-js";
 export type UserRole = 'member' | 'admin' | 'representative';
 export type SubPlan = 'free' | 'pro';
 
+export type UserSettings = {
+    theme: 'light' | 'dark' | 'system';
+    language: string;
+    notifications: {
+        email: boolean;
+        push: boolean;
+        marketing: boolean;
+    };
+};
+// Default settings
+const DEFAULT_SETTINGS: UserSettings = {
+    theme: 'system',
+    language: 'it',
+    notifications: { email: true, push: true, marketing: false }
+};
+
 export type UserProfile = {
   id: string;
   name: string | null;
@@ -30,6 +46,8 @@ type AuthContextType = {
   isLoading: boolean;
   isLoggingOut: boolean;
   isPro: boolean;
+  settings: UserSettings;
+  updateSettings: (newSettings: Partial<UserSettings>) => Promise<void>;
   refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -43,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isPro = profile?.subscription_plan === 'pro' || profile?.is_super_admin || false;
+  const [settings, setSettings] = useState<UserSettings>({
+        theme: 'system',
+        language: 'it',
+        notifications: { email: true, push: true, marketing: false }
+    });
 
   // Helper fetch profile
   const fetchProfile = async (userId: string) => {
@@ -58,11 +81,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("[AuthContext] Error fetching profile:", error);
       } else if (data) {
         setProfile(data as UserProfile);
+        if(data.settings) {
+          setSettings({...DEFAULT_SETTINGS, ...data.settings});
+        }
       } else {
         console.warn("[AuthContext] Profile missing");
       }
     } catch (err) {
       console.error("[AuthContext] Critical Error:", err);
+    }
+  };
+
+  //update user preferences and settings(first local state then db)
+  const updateSettings = async (partialSettings: Partial<UserSettings>) => {
+    if (!user) return;
+
+    const newSettings = { ...settings, ...partialSettings };
+    setSettings(newSettings);
+
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({ settings: newSettings })
+            .eq('id', user.id);
+        
+        if (error) throw error;
+    } catch (err) {
+        console.error("Errore salvataggio settings:", err);
     }
   };
 
@@ -107,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setProfile(null);
     }
-  }, [user]); // Dipendenza cruciale: user
+  }, [user]);
 
   const signOut = async () => {
     try{
@@ -134,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, isLoading, isLoggingOut, isPro, refreshProfile, signOut }}>
+    <AuthContext.Provider value={{ session, user, profile, isLoading, isLoggingOut, isPro, settings, updateSettings, refreshProfile, signOut }}>
       {children}
     </AuthContext.Provider>
   );

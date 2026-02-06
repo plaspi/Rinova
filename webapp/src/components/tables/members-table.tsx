@@ -1,20 +1,14 @@
 import { useState } from "react"
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
+import { useNavigate } from "react-router-dom"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { 
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator 
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-  MoreHorizontal, Search, Mail, UserCog, Ban, CheckCircle, Leaf, ListFilter,
-  ChevronLeft, ChevronRight
-} from "lucide-react"
+import { MoreHorizontal, Search, Mail, UserCog, Ban, CheckCircle, Leaf, ListFilter, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MemberDetails } from "../details/memberDetails"
+import { MemberDetails } from "@/components/details/memberDetails"
 import { toast } from "sonner"
 import type { MemberData } from "@/pages/CerPage"
 
@@ -27,6 +21,8 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedRow, setSelectedRow] = useState<MemberData | null>(null);
+
+  const navigate = useNavigate();
   
   // PAGINATION STATE
   const [page, setPage] = useState(0);
@@ -153,7 +149,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
                           <DropdownMenuItem onClick={() => setSelectedRow(row)}>
                             Visualizza dettagli
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Premium", { description: "Chat disponibile nel piano Pro." })}>
+                          <DropdownMenuItem onClick={() => toast.info("Sblocca Rinova Energy Pro", { description: "Chat disponibile nel piano Pro.", icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />, action: { label: "Vedi Piani", onClick: () => navigate("/subscription") }, })}>
                             <Mail className="mr-2 h-4 w-4" /> Invia messaggio
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />

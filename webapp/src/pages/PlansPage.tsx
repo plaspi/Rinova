@@ -25,16 +25,16 @@ export default function PlansPage() {
 
     const freeFeatures = [
         "Monitoraggio Live (ultime 24h)",
-        "Storico standard (Sett/Mese/Anno)",
+        "Storico standard (Settimana/Mese/Anno)",
         "Gestione Impianti base",
-        "Accesso Bacheca CER (sola lettura)",
+        "Accesso Bacheca CER",
     ];
 
     const proFeatures = [
         "Analisi Storico con date personalizzate",
         "Reportistica PDF illimitata",
         "Chat e messaggistica membri CER",
-        "Dashboard personalizzabile (Widget)",
+        "Dashboard personalizzabile",
         "Supporto prioritario",
     ];
 
@@ -113,7 +113,7 @@ export default function PlansPage() {
                                     variant={!isPro ? "outline" : "secondary"}
                                     disabled={!isPro} 
                                 >
-                                    {!isPro ? "Piano Attuale" : "Passa a Base"}
+                                    {!isPro ? "Piano Attuale" : "Torna a Base"}
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -193,7 +193,7 @@ export default function PlansPage() {
                     {/* FAQ / FOOTER */}
                     <div className="text-center pt-8 text-muted-foreground text-sm">
                         <p>Hai bisogno di un piano personalizzato per una grande CER?</p>
-                        <Button variant="link" className="text-primary h-auto mt-2">Contattaci per soluzioni Enterprise</Button>
+                        <Button variant="link" className="text-foreground! bg-accent! h-auto mt-2">Contattaci per soluzioni Enterprise</Button>
                     </div>
 
                 </div>

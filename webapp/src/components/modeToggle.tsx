@@ -1,5 +1,5 @@
 import { Moon, Sun } from "lucide-react"
-
+import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,8 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "@/components/themeProvider"
+import { useAuth } from "@/context/authContext"
+
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+  const { updateSettings } = useAuth()
+
+  //cambia state locale e chiama db per salvataggio preferenze
+  const changeTheme = (newTheme: "light" | "dark" | "system") => {
+    setTheme(newTheme);
+    updateSettings({ theme: newTheme });
+  }
 
   return (
     <DropdownMenu>
@@ -21,14 +30,17 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="left">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem className="justify-between" onClick={() => changeTheme("light")}>
           Light
+          {theme === "light" && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem className="justify-between" onClick={() => changeTheme("dark")}>
           Dark
+          {theme === "dark" && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem className="justify-between" onClick={() => changeTheme("system")}>
           System
+          {theme === "system" && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

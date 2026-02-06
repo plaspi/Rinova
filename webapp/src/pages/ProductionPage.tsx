@@ -7,7 +7,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { RefreshCcw, Loader2, Zap, Activity, TrendingUp, Lock, Download } from "lucide-react";
+import { RefreshCcw, Loader2, Zap, Activity, TrendingUp, Lock, Download, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/services/supabase_client";
 import { useAuth } from "@/context/authContext";
@@ -49,11 +49,11 @@ export default function ProductionPage() {
 
     const handleDownloadReport = async () => {
         if (!isPro) {
-            toast("Reportistica Avanzata", {
+            toast("Sblocca Rinova Energy Pro", {
                 id: "pro-lock-live",
-                description: "Il download dei report Live è riservato al piano Pro.",
-                icon: <Lock className="h-5 w-5 text-amber-500" />,
-                action: { label: "Upgrade", onClick: () => navigate("/settings/plans") },
+                description: "Il download dei report PDF è riservato al piano Pro.",
+                icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
+                action: { label: "Vedi Piani", onClick: () => navigate("/subscription") },
             });
             return;
         }

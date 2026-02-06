@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/forms/login-form"
 import { Card } from "@/components/ui/card"
 import { RegistrationCarousel } from "@/components/registrationCarousel"
-import { TermsModal } from "@/components/modals/termsModal"
+import { PrivacyPolicyModal, TermsOfServiceModal} from "@/components/modals/termsModal"
 import { RinovaLogo } from "@/components/rinova-logo"
 
 export default function LoginPage() {
@@ -54,7 +54,7 @@ export default function LoginPage() {
           {/* MODALS */}
           <div className="mt-4 text-center px-4 shrink-0">
                <p className="text-[12px] text-muted-foreground max-w-sm mx-auto">
-                  Cliccando accedi accetti i nostri <TermsModal title="Termini">Termini</TermsModal> e <TermsModal title="Privacy">Privacy</TermsModal>.
+                  Cliccando accedi accetti i nostri <TermsOfServiceModal>Termini</TermsOfServiceModal> e <PrivacyPolicyModal>Privacy</PrivacyPolicyModal>.
                </p>
           </div>
     

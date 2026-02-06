@@ -565,7 +565,7 @@ export default function CerPage() {
                                                     <p className="text-sm font-medium truncate">{admin.nome} {admin.cognome}</p>
                                                     <p className="text-[10px] text-muted-foreground capitalize">{admin.ruolo}</p>
                                                 </div>
-                                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => toast.info("Chat feature coming soon")}>
+                                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => toast.info("Chat in arrivo...")}>
                                                     <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                                                 </Button>
                                             </div>

@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-    Loader2, Lock, Sparkles, Pencil, 
-    Leaf, Zap, Plug, 
-    BatteryLow, BatteryMedium, BatteryFull
-} from "lucide-react"; 
+import { Loader2, Lock, Sparkles, Pencil, Leaf, Zap, Plug, BatteryLow, BatteryMedium, BatteryFull, CheckCircle2, Wrench, XCircle } from "lucide-react"; 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DashboardData {
   produzione: number;
@@ -24,6 +21,12 @@ interface DashboardData {
   risparmio_co2: number;
   trend_produzione: string;
   trend_consumo: string;
+}
+
+interface PlantSimple {
+    id: string;
+    nome: string;
+    status: 'attivo' | 'manutenzione' | 'offline';
 }
 
 export default function HomePage() {
@@ -56,12 +59,25 @@ export default function HomePage() {
         }
     });
 
+    // Query lista impianti
+    const { data: plantsList = [], isLoading: isLoadingPlants } = useQuery({
+        queryKey: ['dashboard-plants'],
+        queryFn: async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch('http://localhost:8000/api/dashboard/plants', {
+                headers: { 'Authorization': `Bearer ${session?.access_token}` }
+            });
+            if (!res.ok) throw new Error("Errore fetch Lista Impianti");
+            return res.json() as Promise<PlantSimple[]>;
+        }
+    });
+
     const handleEditWidgets = () => {
         if (!isPro) {
-            toast("Personalizzazione Dashboard", {
+            toast("Sblocca Rinova Energy Pro", {
                 description: "Sblocca il piano Pro per modificare, nascondere o riordinare i widget.",
                 icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
-                action: { label: "Upgrade", onClick: () => navigate("/settings/plans") },
+                action: { label: "Vedi Piani", onClick: () => navigate("/subscription") },
             });
             return;
         }
@@ -162,7 +178,7 @@ export default function HomePage() {
 
                 <div className="grid gap-6 md:grid-cols-7 lg:h-100">
                     <div className="col-span-4 rounded-xl border bg-card p-6 shadow-sm flex flex-col">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                             Andamento (Ultime 4 Ore)
                             {isLoadingChart && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
                         </h3>
@@ -198,15 +214,76 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="col-span-3 rounded-xl border bg-card p-6 shadow-sm flex flex-col">
-                        <h3 className="font-semibold mb-4">Stato Dispositivi</h3>
-                         <div className="flex-1 bg-muted/10 rounded-lg flex items-center justify-center border border-dashed border-border text-sm text-muted-foreground">
-                            Lista impianti qui
+                    <div className="col-span-3 rounded-xl border bg-card p-0 shadow-sm flex flex-col overflow-hidden">
+                        <div className="p-6 pb-2">
+                             <h3 className="font-semibold text-lg flex items-center justify-between">
+                                Stato Impianti
+                                <span className="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                    {plantsList.length} Totali
+                                </span>
+                             </h3>
                         </div>
-                    </div>
+
+                        <ScrollArea className="flex-1 p-6 pt-2">
+                            {isLoadingPlants ? (
+                                <div className="flex flex-col gap-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className="h-14 w-full bg-muted/20 animate-pulse rounded-lg" />
+                                    ))}
+                                </div>
+                            ) : plantsList.length > 0 ? (
+                                <div className="space-y-3">
+                                    {plantsList.map((plant) => (
+                                        <PlantListItem key={plant.id} plant={plant} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/10 rounded-lg border border-dashed p-8">
+                                    <Leaf className="h-8 w-8 opacity-20 mb-2" />
+                                    <p className="text-sm">Nessun impianto collegato</p>
+                                </div>
+                            )}
+                        </ScrollArea>
+                    </div>  
                 </div>
             </div>
         </main>
+    )
+}
+
+function PlantListItem({ plant }: { plant: PlantSimple }) {
+    const status = plant.status.toLowerCase();
+    
+    let icon = <CheckCircle2 className="h-4 w-4 text-green-500" />;
+    let statusClass = "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20";
+    let label = "Attivo";
+
+    if (status === 'offline') {
+        icon = <XCircle className="h-4 w-4 text-red-500" />;
+        statusClass = "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20";
+        label = "Offline";
+    } else if (status === 'manutenzione') {
+        icon = <Wrench className="h-4 w-4 text-yellow-500" />;
+        statusClass = "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20";
+        label = "Manutenzione";
+    }
+
+    return (
+        <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors group">
+            <div className="flex items-center gap-3">
+                <div className={cn("flex items-center justify-center w-8 h-8 rounded-full border", statusClass.replace("text-", "bg-opacity-0 "))}>
+                    {icon}
+                </div>
+                <div className="flex flex-col">
+                    <span className="font-medium text-sm leading-none group-hover:text-primary transition-colors">
+                        {plant.nome}
+                    </span>
+                </div>
+            </div>
+            <div className={cn("text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border", statusClass)}>
+                {label}
+            </div>
+        </div>
     )
 }
 

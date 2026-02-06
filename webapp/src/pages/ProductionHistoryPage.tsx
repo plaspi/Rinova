@@ -104,13 +104,13 @@ export default function HistoryPage() {
 
     const handleTabChange = (val: string) => {
         if (val === 'custom' && !isPro) {
-            toast("Esegui l'upgrade al Piano Pro", {
+            toast("Sblocca Rinova Energy Pro", {
                 id: "pro-lock-custom",
-                description: "Sblocca l'analisi personalizzata.",
+                description: "Per usufruire dell'analisi personalizzata esegui l'upgrade al piano Pro.",
                 icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
                 action: {
                     label: "Vedi Piani",
-                    onClick: () => navigate("/settings/plans")
+                    onClick: () => navigate("/subscription")
                 },
             });
             return;
@@ -123,10 +123,10 @@ export default function HistoryPage() {
             toast("Esegui l'upgrade al Piano Pro", {
                 id: "pro-lock-pdf",
                 description: "Sblocca la reportistica PDF illimitata",
-                icon: <Lock className="h-5 w-5 text-red-500" />,
+                icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
                 action: {
                     label: "Upgrade",
-                    onClick: () => navigate("/settings/plans")
+                    onClick: () => navigate("/subscription")
                 },
             });
             return;

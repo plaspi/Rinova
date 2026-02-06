@@ -269,10 +269,10 @@ function SidebarContent() {
                 onClick={() => navigate("/subscription")}
               >
                   <Sparkles className="size-4 text-amber-500 group-hover:text-amber-600" />
-                  <span className="font-semibold text-amber-600/90 group-hover:text-amber-700">Upgrade to Pro</span>
+                  <span className="font-semibold text-amber-600/90 group-hover:text-amber-700">Rinova Energy Pro</span>
               </DropdownMenuItem>
               
-              <DropdownMenuSeparator className="my-1 opacity-50" />
+              <DropdownMenuSeparator className="my-1" />
 
               <DropdownMenuItem asChild className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" >
                   <Link to="/user-area">
