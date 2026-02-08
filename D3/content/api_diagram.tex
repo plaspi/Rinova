@@ -24,24 +24,23 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
  & logout() & POST & /auth/v1/logout & - & \textbf{Supabase Auth}: Revoca token (Status 204). \\ \hline
  & cambia\_password() & PUT & /auth/v1/user & \{password: "..."\} & \textbf{Supabase Auth}: Ritorna oggetto Utente aggiornato. \\ \hline
 
-% SUPABASE CRUD (Operazioni semplici)
+% SUPABASE CRUD
  & cambia\_residenza() & PATCH & /rest/v1/users?id=eq.\{id\} & \{via, citta, cap...\} & \textbf{Supabase}: Ritorna JSON anagrafica aggiornata. \\ \hline
- & cambia\_avatar() & POST & /rest/v1/users?id=eq.\{id\} & \{avatar\_url = "nuovo avatar"\} & \textbf{Storage}: Ritorna path/URL del file caricato. \\ \hline
+ & cambia\_avatar() & POST & /rest/v1/users?id=eq.\{id\} & \{avatar\_url = "..."\} & \textbf{Storage}: Ritorna path/URL del file caricato. \\ \hline
  & elimina\_account() & DELETE & /rest/v1/users?id=eq.\{id\} & - & \textbf{Supabase}: Cancellazione a cascata (Status 204). \\ \hline
  & visualizza\_impianti() & GET & /rest/v1/impianti?user\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array JSON Impianto[]. \\ \hline
- & aggiungi\_impianto() & POST & /rest/v1/impianti & \begin{tabular}[c]{@{}l@{}} \{"user\_id": "...", "nome": "...", \\ "pod\_code": "...", "potenza": "...", \\ "lat": "...", "long": "..."\} \end{tabular} & 
-\textbf{Supabase}: Ritorna l'oggetto JSON creato. \\ \hline & visualizza\_piani() & - & - & - & \textbf{Frontend}: Ritorna lista statica o JSON array. \\ \hline
+ & aggiungi\_impianto() & POST & /rest/v1/impianti & \begin{tabular}[c]{@{}l@{}} \{"user\_id": "...", "nome": "...", \\ "pod\_code": "...", "potenza": "..."\} \end{tabular} & 
+\textbf{Supabase}: Ritorna l'oggetto JSON creato. \\ \hline & visualizza\_piani() & - & - & - & \textbf{Frontend}: Ritorna lista statica. \\ \hline
  & modifica\_piano() & PATCH & /rest/v1/users?id=eq.\{id\} & \{piano: "nuovo piano"\} & \textbf{Supabase}: Ritorna utente con nuovo piano. \\ \hline
 
-% FASTAPI (Intelligenza e Calcoli)
- & visualizza\_produzione\_live() & da riempire & da riempire & - & \textbf{Realtime}: Flusso continuo eventi (WSS). \\ \hline
- & visualizza\_panoramica() & GET & /api/v1/analytics/dashboard/\{id\} & - & \textbf{FastAPI}: Ritorna JSON aggregato (KPI, CO2). \\ \hline
- & visualizza\_storico() & GET & /api/v1/analytics/history/\{id\} & ?periodo=mese\&type=prod & \textbf{FastAPI}: Ritorna serie temporale JSON. \\ \hline
- & get\_produzione\_live() & GET & /api/v1/plants/\{id\}/status & - & \textbf{FastAPI}: Ritorna stato istantaneo e anomalie. \\ \hline
- & scarica\_report() & POST & /api/v1/reports/pdf & \{periodo: "2023-10"\} & \textbf{FastAPI}: Restituisce file binario (PDF). \\ \hline
+% FASTAPI (INTEGRAZIONE REALE DATI SWAGGER)
+ & visualizza\_produzione\_live() & GET & /api/production/live & - & \textbf{FastAPI}: JSON \texttt{LiveResponse} \{plants, charts, kpi\}. \\ \hline & visualizza\_panoramica() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: JSON \texttt{SimpleKPI} \{prod, cons, co2, trend\}. \\ \hline
+ & visualizza\_storico() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: JSON \texttt{HistoryResponse} \{chart:[], kpi:\{...\}\}. \\ \hline
+ & get\_produzione\_live() & GET & /api/dashboard/plants & - & \textbf{FastAPI}: JSON \texttt{PlantSimple} \{id, status: 'attivo/offline'\}. \\ \hline
+ & scarica\_report() & GET & /api/report/download & ?period=... & \textbf{FastAPI}: Ritorna stream binario (application/pdf). \\ \hline
 
- & cerca\_cer() & GET & /rest/v1/cer?codice\_fiscale=eq.\{codice\} & - & \textbf{Supabase}: Ritorna lista CER corrispondenti. \\ \hline
- & cerca\_impianto() & GET & /rest/v1/impianti?user\_id=eq.\{id\}\&pod\_code=eq.\{code\} & - & \textbf{Supabase}: Ritorna oggetto Impianto singolo. \\ \hline
+ & cerca\_cer() & GET & /rest/v1/cer?codice\_fiscale=eq.\{cod\} & - & \textbf{Supabase}: Ritorna lista CER corrispondenti. \\ \hline
+ & cerca\_impianto() & GET & .../rest/v1/impianti?... & - & \textbf{Supabase}: Ritorna oggetto Impianto singolo. \\ \hline
 
 \end{tabular}%
 }
@@ -62,10 +61,10 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 
  & rifiuta\_membro() & PATCH & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\user\_id=eq.\{uid\}\&cer\_id=eq.\{cid\}\end{tabular} & \{stato: "RIFIUTATO"\} & \textbf{Supabase}: Ritorna stato aggiornato o 204. \\ \hline
 
- & aggiorna\_stato\_membro() & PATCH & /rest/v1/membri?id=eq.\{id\} & \{stato: "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna oggetto modificato. \\ \hline
+ & aggiorna\_stato\_membro() & PATCH & /rest/v1/membri?id=eq.\{id\} & \{stato: "\textit{new}"\} & \textbf{Supabase}: Ritorna oggetto modificato. \\ \hline
 
 % GESTIONE BACHECA
- & pubblica\_annuncio() & POST & /rest/v1/annunci & \{cer\_id, author\_id, titolo, messaggio, tipo, is\_pinned\} & \textbf{Supabase}: Crea post. Trigger genera 'Attività'. \\ \hline
+ & pubblica\_annuncio() & POST & /rest/v1/annunci & \{cer\_id, titolo...\} & \textbf{Supabase}: Crea post. Trigger genera 'Attività'. \\ \hline
 
  & rimuovi\_annuncio() & DELETE & /rest/v1/annunci?id=eq.\{id\} & - & \textbf{Supabase}: Conferma eliminazione (Status 204). \\ \hline
 
@@ -82,13 +81,13 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 \hline
 \textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
 % SUPABASE (CRUD)
-\textbf{Impianto} & aggiorna\_stato() & PATCH & /rest/v1/impianti?id=eq.\{id\} & \{stato: "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna impianto con nuovo stato. \\ \hline
+\textbf{Impianto} & aggiorna\_stato() & PATCH & /rest/v1/impianti?id=eq.\{id\} & \{stato: "..."\} & \textbf{Supabase}: Ritorna impianto con nuovo stato. \\ \hline
  & get\_dati\_tecnici() & GET & /rest/v1/impianti?id=eq.\{id\}\&select=pod\_code & - & \textbf{Supabase}: Ritorna JSON parziale (select). \\ \hline
 
-% FASTAPI (Analytics & Calcoli)
- & get\_statistiche() & GET & /api/v1/plants/\{id\}/kpi & - & \textbf{FastAPI}: Ritorna metriche calcolate (kWh, \%). \\ \hline
- & get\_grafico\_andamento() & GET & /api/v1/plants/\{id\}/live & - & \textbf{FastAPI}: Ritorna dati normalizzati per chart. \\ \hline
- & get\_grafici\_storici() & GET & /api/v1/plants/\{id\}/history & ?start=\textit{date}\&end=\textit{date} & \textbf{FastAPI}: Ritorna dataset storico aggregato. \\ \hline
+% FASTAPI (Analytics Reali)
+ & get\_statistiche() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: JSON \texttt{SimpleKPI} \{prod, cons, batt\%\}. \\ \hline
+ & get\_grafico\_andamento() & GET & /api/dashboard/chart & - & \textbf{FastAPI}: Array \texttt{SummaryChartPoint} [\{ora, prod\}]. \\ \hline
+ & get\_grafici\_storici() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: JSON \texttt{HistoryResponse} (chart + kpi). \\ \hline
 
 \end{tabular}%
 }
@@ -108,10 +107,10 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 
  & get\_bacheca() & GET & /rest/v1/annunci?cer\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array Annunci (ordinati). \\ \hline
 
-% FASTAPI (Calcoli Complessi)
- & get\_statistiche() & GET & /api/v1/communities/\{id\}/kpi & - & \textbf{FastAPI}: Ritorna JSON aggregato (Totali, Incentivi). \\ \hline
+% FASTAPI (Calcoli Complessi - Riuso Schemi)
+ & get\_statistiche() & GET & /api/dashboard/summary & ?cer\_id=... & \textbf{FastAPI}: JSON \texttt{SimpleKPI} aggregato CER. \\ \hline
 
- & get\_grafici() & GET & /api/v1/communities/\{id\}/charts & ?periodo=\textit{mese} & \textbf{FastAPI}: Ritorna struttura dati per grafici. \\ \hline
+ & get\_grafici() & GET & /api/dashboard/chart & ?cer\_id=... & \textbf{FastAPI}: JSON \texttt{SummaryChartPoint} aggregato CER. \\ \hline
 
 \end{tabular}%
 }
@@ -129,7 +128,7 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 \textbf{Membro} & visualizza\_cer() & GET & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\ user\_id=eq.\{id\}\&select=*,cer(*)\end{tabular} & - & \textbf{Supabase}: Ritorna Membro con CER annidata (JSON). \\ \hline
  & abbandona\_cer() & DELETE & \begin{tabular}[c]{@{}l@{}}/rest/v1/membri?\\user\_id=eq.\{uid\}\end{tabular} & - & \textbf{Supabase}: Elimina associazione (Status 204). \\ \hline
 
- & aggiorna\_stato() & PATCH & /rest/v1/membri?user\_id=eq.\{uid\} & \{"stato": "\textit{nuovo\_stato}"\} & \textbf{Supabase}: Ritorna lo stato aggiornato. \\ \hline
+ & aggiorna\_stato() & PATCH & /rest/v1/membri?user\_id=eq.\{uid\} & \{"stato": "..."\} & \textbf{Supabase}: Ritorna lo stato aggiornato. \\ \hline
 
 \end{tabular}%
 }
@@ -145,7 +144,7 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 \textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
 
 % UPDATE SPECIFICI (Modifica JSONB)
-\textbf{Settings} & salva\_modifiche() & PATCH & /rest/v1/users?id=eq.\{id\} & \{"settings": \{"..."\}\} & \textbf{Supabase}: Ritorna JSON Utente aggiornato. \\ \hline
+\textbf{Settings} & salva\_modifiche() & PATCH & /rest/v1/users?id=eq.\{id\} & \{"settings": \{...\}\} & \textbf{Supabase}: Ritorna JSON Utente aggiornato. \\ \hline
 
  & modifica\_tema() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
 
