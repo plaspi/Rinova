@@ -1,0 +1,43 @@
+name: Rinova Frontend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./webapp
+
+    steps:
+    # Get the code
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    # Set up Node.js
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        # Tells the cache action where to find the lock file since it's not in root
+        cache-dependency-path: webapp/package-lock.json
+
+    # Install dependencies
+    - name: Install dependencies
+      run: npm ci
+
+    # 4. Create Dummy .env to prevent "Missing env vars" crashes in Supabase client
+    - name: Create .env file
+      run: |
+        echo "VITE_SUPABASE_URL=https://ci-placeholder.supabase.co" >> .env
+        echo "VITE_SUPABASE_ANON_KEY=ci-placeholder-anon" >> .env
+
+    # 5. Run the Vitest suite
+    - name: Run Tests
+      run: npm test

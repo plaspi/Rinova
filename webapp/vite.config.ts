@@ -1,6 +1,6 @@
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -56,4 +56,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
+    css: true,
+  },
+
 })

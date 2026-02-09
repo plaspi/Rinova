@@ -1,0 +1,49 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { MembersTable } from './members-table';
+import { BrowserRouter } from 'react-router-dom';
+
+// Mock simple dropdown for actions
+vi.mock('@/components/ui/dropdown-menu', () => ({
+  DropdownMenu: ({ children }: any) => <div>{children}</div>,
+  DropdownMenuTrigger: ({ children }: any) => <button>{children}</button>,
+  DropdownMenuContent: ({ children }: any) => <div>{children}</div>,
+  DropdownMenuItem: ({ children }: any) => <div>{children}</div>,
+  DropdownMenuSeparator: () => null,
+}));
+
+const mockData = Array.from({ length: 10 }, (_, i) => ({
+  id: `${i}`,
+  nome: `User${i}`,
+  cognome: `Test${i}`,
+  email: `user${i}@test.com`,
+  ruolo: 'member',
+  stato: i % 2 === 0 ? 'attivo' : 'sospeso',
+  avatar_url: null
+}));
+
+const renderTable = () => render(
+  <BrowserRouter>
+    <MembersTable data={mockData as any} currentUserRole="admin" />
+  </BrowserRouter>
+);
+
+describe('MembersTable', () => {
+  it('renders correct number of rows (Pagination limit is 8)', () => {
+    renderTable();
+    // 8 rows + headers/etc. We check for specific names.
+    expect(screen.getByText('User0 Test0')).toBeInTheDocument();
+    expect(screen.getByText('User7 Test7')).toBeInTheDocument();
+    // User8 should be on page 2
+    expect(screen.queryByText('User8 Test8')).not.toBeInTheDocument();
+  });
+
+  it('filters by name', () => {
+    renderTable();
+    const searchInput = screen.getByPlaceholderText(/cerca per nome/i);
+    fireEvent.change(searchInput, { target: { value: 'User5' } });
+
+    expect(screen.getByText('User5 Test5')).toBeInTheDocument();
+    expect(screen.queryByText('User0 Test0')).not.toBeInTheDocument();
+  });
+});

@@ -71,7 +71,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
         <div className="flex items-center gap-2 w-full sm:w-auto">
            {canManage && (
              <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(0); }}>
-                <SelectTrigger className="h-9 w-[160px] text-xs">
+                <SelectTrigger className="h-9 w-40 text-xs">
                     <ListFilter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                     <SelectValue placeholder="Stato" />
                 </SelectTrigger>
@@ -105,7 +105,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
           </TableHeader>
           <TableBody>
             {paginatedData.map((row) => (
-              <TableRow key={row.id} className="hover:bg-muted/50 border-b last:border-0 cursor-pointer h-[65px]" onClick={() => setSelectedRow(row)}>
+              <TableRow key={row.id} className="hover:bg-muted/50 border-b last:border-0 cursor-pointer h-16.25" onClick={() => setSelectedRow(row)}>
                 <TableCell className="pl-6">
                   <Avatar className="h-9 w-9 border border-border">
                     <AvatarImage src={row.avatar_url || ""} className="object-cover" />
