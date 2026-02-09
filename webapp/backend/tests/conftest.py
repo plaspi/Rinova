@@ -1,6 +1,11 @@
 import os
 import pytest
 from unittest.mock import MagicMock, patch
+#ensures no missing keys during CI setps.
+os.environ.setdefault("SUPABASE_URL", "https://test-placeholder.supabase.co")
+os.environ.setdefault("SUPABASE_KEY", "test-placeholder-key")
+os.environ.setdefault("SUPABASE_JWT_SECRET", "test-secret")
+
 from typing import Any, Dict, List, Optional
 from fastapi.testclient import TestClient
 
