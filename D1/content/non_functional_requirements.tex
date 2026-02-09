@@ -29,12 +29,12 @@ aumenti di utenza.
 L'architettura del sistema deve essere scalabile così da poter supportare una crescita
 del numero di:
 \begin{itemize}
-    \item utenti (cittadini, enti, CER e comuni)
+    \item utenti (cittadini, enti, CER)
     \item richieste simultanee ai servizi offerti dal software
     \item dati energetici
 \end{itemize}
-Il sistema deve poter essere facilmente esteso a nuovi \textbf{comuni o regioni} senza modifiche
-sostanziali all'infrastruttura.
+Il sistema deve poter essere facilmente esteso ad un maggior parco d'utenza%a nuovi \textbf{comuni o regioni}
+senza modifiche sostanziali all'infrastruttura.
 \subsection*{RNF-04-Affidabilità}
 Il sistema deve garantire un livello di disponibilità non inferiore al XX\%,
 che corrisponde ad un downtime massimo di X ore, Y minuti, Z secondi.
@@ -47,7 +47,7 @@ crittografia a riposo, utilizzando algoritmi conformi agli standard AES-256
 (Advanced Encryption Standard) in modalità GCM (Galois/Counter Mode)
 o CBC (Cipher Block Chaining), le password devono essere salvate tramite hashing
 unidirezionale con salt univoco per utente usando algoritmi moderni e
-resistenti ad attacchi di forza bruta come: (da aggiungere dettagli).
+resistenti ad attacchi di forza bruta.
 \subsection*{RNF-06-Privacy e conformità normativa}
 Il sistema deve essere conforme al Regolamento Europeo GDPR
 (UE 2016/679) e alle normative nazionali sulla protezione dei
@@ -58,6 +58,8 @@ e tracciabile, devono essere garantiti:
     \item la gestione del consenso informato
     \item l'uso di accordi di trattamento dati (DPA) per soggetti esterni
 \end{itemize}
+
+%da valutare
 \subsection*{RNF-07-Lingua}
 L'interfaccia utente deve essere disponibile in lingua italiana
 come predefinita, deve includere la possibilità di estensione
