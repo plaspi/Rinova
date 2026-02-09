@@ -13,6 +13,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { API_BASE_URL } from "@/services/api_config";
 
 interface DashboardData {
   produzione: number;
@@ -38,7 +39,7 @@ export default function HomePage() {
         queryKey: ['dashboard-summary'],
         queryFn: async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch('http://localhost:8000/api/dashboard/summary', {
+            const res = await fetch(`${API_BASE_URL}/api/dashboard/summary`, {
                 headers: { 'Authorization': `Bearer ${session?.access_token}` }
             });
             if (!res.ok) throw new Error("Errore fetch KPI");
@@ -51,7 +52,7 @@ export default function HomePage() {
         queryKey: ['dashboard-chart'],
         queryFn: async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch('http://localhost:8000/api/dashboard/chart', {
+            const res = await fetch(`${API_BASE_URL}/api/dashboard/chart`, {
                 headers: { 'Authorization': `Bearer ${session?.access_token}` }
             });
             if (!res.ok) throw new Error("Errore fetch Grafico");
@@ -64,7 +65,7 @@ export default function HomePage() {
         queryKey: ['dashboard-plants'],
         queryFn: async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch('http://localhost:8000/api/dashboard/plants', {
+            const res = await fetch(`${API_BASE_URL}/api/dashboard/plants`, {
                 headers: { 'Authorization': `Bearer ${session?.access_token}` }
             });
             if (!res.ok) throw new Error("Errore fetch Lista Impianti");

@@ -20,8 +20,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/authContext";
 import { useQuery } from "@tanstack/react-query";
 import type { DateRange } from "react-day-picker";
-
-const API_URL = "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "@/services/api_config";
 
 const DAYS_FULL_IT: Record<string, string> = {
     'Lun': 'Lunedì', 'Mar': 'Martedì', 'Mer': 'Mercoledì', 'Gio': 'Giovedì',
@@ -84,7 +83,7 @@ export default function HistoryPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
-            let url = `${API_URL}/production/history?plantId=${selectedPlant}&period=${period}`;
+            let url = `${API_BASE_URL}/api/production/history?plantId=${selectedPlant}&period=${period}`;
             
             if (period === 'custom' && dateRange?.from && dateRange?.to) {
                 const startStr = format(dateRange.from, 'yyyy-MM-dd');
@@ -137,7 +136,7 @@ export default function HistoryPage() {
         const token = session?.access_token;
         if (!token) { setPdfLoading(false); return; }
         
-        let url = `${API_URL}/report/download?plantId=${selectedPlant}&period=${period}`;
+        let url = `${API_BASE_URL}/api/report/download?plantId=${selectedPlant}&period=${period}`;
         if (period === 'custom' && dateRange?.from && dateRange?.to) {
              const startStr = format(dateRange.from, 'yyyy-MM-dd');
              const endStr = format(dateRange.to, 'yyyy-MM-dd');

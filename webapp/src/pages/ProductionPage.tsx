@@ -13,8 +13,7 @@ import { supabase } from "@/services/supabase_client";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-const API_URL = "http://127.0.0.1:8000/api";
+import { API_BASE_URL } from "@/services/api_config";
 
 export default function ProductionPage() {
     const { isPro } = useAuth();
@@ -29,7 +28,7 @@ export default function ProductionPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
             
-            const response = await fetch(`${API_URL}/production/live`, {
+            const response = await fetch(`${API_BASE_URL}/api/production/live`, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -62,7 +61,7 @@ export default function ProductionPage() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
-            const res = await fetch(`${API_URL}/report/download?period=live&plantId=summary`, { 
+            const res = await fetch(`${API_BASE_URL}/api/report/download?period=live&plantId=summary`, { 
                 headers: { 'Authorization': `Bearer ${token}` } 
             });
             
