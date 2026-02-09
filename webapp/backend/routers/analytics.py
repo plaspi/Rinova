@@ -48,7 +48,7 @@ async def get_production_history(
             start_date = now.replace(year=start_year, month=start_month, day=1, hour=0, minute=0, second=0, microsecond=0)
             table_name, col_time, col_val, resample_freq = "vista_mensile", "timestamp", "produzione", 'MS'
         elif period == 'custom':
-            if not startDate or not endDate: return {"chart": [], "kpi": {"totalEnergy":0, "co2":0, "peakValue":0, "peakTime":"-", "efficiency":0}}
+            if not startDate or not endDate: return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
             start_date = datetime.strptime(startDate, "%Y-%m-%d")
             limit_date = datetime.strptime(endDate, "%Y-%m-%d").replace(hour=23, minute=59)
             col_time, col_val = "timestamp", "produzione"
@@ -60,7 +60,7 @@ async def get_production_history(
 
         res = await db.table(table_name).select(f"{col_time}, {col_val}").eq("impianto_id", plantId).gte(col_time, start_date.isoformat()).lte(col_time, now.isoformat()).order(col_time).execute()
         if not res.data: 
-             return {"chart": [], "kpi": {"totalEnergy":0, "co2":0, "peakValue":0, "peakTime":"-", "efficiency":0}}
+             return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
 
         df = pd.DataFrame(res.data)
         df.rename(columns={col_time: 'timestamp', col_val: 'value'}, inplace=True)
@@ -76,7 +76,7 @@ async def get_production_history(
 
         total_prod = df_resampled['value'].sum()
         max_peak_val = df_resampled['value'].max()
-        efficiency = (total_prod / (6.0 * ((now - start_date).total_seconds() / 3600 / 24 * 5)) * 100) if total_prod > 0 else 0
+        efficiency = (total_prod / (6.0 * ((now - start_date).total_seconds() / 3600 / 24 * 5)) * 100) if total_prod > 0 else 0.0
         if efficiency > 100: efficiency = 99.9
 
         peak_label = "-"
@@ -95,14 +95,14 @@ async def get_production_history(
             elif period == 'month': label = ts.strftime('%d')
             elif period == 'year' or (period=='custom' and resample_freq=='MS'): label = MONTHS_IT.get(ts.month, '-')
             else: label = f"{ts.day} {MONTHS_IT.get(ts.month,'')}"
-            chart_data.append({"time": label, "full_date": ts.isoformat(), "Produzione": round(row['value'], 2)})
+            chart_data.append({"time": str(label), "full_date": ts.isoformat(), "Produzione": round(row['value'], 2)})
 
         return {
             "chart": chart_data,
             "kpi": {
                 "totalEnergy": round(total_prod, 2),
                 "co2": round(total_prod * 0.225, 2),
-                "peakValue": round(max_peak_val, 2),
+                "peakValue": round(max_peak_val, 2),    
                 "peakTime": peak_label,
                 "efficiency": round(efficiency, 1)
             }
@@ -110,4 +110,4 @@ async def get_production_history(
     except Exception as e:
         if isinstance(e, (BadRequestException, ServiceUnavailableException)): raise e
         print(f"ERR History: {e}")
-        return {"chart": [], "kpi": {"totalEnergy":0, "co2":0, "peakValue":0, "peakTime":"-", "efficiency":0}}
+        return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
