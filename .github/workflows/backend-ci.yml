@@ -1,0 +1,42 @@
+name: Rinova Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 1. Global Environment Configuration
+env:
+  PYTHONPATH: webapp
+  SUPABASE_URL: "https://ci-placeholder.supabase.co"
+  SUPABASE_SERVICE_KEY: "ci-placeholder-service-key"
+  SUPABASE_JWT_SECRET: "test-secret"
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    # 2. Setup Python with Smart Caching
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: 'pip'
+        cache-dependency-path: webapp/backend/requirements.txt
+
+    # 3. Install Dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r webapp/backend/requirements.txt
+        pip install pytest httpx pytest-asyncio
+
+    # 4. Run Tests
+    - name: Run Tests
+      run: |
+        python -m pytest -v webapp/backend/tests

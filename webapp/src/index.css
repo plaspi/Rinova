@@ -1,0 +1,272 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@import "flowbite";
+@import "tw-animate-css";
+
+/* Variante Dark Mode v4 */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* --- IMPOSTAZIONI BASE --- */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark; 
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --radius: 0.625rem;
+
+  /* --- PALETTE LIGHT MODE --- */
+  --background: 210 40% 98%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+
+  /* PRIMARY: Verde Foresta */
+  --primary: 118 46% 30%;
+  --primary-foreground: 0 0% 100%;
+
+  /* SECONDARY: Corretto NaN -> Verde Neutro Pallido */
+  --secondary: 120 10% 95%;
+  --secondary-foreground: 118 46% 30%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 120 60% 95%;
+  --accent-foreground: 118 46% 30%;
+
+  --destructive: 0 69% 70%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 118 46% 30%;
+
+  --chart-1: 118 46% 30%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+
+  /* Variabili Custom */
+  --brand-soft: oklch(96.2% 0.044 156.743);
+  --brand-soft-foreground: 118 46% 30%;
+  --nuance: 122 39% 49%;
+  --nuanceCard: 117 46% 20%;
+
+  /* Sidebar Light */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 118 46% 30%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 120 60% 95%;
+  --sidebar-accent-foreground: 118 46% 30%;
+  --sidebar-border: 214.3 31.8% 91.4%;
+  --sidebar-ring: 118 46% 30%;
+}
+
+/* --- STILI ELEMENTI BASE --- */
+a {
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  
+  /* DEFAULT (Light Mode): Colore scuro base */
+  color: hsl(var(--foreground));
+}
+
+/* HOVER (Light Mode): Diventa Verde */
+a:hover {
+  color: hsl(var(--primary));
+}
+.dark a {
+  /* BASE (Dark Mode): I link sono VERDI di default */
+  color: hsl(var(--primary));
+}
+
+.dark a:hover {
+  /* HOVER (Dark Mode): Diventano BIANCHI per evidenziarsi ("accendersi") */
+  color: hsl(var(--foreground));
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.5); /* Effetto glow opzionale */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 100%;
+  width: 100%;
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button:not([role="switch"]) {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  button:not([role="switch"]) {
+    background-color: #f9f9f9;
+  }
+}
+
+/* --- MAPPATURA TEMA TAILWIND v4 --- */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* NOTA: Tutte le variabili mappate con hsl() devono essere numeri (es: 120 50% 50%) */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-nuance: hsl(var(--nuance));
+  --color-nuanceCard: hsl(var(--nuanceCard));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  
+  /* NOTA: Questa è mappata SENZA hsl(), quindi accetta HEX, OKLCH, RGB */
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-soft-foreground: hsl(var(--brand-soft-foreground));
+} 
+
+/* --- PALETTE DARK MODE --- */
+.dark {
+  --background: 222.2 84% 4.9%; /* Blu notte profondissimo */
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+
+  /* PRIMARY DARK: Verde acceso (#4ade80) per contrasto su scuro */
+  --primary: 142 71% 45%;
+  --primary-foreground: 144 100% 10%; /* Verde scurissimo quasi nero */
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 142 71% 45%;
+
+  --chart-1: 142 71% 45%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+
+  /* BRAND SOFT (Dark Mode) */
+  /* Hex usato qui perché la mappatura nel tema NON ha hsl() */
+  --brand-soft: #0B411F; 
+  /* Hsl usato qui perché la mappatura nel tema HA hsl() */
+  --brand-soft-foreground: 142 70% 60%;
+
+  /* NUANCE (Aggiunte per la Dark Mode) */
+  --nuance: 122 39% 49%;
+  --nuanceCard: 117 46% 15%; /* Più scuro rispetto al light per non abbagliare */
+
+  /* Sidebar Dark */
+  --sidebar-background: 222 47% 11%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-primary: 142 71% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 217.2 32.6% 17.5%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 217.2 32.6% 17.5%;
+  --sidebar-ring: 142 71% 45%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .animate-slide-up-fade {
+    animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
