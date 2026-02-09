@@ -26,7 +26,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f webapp/backend/requirements.txt ]; then 
+          pip install -r webapp/backend/requirements.txt
+        else 
+          echo "WARNING: requirements.txt not found at webapp/backend/requirements.txt"
+          exit 1 check for fails on read
+        fi
         pip install pytest httpx pytest-asyncio
 
     # Create Dummy .env
