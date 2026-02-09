@@ -33,7 +33,7 @@ interface OTPFormContentProps {
 }
 
 function OTPFormContent({ 
-  otp, setOtp, handleSubmit, handleResend, isSubmitting, canResend, timer, email 
+  otp, setOtp, handleSubmit, handleResend, isSubmitting, canResend, timer 
 }: OTPFormContentProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-6">
@@ -100,7 +100,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState<string>(location.state?.email || "");
+  const [email, _setEmail] = useState<string>(location.state?.email || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(()=> {
@@ -151,7 +151,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
+      const { error } = await supabase.auth.verifyOtp({
         email: email,
         token: otp,
         type: 'signup' // O 'email'/'recovery' in base a come arrivi qui
