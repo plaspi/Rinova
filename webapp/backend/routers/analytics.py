@@ -64,7 +64,11 @@ async def get_production_history(
 
         df = pd.DataFrame(res.data)
         df.rename(columns={col_time: 'timestamp', col_val: 'value'}, inplace=True)
-        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True).dt.tz_convert(None).dt.normalize()
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        if df['timestamp'].dt.tz is not None:
+            df['timestamp'] = df['timestamp'].dt.tz_localize(None)
+            
+        df['timestamp'] = df['timestamp'].dt.normalize()
         
         full_idx = pd.date_range(start=start_date, end=now, freq=resample_freq)
         if period != 'day': full_idx = full_idx.normalize()
