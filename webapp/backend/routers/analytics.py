@@ -64,6 +64,7 @@ async def get_production_history(
 
         df = pd.DataFrame(res.data)
         df.rename(columns={col_time: 'timestamp', col_val: 'value'}, inplace=True)
+        df = df[['timestamp', 'value']]
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         if df['timestamp'].dt.tz is not None:
             df['timestamp'] = df['timestamp'].dt.tz_localize(None)
