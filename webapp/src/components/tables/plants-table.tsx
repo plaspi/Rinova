@@ -92,11 +92,11 @@ export function PlantsTable({ data }: PlantsTableProps) {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 bg-background!">
+                      <Button variant="ghost" className="h-8 w-8 p-0 bg-background! hover:border-transparent!">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="text-yellow-500!">
                       <DropdownMenuItem onClick={() => setSelected(row)}>
                         <Settings className="mr-2 h-4 w-4" /> Dettagli tecnici
                       </DropdownMenuItem>

@@ -83,7 +83,7 @@ export function UserAvatarCard() {
                     <p className="text-xs text-muted-foreground mb-4">
                         L'eliminazione è irreversibile. Perderai l'accesso alla CER.
                     </p>
-                    <Button variant="destructive" size="sm" className="w-full bg-red-600 hover:bg-red-700">
+                    <Button variant="destructive" size="sm" className="w-full bg-red-600! hover:bg-red-700!">
                         Elimina definitivamente
                     </Button>
                 </CardContent>

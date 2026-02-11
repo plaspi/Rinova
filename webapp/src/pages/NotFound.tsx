@@ -57,7 +57,7 @@ export default function NotFound() {
             </Button>
             
             <Button 
-                className="gap-2 h-11 bg-primary text-primary-foreground hover:bg-primary/90"
+                className="gap-2 h-11 bg-foreground! text-primary-foreground hover:bg-primary/90"
                 onClick={() => navigate("/home")}
             >
                 <Home className="h-4 w-4" />

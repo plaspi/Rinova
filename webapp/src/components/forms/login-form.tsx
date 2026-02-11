@@ -96,7 +96,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           {/* EMAIL */}
           <div className="space-y-1">
             <Label htmlFor="email" className="text-xs font-medium">Email</Label>
-            <Input id="email" type="email" placeholder="mail@example.com" className="h-10" {...register("email")} />
+            <Input id="email" type="email" placeholder="mail@example.com" className="h-10 bg-brand-gradient! placeholder:text-background" {...register("email")} />
             {errors.email && <p className="text-[10px] text-destructive">{errors.email.message}</p>}
           </div>
 
@@ -117,15 +117,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                className="h-10 pr-9"
+                placeholder="inserisci qui la tua password"
+                className="h-10 pr-9 bg-brand-gradient! placeholder:text-background"
                 {...register("password")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground bg-transparent focus:outline-none flex items-center justify-center transition-colors"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                className="absolute right-0 top-0 h-full px-3 text-muted-foreground flex items-center justify-center bg-brand-gradient! cursor-default! pointer-events-auto! select-none! outline-none!"              >
+                {showPassword ? <EyeOff className="h-4 w-4 text-background" /> : <Eye className="h-4 w-4 text-background"/>}
               </button>
             </div>
             {errors.password && <p className="text-[10px] text-destructive">{errors.password.message}</p>}
@@ -135,11 +135,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         <CardFooter className="flex flex-col gap-4 p-0 pt-6">
           <Button 
             type="submit" 
-            className="w-full h-10 font-semibold shadow-md" 
+            className="w-full text-foreground! bg-background! hover:bg-foreground/90 h-10 font-semibold shadow-md" 
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Accedi <ArrowRight className="ml-2 h-4 w-4" />
+            Accedi <ArrowRight className="ml-2 h-4 w-4 text-foreground" />
           </Button>
 
           {/* SEPARATORE */}
@@ -155,7 +155,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button 
                 variant="outline" 
                 type="button" 
-                className="w-full h-10 bg-white! text-neutral-900! border-neutral-200! hover:bg-neutral-100! hover:text-neutral-900! font-medium"
+                className="w-full h-10 bg-brand-gradient! text-background hover:bg-neutral-100! hover:text-neutral-900! font-medium"
                 onClick={()=> handleSocialLogin('google')}
                 disabled={isLoading}
               >
@@ -171,7 +171,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button 
               variant="outline" 
               type="button" 
-              className="w-full h-10 font-medium"
+                className="w-full h-10 bg-brand-gradient! text-background hover:bg-neutral-100! hover:text-neutral-900! font-medium"
               onClick={() => handleSocialLogin('azure')}
               disabled={isLoading}
             >
