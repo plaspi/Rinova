@@ -26,7 +26,7 @@ Come utente, voglio potermi registrare autonomamente alla webapp inserendo i mie
 \subsubsection*{User Story 2 – associata a RF-02: Login utente}
 \textbf{Accesso con credenziali e gestione errori}
 
-Come utente registrato, voglio poter accedere alla webapp inserendo le mie credenziali, in modo da poter visualizzare la mia area personale.
+Come utente registrato, voglio poter accedere alla webapp inserendo le mie credenziali, in modo da poter visualizzare la mia area personale ed i miei impianti.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
@@ -62,7 +62,7 @@ Come utente, voglio poter recuperare la mia password se la dimentico, in modo da
 \subsubsection*{User Story 4 – associata a RF-03: Accesso all’area personale}
 \textbf{Gestione area personale utente autenticato}
 
-Come utente autenticato, voglio accedere alla mia area personale per visualizzare e gestire i miei dati.
+Come utente autenticato, voglio accedere alla mia area personale per visualizzare e gestire i miei dati personali.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
@@ -76,23 +76,23 @@ Come utente autenticato, voglio accedere alla mia area personale per visualizzar
     \item Collegare la visualizzazione dei dati utente dal database.
     \item Gestire errori di accesso non autorizzato.
 \end{itemize}
-\subsubsection*{User Story 5 – associata a RF-03.1-03.4: Gestione dati profilo e account}
+\subsubsection*{User Story 5 – associata a RF-03.1-03.2: Gestione dati profilo e account}
 \textbf{Aggiornamento o cancellazione delle informazioni personali}
 
 Come utente autenticato, voglio poter modificare o cancellare le mie informazioni personali, in modo da mantenere aggiornati i miei dati e gestire la mia privacy.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item L’utente può aggiornare email, telefono, dati non obbligatori.
+    \item L’utente può aggiornare dati personali o non obbligatori.
     \item Ogni modifica è validata e confermata.
     \item In caso di cancellazione account, viene chiesta conferma e rimossi i dati.
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
     \item Creare form di modifica profilo.
-    \item Validare i nuovi dati (formato email, telefono).
+    \item Validare i nuovi dati.
     \item Implementare procedura di cancellazione con conferma.
-    \item Inviare notifica email dopo aggiornamento o eliminazione.
+    \item Gestire la rimozione a cascata di tutti i dati riferiti all'utente.
 \end{itemize}
 \subsubsection*{User Story 6 – associata a RF-04: Logout utente}
 \textbf{Logout sicuro dalla webapp}
@@ -110,8 +110,56 @@ Come utente autenticato, voglio potermi disconnettere in modo sicuro, in modo da
     \item Cancellare token/sessione al logout.
     \item Gestire redirect alla pagina iniziale.
 \end{itemize}
+\subsubsection*{User story 7 - associata a FR-05-06: Visualizzazione dati e reportistica}
+In quanto utente, voglio poter vedere i dati di produzione dei miei impianti associati ed avere la possibilità di scaricarli.
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item Le aree dedicate alle dashboard mostrano grafici interattivi (lineari o a barre) che visualizzano l'andamento di produzione e consumi aggregati per l'intervallo temporale selezionato (giorno, settimana, mese), o live nell'apposita sezione.
+    \item Sono visibili anche valori numerici totali (KPI) per: Energia prodotta (kWh), Energia consumata (kWh), Livello batteria (\%) e Risparmio di CO$_2$ (kg), oltre che ad analisi sul picco massimo o la miglior giornata.
+    \item È presente un pulsante "Scarica Report" che permette di esportare i dati visualizzati in un file PDF ben formattato.
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Progettare l'interfaccia della dashboard e integrarne le modalità di creazione di grafici e report.
+    \item Sviluppare l'endpoint API per recuperare le serie storiche dei dati energetici dal database e permetterne l'aggregazione.
+    \item Implementare la logica backend per il calcolo dei KPI (es. risparmio di CO$_2$ basato sui kWh prodotti).
+    \item Configurare il servizio di generazione PDF per creare il report dinamico.
+\end{itemize}
+\subsubsection*{User story 8 - associata a FR-07: Gestione impianti energetici}
+In quanto utente, voglio poter visualizzare e gestire gli impianti a me associati, con la possibilità di segnalarne un malfunzionamento o visualizzarne i dettagli tecnici.
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item L'utente visualizza l'elenco completo dei propri impianti con indicazione immediata dello stato (Attivo, In Manutenzione, Sospeso).
+    \item Cliccando sui dettagli tecnici di un impianto, l'utente accede a una scheda che ne mostra tutte le specifiche.
+    \item L'utente può modificare lo stato dell'impianto segnalando un guasto; questa azione deve interrompere il calcolo della produzione per quell'impianto.
+    \item L'utente può rimuovere un impianto non più operativo (cancellazione logica), previa conferma di sicurezza.
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Realizzare l'interfaccia frontend per la lista degli impianti e la scheda di dettaglio.
+    \item Sviluppare il Backend necessario per le operazioni CRUD (Lettura, Aggiornamento stato, Eliminazione).
+    \item Aggiungere il controllo lato backend che esclude gli impianti con stato "In Manutenzione" dai calcoli energetici della CER.
+\end{itemize}
+\subsubsection{User story 9 . associata a FR-08-09: Ricerca ed adesione CER}
+In quanto utente, voglio poter usare Rinova per cercare una comunità energetica a cui fare richiesta d'adesione.
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item L'utente può inserire il nome o il codice identificativo della CER in una barra di ricerca dedicata.
+    \item Il sistema restituisce i risultati sotto forma di elenco o "card", mostrando per ciascuna CER: Nome, Località e numero di membri attuali.
+    \item Selezionando una CER, l'utente visualizza una pagina di dettaglio contenente il pulsante "Richiedi adesione".
+    \item Dopo aver cliccato su "Richiedi adesione", il sistema fornisce un feedback visivo di successo ("Richiesta inviata") e aggiorna lo stato della richiesta a "In attesa".
+    \item Il sistema impedisce l'invio della richiesta se l'utente è già membro o ha già una richiesta pendente per quella specifica CER.
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Sviluppare l'interfaccia di ricerca con filtri e la visualizzazione dei risultati (Frontend).
+    \item Implementare l'endpoint API per la ricerca delle CER nel database (filtro per nome/ID).
+    \item Creare la tabella di associazione "Richieste" (User\_ID, CER\_ID, Stato, Data).
+    \item Sviluppare la logica backend per l'invio della richiesta e il controllo dei duplicati.
+\end{itemize}
+
 \subsection{User Story legate ai requisiti funzionali specifici per gli amministratori della CER}
-\subsubsection*{User Story 7 – associata a RF-05: Gestione membri della CER}
+\subsubsection*{User Story 10 – associata a RF-10: Gestione membri della CER}
 \textbf{Gestione elenco membri e loro dati}
 
 Come amministratore della CER, voglio visualizzare e gestire i membri della comunità, in modo da poter mantenere aggiornata la composizione della CER.
@@ -119,18 +167,15 @@ Come amministratore della CER, voglio visualizzare e gestire i membri della comu
 \textbf{Criteri di accettazione:}
 \begin{itemize}
     \item L’amministratore può aggiungere, modificare o rimuovere membri.
-    \item Ogni operazione è tracciata.
     \item Lo stato di ciascun membro è visibile (attivo, sospeso, in attesa).
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
     \item Creare tabella membri con azioni CRUD.
-    \item Implementare log delle modifiche.
     \item Aggiornare stato membro in tempo reale.
 \end{itemize}
-\subsubsection*{User Story 8 – associata a RF-06: Approvazione richieste di adesione}
+\subsubsection*{User Story 11 – associata a RF-11: Approvazione richieste di adesione}
 \textbf{Gestione richieste di nuovi membri}
-
 Come amministratore della CER, voglio approvare o rifiutare le richieste di adesione, in modo da controllare chi entra nella comunità.
 
 \textbf{Criteri di accettazione:}
@@ -145,6 +190,8 @@ Come amministratore della CER, voglio approvare o rifiutare le richieste di ades
     \item Creare azioni di approvazione/rifiuto.
     \item Collegare invio automatico di notifica email.
 \end{itemize}
+%NON PRESENTE
+\begin{comment}
 \subsubsection*{User Story 9 – associata a RF-07-08: Gestione e monitoraggio impianti}
 \textbf{Gestione impianti e monitoraggio stato operativo}
 
@@ -162,136 +209,136 @@ Come amministratore della CER, voglio registrare e monitorare gli impianti energ
     \item Implementare monitoraggio con aggiornamento automatico.
     \item Mostrare alert in caso di guasto.
 \end{itemize}
-\subsubsection*{User Story 10 – associata a RF-09-10: Reportistica e analisi energetica}
+\end{comment}
+\subsubsection*{User Story 12 – associata a RF-12: Reportistica e analisi energetica}
 \textbf{Visualizzazione report e analisi dei benefici}
 
 Come amministratore della CER, voglio consultare report energetici e analisi economiche, in modo da monitorare l’efficienza e i benefici della CER.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item Possibilità di selezionare periodo temporale.
-    \item Dati mostrati in grafici e tabelle.
-    \item Esportazione disponibile in CSV o PDF.
+    \item Sono presenti dashboard che mostrano grafici interattivi sull'andamento energetico della CER in base al periodo temporale selezionato.
+    \item È presente un pulsante "Scarica Report" che permette di esportare i dati visualizzati in un file PDF ben formattato.
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
     \item Implementare dashboard analitica.
-    \item Collegare grafici interattivi a database.
-    \item Creare funzioni di esportazione.
+    \item Sviluppare l'endpoint API per recuperare le serie storiche dei dati energetici dal database e permetterne l'aggregazione.
+    \item Collegare il servizio di generazione PDF per creare il report dinamico.
 \end{itemize}
-\subsection{User story legate ai requisti funzionali specifici per il Rappresentante del Comune}
-\subsubsection*{User Story 11 – associata a RF-11-12: Supervisione e dashboard comunale}
-\textbf{Visualizzazione delle CER del territorio}
 
-Come rappresentante del Comune, voglio visualizzare le CER attive e i dati aggregati, in modo da monitorare la produzione e l’impatto energetico sul territorio.
+\subsubsection*{User Story 13 – associata a RF-13-14: Gestione comunicazioni e avvisi}
+\textbf{Pubblicazione avvisi e consultazione notifiche}
 
-\textbf{Criteri di accettazione:}
-\begin{itemize}
-    \item Possibile vedere elenco CER con indicatori principali.
-    \item Dashboard aggregata per periodo e territorio.
-    \item Nessuna modifica diretta sui dati delle CER.
-\end{itemize}
-\textbf{Tasks:}
-\begin{itemize}
-    \item Creare vista “Panoramica comunale”.
-    \item Implementare filtri temporali e geografici.
-    \item Collegare grafici ai dati aggregati.
-\end{itemize}
-\subsubsection*{User Story 12 – associata a RF-13: Gestione richieste dalle CER}
-\textbf{Supervisione delle richieste di supporto}
-
-Come rappresentante del Comune, voglio gestire le richieste provenienti dalle CER, in modo da fornire supporto o approvazioni necessarie.
+In quanto amministratore della CER, voglio poter gestire la bacheca comune e visualizzare i messaggi ricevuti dai membri, per garantire una comunicazione efficace e bidirezionale all'interno della comunità.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item Visualizzazione delle richieste in ordine cronologico.
-    \item Possibilità di modificare stato (in lavorazione, approvata, rifiutata).
-    \item Possibilità di aggiungere un commento di risposta.
+    \item L'amministratore può creare un nuovo avviso inserendo titolo e contenuto; l'avviso diventa immediatamente visibile a tutti i membri e viene segnalato attraverso l'invio di un'email.
+    \item L'amministratore può eliminare avvisi obsoleti o scaduti dalla bacheca.
+    \item Esiste un'area notifiche dedicata dove l'amministratore visualizza la lista dei messaggi o delle segnalazioni inviate dai membri.
+    \item Il sistema evidenzia visivamente le notifiche non lette e aggiorna il contatore quando vengono consultate.
 \end{itemize}
+
 \textbf{Tasks:}
 \begin{itemize}
-    \item Creare sezione “Richieste CER”.
-    \item Implementare pulsanti per aggiornare stato.
-    \item Gestire notifiche agli amministratori CER.
+    \item Implementare il componente UI per la bacheca con form di pubblicazione e lista avvisi.
+    \item Sviluppare le API backend per le operazioni CRUD (Create, Read, Delete) sugli avvisi.
+    \item Creare il centro notifiche per l'admin, con logica di distinzione letto/non letto.
+    \item Implementare il meccanismo di aggiornamento del contatore notifiche (badge) nell'header.
 \end{itemize}
-\subsubsection*{User Story 13 – associata a RF-14: Comunicazioni istituzionali}
-\textbf{Invio comunicazioni alle CER del Comune}
 
-Come rappresentante del Comune, voglio poter inviare comunicazioni ufficiali alle CER registrate, in modo da informarle su iniziative e novità.
 
-\textbf{Criteri di accettazione:}
-\begin{itemize}
-    \item Possibilità di scrivere testo e allegare file.
-    \item Le comunicazioni vengono recapitate nell’area notifiche CER.
-\end{itemize}
-\textbf{Tasks:}
-\begin{itemize}
-    \item Implementare modulo di invio messaggi.
-    \item Gestire upload e invio allegati.
-    \item Creare visualizzazione comunicazioni in area notifiche.
-\end{itemize}
+
 \subsection{User story legate ai requisti funzionali specifici per i membri della CER}
-\subsubsection*{User Story 14 – associata a RF-15: Visualizzazione dati energetici personali}
-\textbf{Monitoraggio dei propri consumi e produzione}
+%SPOSRATO LATO UTENTE
 
-Come membro della CER, voglio visualizzare i miei dati energetici personali, in modo da capire i miei consumi e la quota condivisa di energia.
-
-\textbf{Criteri di accettazione:}
-\begin{itemize}
-    \item Dashboard con grafici dei dati energetici.
-    \item Possibilità di filtrare per periodo.
-    \item Aggiornamento automatico o periodico.
-\end{itemize}
-\textbf{Tasks:}
-\begin{itemize}
-    \item Creare dashboard personale.
-    \item Collegare API dati energetici.
-    \item Implementare filtri temporali e refresh automatico.
-\end{itemize}
-\subsubsection*{User Story 15 – associata a RF-16: Confronto con la comunità}
-\textbf{Confronto dei propri dati con la media della CER}
-
-Come membro della CER, voglio confrontare i miei consumi con la media della CER, in modo da valutare la mia efficienza energetica.
-
-\textbf{Criteri di accettazione:}
-\begin{itemize}
-    \item Mostra grafico comparativo utente vs media CER.
-    \item Dati anonimi e aggregati.
-\end{itemize}
-\textbf{Tasks:}
-\begin{itemize}
-    \item Implementare logica di calcolo media comunitaria.
-    \item Visualizzare confronto grafico in dashboard.
-\end{itemize}
-\subsubsection*{User Story 16 – associata a RF-17: Notifiche e avvisi}
+\subsubsection*{User Story 14 – associata a RF-15: Notifiche e avvisi}
 \textbf{Ricezione di notifiche e aggiornamenti}
 
 Come membro della CER, voglio ricevere notifiche sulle attività della mia CER, in modo da essere sempre informato su cambiamenti e novità.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item Le notifiche appaiono in area dedicata e sono marcabili come lette.
-    \item Devono coprire eventi come approvazioni, anomalie o nuovi impianti.
+    \item Le notifiche vengono inviate via posta elettronica.
+    \item Devono coprire eventi come approvazioni, comunicazioni o segnalazioni.
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
-    \item Implementare centro notifiche.
-    \item Gestire logica di creazione e lettura notifiche.
-    \item Creare contatore visivo di notifiche non lette.
+    \item Gestione invio messaggi via posta elettronica.
 \end{itemize}
-\subsubsection*{User Story 17 – associata a RF-18: Segnalazioni e richieste}
+
+\subsubsection*{User Story 15 – associata a RF-16: Segnalazioni e richieste}
 \textbf{Invio segnalazioni tecniche o amministrative}
 
-Come membro della CER, voglio poter inviare segnalazioni alla CER o al Comune, in modo da comunicare problemi o suggerimenti.
+Come membro della CER, voglio poter comunicare con gli amministratori della mia CER in modo da poter inviare sengalazioni o richiedere assistenza.
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item Modulo con titolo, descrizione e allegati.
-    \item Tracciamento stato segnalazione (inviata, in lavorazione, risolta).
+    \item È disponibile una shortcut per contattare i referenti della CER via chat nella pagina della propria comunità.
+    \item Il messaggio inviato viene salvato nel sistema e reso visibile all'amministratore nella sua area notifiche/messaggi.
+    \item L'utente può visualizzare lo storico dei messaggi inviati e il loro stato (es. Inviato, Letto).
+\end{itemize}
+
+\textbf{Tasks:}
+\begin{itemize}
+    \item Implementare il pulsante di accesso rapido (shortcut) per avviare la conversazione con l'amministratore.
+    \item Progettare e implementare lo schema database per i messaggi (campi: mittente, destinatario, contenuto, timestamp, stato lettura).
+    \item Sviluppare l'endpoint API per l'invio sicuro del messaggio e il salvataggio persistente nel sistema.
+    \item Realizzare l'interfaccia frontend per la visualizzazione dello storico con distinzione grafica tra messaggi inviati e ricevuti.
+    \item Implementare la logica backend per la gestione degli stati (Inviato/Letto) e l'aggiornamento dello stato quando l'amministratore apre la notifica.
+\end{itemize}
+
+\subsubsection*{User Story 16 – associata a RF-17: Abbandono CER}
+\textbf{Recesso volontario dalla comunità}
+
+In quanto membro della CER, voglio poter abbandonare la comunità in qualsiasi momento, per interrompere la condivisione dei miei dati energetici e la partecipazione al sistema di incentivi.
+
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item È presente un'opzione "Abbandona Comunità" nella pagina della CER.
+    \item Cliccando sull'opzione, il sistema mostra un messaggio di avviso (alert) chiaro che informa l'utente delle conseguenze (es. perdita degli incentivi maturandi).
+    \item È richiesta una conferma esplicita (es. doppio click) per rendere effettiva l'uscita.
+    \item Dopo la conferma, i dati non vegono più resi disponibili per quella CER.
+\end{itemize}
+
+\textbf{Tasks:}
+\begin{itemize}
+    \item Implementare il pulsante di abbandono e la finestra modale di conferma nell'interfaccia utente.
+    \item Sviluppare l'endpoint API per gestire la logica di uscita (aggiornamento stato membro nel database).
+    \item Implementare la logica di backend che interrompe il calcolo dell'energia condivisa per quell'utente a partire dalla data di uscita.
+    \item Configurare il sistema di notifica per avvisare l'amministratore dell'avvenuto recesso.
+\end{itemize}
+
+\subsection{User Story specifiche per Super Admin (Staff Rinova)}
+
+\subsubsection*{User Story 19 – associata a RF-AS-01/02/03: Gestione ciclo di vita CER}
+\textbf{CRUD Comunità Energetiche}
+Come Super Admin, voglio creare, modificare ed eliminare le CER sulla piattaforma, per gestire i clienti del servizio Rinova.
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item Accesso al database per compiere operazioni di modifica, aggiunta e rimozione.
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
-    \item Creare modulo segnalazione con upload file.
-    \item Gestire backend per stato della richiesta.
-    \item Inviare notifiche automatiche ai destinatari.
+    \item gestire l'accesso al database solo agli amministratori autorizzati.
+    \item rendere disponibili le operazioni CRUD solo agli amministratori autorizzati.
+\end{itemize}
+
+\subsubsection*{User Story 20 – associata a RF-AS-04: Validazione Impianti}
+\textbf{Approvazione tecnica impianti}
+Come Super Admin, voglio validare gli impianti inseriti dagli utenti, per garantire che solo impianti certificati partecipino al calcolo dell'energia.
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item Lista impianti in stato "In attesa di validazione".
+    \item Verifica dati tecnici e switch stato a "Attivo".
+    \item Notifica all'utente proprietario dell'avvenuta attivazione.
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Implementare l'interfaccia di amministrazione per visualizzare la lista degli impianti in stato "In attesa".
+    \item Creare la vista di dettaglio per ispezionare i dati tecnici e i documenti dell'impianto.
+    \item Sviluppare l'endpoint backend per l'aggiornamento dello stato (Approvato/Rifiutato).
+    \item Implementare un modale per l'inserimento della motivazione in caso di rifiuto.
+    \item Configurare il trigger per l'invio automatico della notifica email all'utente al cambio di stato.
 \end{itemize}
