@@ -16,8 +16,7 @@ import {
     Clock, 
     XCircle, 
     ChevronRight,
-    Paperclip,
-    Hash
+    Paperclip
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
