@@ -213,10 +213,10 @@ export default function HistoryPage() {
                             <div className="flex flex-wrap items-center gap-2 bg-muted/40 p-1.5 rounded-xl border shadow-sm">
                                 <Tabs value={period} onValueChange={handleTabChange} className="h-9">
                                     <TabsList className="h-full bg-transparent p-0 gap-1">
-                                        <TabsTrigger value="week" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Settimana</TabsTrigger>
-                                        <TabsTrigger value="month" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Mese</TabsTrigger>
-                                        <TabsTrigger value="year" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Anno</TabsTrigger>
-                                        <TabsTrigger value="custom" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm gap-1.5">
+                                        <TabsTrigger value="week" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! ring-offset-0! focus:ring-0! focus:outline-none! hover:ring-0! hover:outline-none! hover:border-transparent! data-[state=active]:ring-2! data-[state=active]:ring-black dark:data-[state=active]:ring-primary!">Settimana</TabsTrigger>
+                                        <TabsTrigger value="month" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! ring-offset-0! focus:ring-0! focus:outline-none! hover:ring-0! hover:outline-none! hover:border-transparent! data-[state=active]:ring-2! data-[state=active]:ring-black dark:data-[state=active]:ring-primary!">Mese</TabsTrigger>
+                                        <TabsTrigger value="year" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! ring-offset-0! focus:ring-0! focus:outline-none! hover:ring-0! hover:outline-none! hover:border-transparent! data-[state=active]:ring-2! data-[state=active]:ring-black dark:data-[state=active]:ring-primary!">Anno</TabsTrigger>
+                                        <TabsTrigger value="custom" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm data-[state=active]:bg-background! ring-offset-0! focus:ring-0! focus:outline-none! hover:ring-0! hover:outline-none! hover:border-transparent! data-[state=active]:ring-2! data-[state=active]:ring-black dark:data-[state=active]:ring-primary! gap-1.5">
                                             Custom
                                             {!isPro && <Lock className="h-3 w-3 text-amber-500 opacity-70" />}
                                         </TabsTrigger>

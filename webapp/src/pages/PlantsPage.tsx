@@ -218,7 +218,7 @@ export default function PlantsPage() {
                          <h3 className="text-lg font-semibold">Lista Dispositivi</h3>
                          
                          {/* BOTTONE UNICO PER NUOVO IMPIANTO */}
-                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9 text-foreground! bg-card!">
+                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9 hover:border-yellow-500! text-foreground! bg-card!">
                             <Plus className="h-4 w-4" /> Nuovo Impianto
                          </Button>
                     </div>
@@ -235,7 +235,20 @@ export default function PlantsPage() {
 
             {/* MODALE DIALOG */}
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-                <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:text-primary! 
+    [&>button]:bg-background!
+    [&>button]:hover:text-red-700!
+    [&>button]:hover:border-transparent!
+    [&>button]:text-frontground!
+    [&>button]:hover:outline-none!
+    [&>button]:transition-none!
+    [&>button]:active:border-transparent!
+    [&>button]:border-none!
+    [&>button]:focus:ring-0! 
+    [&>button]:focus:ring-offset-0! 
+    [&>button]:focus:outline-none! 
+    [&>button]:focus-visible:ring-0!
+    ">
                     <DialogHeader>
                         <DialogTitle>Registra Nuovo Impianto</DialogTitle>
                         <DialogDescription>Compila i dati tecnici richiesti per la connessione alla rete.</DialogDescription>
@@ -253,7 +266,7 @@ export default function PlantsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="tipo">Tipologia Fonte</Label>
                                     <Select value={formData.tipo} onValueChange={v => setFormData({...formData, tipo: v})}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="bg-background! hover:border-transparent!"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="fotovoltaico">Fotovoltaico (Solare)</SelectItem>
                                             <SelectItem value="eolico">Eolico</SelectItem>
@@ -291,7 +304,7 @@ export default function PlantsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="tensione">Tensione Lavoro</Label>
                                     <Select value={formData.tensione} onValueChange={v => setFormData({...formData, tensione: v})}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="bg-background! hover:border-transparent!"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="230">Monofase (230V)</SelectItem>
                                             <SelectItem value="400">Trifase (400V)</SelectItem>
@@ -301,7 +314,7 @@ export default function PlantsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="convenzione">Convenzione GSE</Label>
                                     <Select value={formData.convenzione} onValueChange={v => setFormData({...formData, convenzione: v})}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="bg-background! hover:border-transparent!"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="SSP">Scambio sul Posto (SSP)</SelectItem>
                                             <SelectItem value="RID">Ritiro Dedicato (RID)</SelectItem>
@@ -348,8 +361,8 @@ export default function PlantsPage() {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsAddOpen(false)}>Annulla</Button>
-                        <Button onClick={handleNewImpianto} disabled={createPlantMutation.isPending}>
+                        <Button variant="outline" className="border-2! hover:border-primary!" onClick={() => setIsAddOpen(false)}>Annulla</Button>
+                        <Button variant="outline" className="border-2!  hover:border-yellow-500!" onClick={handleNewImpianto} disabled={createPlantMutation.isPending}>
                             {createPlantMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Salva Impianto
                         </Button>

@@ -95,7 +95,7 @@ export function UserProfileForm() {
     };
 
     return (
-        <Card className="border-border shadow-sm">
+        <Card className="border-yellow-500! border-2! shadow-sm">
             <CardHeader>
                 <CardTitle>Dettagli Anagrafici</CardTitle>
                 <CardDescription>Informazioni utilizzate per la fatturazione e le comunicazioni CER.</CardDescription>
@@ -174,7 +174,7 @@ export function UserProfileForm() {
                     </div>
 
                     <div className="flex justify-end pt-4 border-t">
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" className="bg-yellow-500!"disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             <Save className="mr-2 h-4 w-4" /> Salva Anagrafica
                         </Button>
