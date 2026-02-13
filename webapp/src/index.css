@@ -95,7 +95,6 @@ a:hover {
 .dark a:hover {
   /* HOVER (Dark Mode): Diventano BIANCHI per evidenziarsi ("accendersi") */
   color: hsl(var(--foreground));
-  text-shadow: 0 0 8px rgba(74, 222, 128, 0.5); /* Effetto glow opzionale */
 }
 
 body {

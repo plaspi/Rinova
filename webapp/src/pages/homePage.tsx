@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Lock, Sparkles, Pencil, Leaf, Zap, Plug, BatteryLow, BatteryMedium, BatteryFull, CheckCircle2, Wrench, XCircle } from "lucide-react"; 
+import { Loader2, Lock, Sparkles, Pencil, Leaf, Zap, Plug, BatteryLow, BatteryMedium, BatteryFull, CheckCircle2, Wrench, XCircle, LayoutDashboard } from "lucide-react"; 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
@@ -124,16 +124,19 @@ export default function HomePage() {
 
             <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-4xl! font-bold tracking-tight">Panoramica Energetica</h1>
-                    <Button 
+                    <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                        <LayoutDashboard className="h-8 w-8 text-primary" />
+                        Panoramica Energetica
+                    </h1>
+                </div>
+                <Button 
                         variant={isPro ? "outline" : "secondary"}
                         onClick={handleEditWidgets}
                         className="gap-2 shadow-sm bg-card!"
                     >
                         {!isPro ? <Lock className="h-4 w-4 text-amber-600 opacity-80" /> : <Pencil className="h-4 w-4" />}
                         Modifica Widget
-                    </Button>
-                </div>
+                </Button>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     <HomeKpiCard 
@@ -179,10 +182,10 @@ export default function HomePage() {
 
                 <div className="grid gap-6 md:grid-cols-7 lg:h-100">
                     <div className="col-span-4 rounded-xl border bg-card p-6 shadow-sm flex flex-col">
-                        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                        <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
                             Andamento (Ultime 4 Ore)
                             {isLoadingChart && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
-                        </h3>
+                        </h2>
                         
                         <div className="flex-1 min-h-0 w-full">
                             {chartData.length > 0 ? (
@@ -199,8 +202,8 @@ export default function HomePage() {
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                                        <XAxis dataKey="ora" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                        <XAxis dataKey="ora" stroke="hsl(var(foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="hsl(var(foreground))" fontSize={12} tickLine={false} axisLine={false} />
                                         <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
                                         <Legend wrapperStyle={{ paddingTop: '10px' }} />
                                         <Area type="monotone" dataKey="produzione" name="Produzione" stroke="#22c55e" fillOpacity={1} fill="url(#colorProd)" strokeWidth={2} />
@@ -215,7 +218,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="col-span-3 rounded-xl border bg-card p-0 shadow-sm flex flex-col overflow-hidden">
+                    <div className="col-span-3 md:flex rounded-xl border bg-card p-0 shadow-sm flex flex-col overflow-hidden">
                         <div className="p-6 pb-2">
                              <h3 className="font-semibold text-lg flex items-center justify-between">
                                 Stato Impianti

@@ -25,9 +25,29 @@ async def get_production_history(
 ):
     try:
         db = get_db()
+        user_id = user.get('sub')
+
+        # --- 1. RESOVLE PLANT IDs ---
+        target_plant_ids = []
+        
+        if plantId == 'summary':
+            # Fetch ALL user's plants
+            user_plants = await db.table("impianti").select("id").eq("user_id", user_id).execute()
+            if not user_plants.data:
+                # User has no plants at all
+                return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
+            target_plant_ids = [p['id'] for p in user_plants.data]
+        else:
+            # Verify specific plant ownership
+            check = await db.table("impianti").select("id").eq("id", plantId).eq("user_id", user_id).execute()
+            if not check.data:
+                # Plant doesn't exist or doesn't belong to user
+                return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
+            target_plant_ids = [plantId]
             
         now = datetime.now()
-        
+
+        # --- 2. DETERMINE TABLE & FREQUENCY ---
         if period == 'day':
             start_date = now - timedelta(hours=24)
             table_name, col_time, col_val, resample_freq = "mv_analytics_oraria", "ora", "produzione_kwh", '1h'
@@ -58,19 +78,26 @@ async def get_production_history(
         else:
             raise BadRequestException(detail="Periodo non valido")
 
-        res = await db.table(table_name).select(f"{col_time}, {col_val}").eq("impianto_id", plantId).gte(col_time, start_date.isoformat()).lte(col_time, now.isoformat()).order(col_time).execute()
+        # --- 3. FETCH DATA ---
+        res = await db.table(table_name).select(f"{col_time}, {col_val}").in_("impianto_id", target_plant_ids).gte(col_time, start_date.isoformat()).lte(col_time, now.isoformat()).order(col_time).execute()
         if not res.data: 
              return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
 
+        # --- 4. PROCESS DATA AND AGGREGATE ---
         df = pd.DataFrame(res.data)
         df.rename(columns={col_time: 'timestamp', col_val: 'value'}, inplace=True)
-        df = df[['timestamp', 'value']]
         df['timestamp'] = pd.to_datetime(df['timestamp'])
+        
+        #Remove timezone if present
         if df['timestamp'].dt.tz is not None:
             df['timestamp'] = df['timestamp'].dt.tz_localize(None)
             
         df['timestamp'] = df['timestamp'].dt.normalize()
         
+        #Group by timestamp
+        df = df.groupby('timestamp')['value'].sum().reset_index()
+        
+        #Reindex to fill gaps
         full_idx = pd.date_range(start=start_date, end=now, freq=resample_freq)
         if period != 'day': full_idx = full_idx.normalize()
         
@@ -81,16 +108,19 @@ async def get_production_history(
 
         total_prod = df_resampled['value'].sum()
         max_peak_val = df_resampled['value'].max()
+        #TODO: scale by number of plants and use nominal value to calculate, for now keeping it simple 
         efficiency = (total_prod / (6.0 * ((now - start_date).total_seconds() / 3600 / 24 * 5)) * 100) if total_prod > 0 else 0.0
         if efficiency > 100: efficiency = 99.9
-
+        
+        #Peak time label
         peak_label = "-"
         if total_prod > 0:
             pk_ts = df_resampled.iloc[df_resampled['value'].idxmax()]['timestamp']
             if period == 'day': peak_label = pk_ts.strftime('%H:%M')
             elif period in ['year'] or (period == 'custom' and resample_freq == 'MS'): peak_label = MONTHS_IT.get(pk_ts.month, '-')
             else: peak_label = f"{pk_ts.day} {MONTHS_IT.get(pk_ts.month,'')}"
-
+        
+        #Build chart data
         chart_data = []
         for _, row in df_resampled.iterrows():
             ts = row['timestamp']

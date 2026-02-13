@@ -53,7 +53,7 @@ export type MemberData = {
     pod?: string | null;
 }
 
-// --- SUB-COMPONENTS (INVARIATI) ---
+// --- SUB-COMPONENTS ---
 
 function AnnouncementItem({ item, onClick }: { item: Annuncio, onClick: () => void }) {
     const formatDate = (dateString: string) => {
@@ -439,7 +439,7 @@ export default function CerPage() {
     const isLoading = isUserLoading; // Caricamento principale
 
     return (
-            <main className="flex-1 flex flex-col min-h-screen w-full h-full bg-background animate-in fade-in"> 
+            <main className="flex-1 flex flex-col min-h-screen w-full h-full bg-background animate-in fade-in overflow-y-scroll"> 
                 <NavLayout className="sticky top-0 z-20 h-16 border-b bg-background/80 backdrop-blur-md flex items-center px-6 gap-4 justify-between shrink-0">
                     <div className="flex items-center gap-4">
                         <SidebarTrigger className="bg-card!" />
@@ -458,7 +458,10 @@ export default function CerPage() {
                 <div className="flex-1 p-6 md:p-8 space-y-4">
                     
                     <div className="flex flex-col gap-1">
-                        <h1 className="text-4xl! font-bold tracking-tight">Comunità Energetica</h1>
+                        <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                            <Users className="h-8 w-8 text-primary" />
+                            Comunità Energetica
+                            </h1>
                         <p className="text-muted-foreground">Gestione operativa della CER.</p>
                     </div>
 

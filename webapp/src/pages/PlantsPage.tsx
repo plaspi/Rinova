@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Zap, Activity, BatteryCharging, Loader2, Plus, MapPin } from "lucide-react"
+import { Zap, Activity, BatteryCharging, Loader2, Plus, MapPin, Leaf } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { supabase } from "@/services/supabase_client";
 import { useAuth } from "@/context/authContext";
@@ -166,7 +166,10 @@ export default function PlantsPage() {
                 {/* HEADER - SOLO TESTO, NESSUN BOTTONE QUI */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-4xl! font-bold tracking-tight">Gestione Impianti</h1>
+                        <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                            <Leaf className="h-8 w-8 text-primary" />
+                            Gestione Impianti
+                            </h1>
                         <p className="text-muted-foreground mt-1">
                             Configura i tuoi dispositivi di produzione e accumulo.
                         </p>

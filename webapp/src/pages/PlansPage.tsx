@@ -10,6 +10,7 @@ import { Check, Sparkles, Zap, HelpCircle, X } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export default function PlansPage() {
     const { isPro } = useAuth();
@@ -193,7 +194,9 @@ export default function PlansPage() {
                     {/* FAQ / FOOTER */}
                     <div className="text-center pt-8 text-muted-foreground text-sm">
                         <p>Hai bisogno di un piano personalizzato per una grande CER?</p>
+                        <Link to={"mailto:rionvaenergy-support@gmail.com"}>
                         <Button variant="link" className="text-foreground! bg-accent! h-auto mt-2">Contattaci per soluzioni Enterprise</Button>
+                        </Link>
                     </div>
 
                 </div>

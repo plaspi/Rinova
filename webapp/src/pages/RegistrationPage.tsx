@@ -11,7 +11,7 @@ export default function RegistrationPage() {
       {/* CARD PRINCIPALE */}
       <Card className="
         w-full max-w-5xl 
-        h-full lg:h-auto lg:max-h-[90vh] 
+        h-full lg:h-auto lg:max-h-[90vh] md:max-h-[90vh]
         flex flex-col lg:grid lg:grid-cols-2 
         border-0 lg:border shadow-none lg:shadow-2xl 
         lg:rounded-3xl 

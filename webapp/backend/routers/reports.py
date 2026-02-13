@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timedelta
 import pandas as pd
@@ -8,13 +8,15 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 from backend.services.supabase_client import supabase as sync_db
+from backend.services.auth import get_current_user
 from backend.exceptions import NotFoundException, InternalServerErrorException
 
 router = APIRouter(tags=["Reports"])
 
 @router.get("/api/report/download", summary="Download Report PDF")
-def download_report(period: str, plantId: str, startDate: str = Query(None), endDate: str = Query(None)):
+def download_report(period: str, plantId: str, startDate: str = Query(None), endDate: str = Query(None), user=Depends(get_current_user)):
     try:
+        user_id = user.get('sub')
         now = datetime.now()
         
         if period == 'live':

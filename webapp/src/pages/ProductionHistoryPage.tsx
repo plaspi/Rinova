@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SidebarTrigger } from "@/components/sidebar/sidebarLayout";
 import { NavLayout } from "@/components/nav/navLayout";
 import { ModeToggle } from "@/components/modeToggle";
@@ -11,16 +11,17 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Loader2, Leaf, Zap, Trophy, Activity, TrendingUp, Calendar as CalendarIcon, Download, Sparkles, Lock } from "lucide-react";
+import { Loader2, Leaf, Zap, Trophy, Activity, Calendar as CalendarIcon, Download, Sparkles, Lock, RefreshCcw, WifiOff, Wrench, ChartNoAxesCombined } from "lucide-react";
 import { supabase } from "@/services/supabase_client";
 import { cn } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { it } from "date-fns/locale";
 import { toast } from "sonner";
 import { useAuth } from "@/context/authContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { DateRange } from "react-day-picker";
 import { API_BASE_URL } from "@/services/api_config";
+import { usePlants } from "@/context/plantsContext";
 
 const DAYS_FULL_IT: Record<string, string> = {
     'Lun': 'Lunedì', 'Mar': 'Martedì', 'Mer': 'Mercoledì', 'Gio': 'Giovedì',
@@ -34,13 +35,11 @@ const MONTHS_FULL_IT: Record<string, string> = {
 };
 
 export default function HistoryPage() {
-    // --- LOGICA LOCALSTORAGE PER SELECTED PLANT ---
-    const [selectedPlant, setSelectedPlant] = useState<string>(() => {
-        return localStorage.getItem("last_selected_plant") || "";
-    });
+    const { plants, selectedPlant, selectPlant, getPlantStatus, refreshPlants, isLoading: plantsLoading } = usePlants();
     
     const [period, setPeriod] = useState("week");
     const [pdfLoading, setPdfLoading] = useState(false);
+    const [isRetrying, setIsRetrying] = useState(false);
     
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: subDays(new Date(), 30),
@@ -49,37 +48,41 @@ export default function HistoryPage() {
 
     const { isPro } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    // --- QUERY IMPIANTI ---
-    const { data: plants = [] } = useQuery({
-        queryKey: ['plants-list'],
-        queryFn: async () => {
-            const { data } = await supabase.from('impianti').select('id, nome');
-            return data || [];
+    // --- 1. LOGICA STATO (Immediata da Context) ---
+    const currentStatus = selectedPlant ? getPlantStatus(selectedPlant) : 'attivo';
+    const isOffline = currentStatus === 'offline';
+    const isMaintenance = currentStatus === 'manutenzione';
+    const isBlocked = isOffline || isMaintenance;
+
+    // --- 2. SOFT RETRY ---
+    const handleRetryConnection = async () => {
+        setIsRetrying(true);
+        try {
+            // A. Aggiorna lo stato nel Context (DB)
+            await refreshPlants();
+            
+            // B. Se dopo il refresh è attivo, invalida la query dei dati
+            // Nota: React Query lo farà in automatico perché 'isBlocked' cambierà,
+            // ma l'invalidate forza il refetch se lo stato era cached.
+            await queryClient.invalidateQueries({ queryKey: ['production-history'] });
+            
+            toast.success("Stato impianto aggiornato", {id: "status-refreshed"});
+        } catch (e) {
+            toast.error("Impossibile connettersi all'impianto");
+        } finally {
+            setIsRetrying(false);
         }
-    });
-
-    // --- SINCRONIZZAZIONE IMPIANTO E LOCALSTORAGE ---
-    useEffect(() => {
-        if (plants.length > 0) {
-            const exists = plants.find(p => p.id === selectedPlant);
-            if (!selectedPlant || !exists) {
-                const firstId = plants[0].id;
-                setSelectedPlant(firstId);
-                localStorage.setItem("last_selected_plant", firstId);
-            }
-        }
-    }, [plants, selectedPlant]);
-
-    const handlePlantChange = (id: string) => {
-        setSelectedPlant(id);
-        localStorage.setItem("last_selected_plant", id);
     };
 
-    // --- QUERY STORICO DATI ---
-    const { data: historyData, isLoading: loading } = useQuery({
+    // --- 3. DATA QUERY (Bloccata se status != attivo) ---
+    const { data: historyData, isLoading: historyLoading } = useQuery({
         queryKey: ['production-history', selectedPlant, period, dateRange],
         queryFn: async () => {
+            // Doppia sicurezza: se bloccato, non chiamare API
+            if (isBlocked) return null;
+
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
@@ -95,7 +98,8 @@ export default function HistoryPage() {
             if (!res.ok) throw new Error("Errore nel caricamento dello storico");
             return res.json();
         },
-        enabled: !!selectedPlant && selectedPlant !== "" && (period !== 'custom' || (!!dateRange?.from && !!dateRange?.to))
+        // IMPORTANT: La query è disabilitata se l'impianto è bloccato
+        enabled: !!selectedPlant && selectedPlant !== "" && !isBlocked && (period !== 'custom' || (!!dateRange?.from && !!dateRange?.to))
     });
 
     const chartData = historyData?.chart || [];
@@ -107,10 +111,7 @@ export default function HistoryPage() {
                 id: "pro-lock-custom",
                 description: "Per usufruire dell'analisi personalizzata esegui l'upgrade al piano Pro.",
                 icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
-                action: {
-                    label: "Vedi Piani",
-                    onClick: () => navigate("/subscription")
-                },
+                action: { label: "Vedi Piani", onClick: () => navigate("/subscription") },
             });
             return;
         }
@@ -123,40 +124,38 @@ export default function HistoryPage() {
                 id: "pro-lock-pdf",
                 description: "Sblocca la reportistica PDF illimitata",
                 icon: <Sparkles className="h-5 w-5 text-amber-500 fill-amber-500/20" />,
-                action: {
-                    label: "Upgrade",
-                    onClick: () => navigate("/subscription")
-                },
+                action: { label: "Upgrade", onClick: () => navigate("/subscription") },
             });
             return;
         }
 
         setPdfLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        if (!token) { setPdfLoading(false); return; }
-        
-        let url = `${API_BASE_URL}/api/report/download?plantId=${selectedPlant}&period=${period}`;
-        if (period === 'custom' && dateRange?.from && dateRange?.to) {
-             const startStr = format(dateRange.from, 'yyyy-MM-dd');
-             const endStr = format(dateRange.to, 'yyyy-MM-dd');
-             url += `&startDate=${startStr}&endDate=${endStr}`;
-        }
-        
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            if (!token) throw new Error("No token");
+            
+            let url = `${API_BASE_URL}/api/report/download?plantId=${selectedPlant}&period=${period}`;
+            if (period === 'custom' && dateRange?.from && dateRange?.to) {
+                 const startStr = format(dateRange.from, 'yyyy-MM-dd');
+                 const endStr = format(dateRange.to, 'yyyy-MM-dd');
+                 url += `&startDate=${startStr}&endDate=${endStr}`;
+            }
+            
             const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
             if(res.ok) {
                 const blob = await res.blob();
                 const downloadUrl = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = downloadUrl;
-                a.download = `Report_Rinova_${period}_${format(new Date(), 'yyyyMMdd')}.pdf`;
+                a.download = `Report_${period}_${format(new Date(), 'yyyyMMdd')}.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
             }
         } catch (e) {
-            console.error("Errore download:", e);
+            console.error(e);
+            toast.error("Errore download PDF");
         } finally {
             setPdfLoading(false);
         }
@@ -171,11 +170,11 @@ export default function HistoryPage() {
 
     return (
         <div className="flex flex-col h-full w-full bg-background">
-            
             <NavLayout className="sticky top-0 z-20 h-16 border-b bg-background/80 backdrop-blur-md flex items-center px-6 gap-4 justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger className="bg-card!" />
-                    <Breadcrumb className="hidden md:flex">
+                    <div className="h-6 w-px bg-border/60 mx-2 hidden md:block" />
+                    <Breadcrumb >
                         <BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/home">Rinova</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator />
@@ -184,86 +183,130 @@ export default function HistoryPage() {
                     </Breadcrumb>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Select value={selectedPlant} onValueChange={handlePlantChange}>
-                        <SelectTrigger className="w-50 h-9 bg-card! shadow-sm border-input">
-                            <SelectValue placeholder="Seleziona Impianto" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {plants.map((p: any) => (
-                                <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
                     <ModeToggle />
                 </div>
             </NavLayout>
 
             <div className="flex-1 p-6 space-y-8 overflow-y-auto">
-                
+                {/* Header & Controls */}
                 <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                     <div>
                         <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2 mb-1">
-                            <TrendingUp className="h-8 w-8 text-primary" />
+                            <ChartNoAxesCombined className="h-8 w-8 text-primary" />
                             Analisi Produzione
                         </h1>
                         <p className="text-muted-foreground">Monitoraggio performance e reportistica avanzata.</p>
                     </div>
+                    <Select value={selectedPlant || ""} onValueChange={selectPlant} disabled={plantsLoading}>
+                        <SelectTrigger className="w-50 h-9 bg-card! shadow-sm border-input">
+                            <SelectValue placeholder={plantsLoading ? "Caricamento..." : "Seleziona Impianto"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {plants.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
-                        <div className="flex flex-wrap items-center gap-2 bg-muted/40 p-1.5 rounded-xl border shadow-sm">
-                            <Tabs value={period} onValueChange={handleTabChange} className="h-9">
-                                <TabsList className="h-full bg-transparent p-0 gap-1">
-                                    <TabsTrigger value="week" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Settimana</TabsTrigger>
-                                    <TabsTrigger value="month" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Mese</TabsTrigger>
-                                    <TabsTrigger value="year" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Anno</TabsTrigger>
-                                    <TabsTrigger value="custom" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm gap-1.5">
-                                        Custom
-                                        {!isPro && <Lock className="h-3 w-3 text-amber-500 opacity-70" />}
-                                    </TabsTrigger>
-                                </TabsList>
-                            </Tabs>
+                    {!isBlocked && !plantsLoading && (
+                        <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
+                            <div className="flex flex-wrap items-center gap-2 bg-muted/40 p-1.5 rounded-xl border shadow-sm">
+                                <Tabs value={period} onValueChange={handleTabChange} className="h-9">
+                                    <TabsList className="h-full bg-transparent p-0 gap-1">
+                                        <TabsTrigger value="week" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Settimana</TabsTrigger>
+                                        <TabsTrigger value="month" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Mese</TabsTrigger>
+                                        <TabsTrigger value="year" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm">Anno</TabsTrigger>
+                                        <TabsTrigger value="custom" className="h-8 px-3 bg-card! rounded-lg data-[state=active]:bg-background! data-[state=active]:shadow-sm gap-1.5">
+                                            Custom
+                                            {!isPro && <Lock className="h-3 w-3 text-amber-500 opacity-70" />}
+                                        </TabsTrigger>
+                                    </TabsList>
+                                </Tabs>
 
-                            {period === 'custom' && (
-                                <>
-                                    <div className="h-6 w-px bg-border mx-1 hidden sm:block"></div>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline" size="sm" className="h-8 border-dashed border-input bg-card!">
-                                                <CalendarIcon className="mr-2 h-3.5 w-3.5 opacity-70" />
-                                                {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd MMM", {locale:it})} - {format(dateRange.to, "dd MMM", {locale:it})}</> : format(dateRange.from, "dd MMM", {locale:it})) : "Date"}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="end">
-                                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={it} />
-                                        </PopoverContent>
-                                    </Popover>
-                                </>
-                            )}
+                                {period === 'custom' && (
+                                    <>
+                                        <div className="h-6 w-px bg-border mx-1 hidden sm:block"></div>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="outline" size="sm" className="h-8 border-dashed border-input bg-card!">
+                                                    <CalendarIcon className="mr-2 h-3.5 w-3.5 opacity-70" />
+                                                    {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd MMM", {locale:it})} - {format(dateRange.to, "dd MMM", {locale:it})}</> : format(dateRange.from, "dd MMM", {locale:it})) : "Date"}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="end">
+                                                <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={it} />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </>
+                                )}
+                            </div>
+
+                            <Button 
+                                variant="outline" 
+                                onClick={handleDownloadPdf} 
+                                disabled={pdfLoading || historyLoading}
+                                className="h-12 sm:h-12 px-4 shadow-sm bg-card! border-primary/20 hover:bg-primary/5 hover:text-primary transition-all gap-2 min-w-35"
+                            >
+                                {pdfLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <>
+                                        <Download className="h-4 w-4" />
+                                        <span>Scarica Report</span>
+                                        {!isPro && <Lock className="h-3.5 w-3.5 text-amber-500 ml-1" />}
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                {/* --- MAIN CONTENT AREA --- */}
+                {plantsLoading ? (
+                    <div className="h-100 w-full flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in-95">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary/50" />
+                        <p className="text-muted-foreground font-medium">Sincronizzazione dati...</p>
+                    </div>
+                ) : isBlocked ? (
+                    // --- BLOCKED UI (Updated Graphics) ---
+                    <div className="flex flex-col items-center justify-center min-h-112.5 border-2 border-dashed border-muted rounded-2xl bg-card/50 gap-6 animate-in fade-in zoom-in-95 p-8">
+                        <div className={cn(
+                            "flex items-center justify-center w-24 h-24 rounded-3xl shadow-lg ring-1 ring-inset",
+                            isOffline 
+                                ? "bg-red-50 text-red-500 ring-red-100 dark:bg-red-900/10 dark:ring-red-900/20" 
+                                : "bg-amber-50 text-amber-500 ring-amber-100 dark:bg-amber-900/10 dark:ring-amber-900/20"
+                        )}>
+                            {isOffline ? <WifiOff className="w-10 h-10" /> : <Wrench className="w-10 h-10" />}
+                        </div>
+                        
+                        <div className="text-center space-y-2 max-w-md">
+                            <h3 className="text-2xl font-bold tracking-tight">
+                                {isOffline ? "Segnale Assente" : "Manutenzione in corso"}
+                            </h3>
+                            <p className="text-muted-foreground text-lg">
+                                {isOffline 
+                                    ? "Non riusciamo a comunicare con l'inverter. Controlla la connessione internet del dispositivo." 
+                                    : "L'impianto è momentaneamente disattivato per interventi tecnici programmati."}
+                            </p>
                         </div>
 
                         <Button 
-                            variant="outline" 
-                            onClick={handleDownloadPdf} 
-                            disabled={pdfLoading || loading}
-                            className="h-12 sm:h-12 px-4 shadow-sm bg-card! border-primary/20 hover:bg-primary/5 hover:text-primary transition-all gap-2 min-w-35"
-                        >
-                            {pdfLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <>
-                                    <Download className="h-4 w-4" />
-                                    <span>Scarica Report</span>
-                                    {!isPro && <Lock className="h-3.5 w-3.5 text-amber-500 ml-1" />}
-                                </>
+                            size="lg"
+                            className={cn(
+                                "gap-2 shadow-md transition-all hover:scale-105",
+                                isOffline ? "bg-red-500! hover:bg-red-600! text-white!" : "bg-amber-500! hover:bg-amber-600! text-white!"
                             )}
+                            onClick={handleRetryConnection}
+                            disabled={isRetrying}
+                        >
+                            {isRetrying ? <Loader2 className="h-5 w-5 animate-spin" /> : <RefreshCcw className="h-5 w-5" />}
+                            {isRetrying ? "Controllo..." : "Riprova connessione"}
                         </Button>
                     </div>
-                </div>
-
-                {loading && chartData.length === 0 ? (
+                ) : historyLoading && chartData.length === 0 ? (
                      <div className="h-125 w-full flex flex-col items-center justify-center gap-4 text-muted-foreground bg-muted/5 border border-dashed rounded-xl animate-pulse">
                         <Loader2 className="h-10 w-10 animate-spin text-primary/50" />
-                        <p className="text-sm font-medium">Aggiornamento analisi...</p>
+                        <p className="text-sm font-medium">Analisi dati in corso...</p>
                     </div>
                 ) : (
                     <>
@@ -316,6 +359,7 @@ export default function HistoryPage() {
     );
 }
 
+// Helpers (Tooltip, KPI) same as before...
 const CustomTooltip = ({ active, payload, label, period }: any) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload;
