@@ -75,6 +75,10 @@
   --input-bg: 161 94% 96%; /* Chiaro per Light Mode */
   --green-500: 142 71% 45%;    /* Il verde brillante */
   --emerald-900: 161 94% 13%;   /* Il verde scuro profondo */
+
+  --input-bg: 161 94% 96%; /* Chiaro per Light Mode */
+  --green-500: 142 71% 45%;    /* Il verde brillante */
+  --emerald-900: 161 94% 13%;   /* Il verde scuro profondo */
 }
 
 /* --- STILI ELEMENTI BASE --- */
@@ -99,7 +103,6 @@ a:hover {
 .dark a:hover {
   /* HOVER (Dark Mode): Diventano BIANCHI per evidenziarsi ("accendersi") */
   color: hsl(var(--foreground));
-  text-shadow: 0 0 8px rgba(74, 222, 128, 0.5); /* Effetto glow opzionale */
 }
 
 body {
@@ -231,6 +234,8 @@ button:focus-visible {
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
+  --input-bg: 161 94% 13%; /* Scuro (Emerald 900) per Dark Mode */
+
   --input-bg: 161 94% 13%; /* Scuro (Emerald 900) per Dark Mode */
 
   /* BRAND SOFT (Dark Mode) */

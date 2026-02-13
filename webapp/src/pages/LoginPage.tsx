@@ -11,7 +11,7 @@ export default function LoginPage() {
           {/* MAIN CARD */}
           <Card className="
             w-full max-w-5xl 
-            h-full lg:h-auto lg:max-h-[90vh] 
+            h-full lg:h-auto lg:max-h-[90vh] md:max-h-[90vh]
             flex flex-col lg:grid lg:grid-cols-2 
             border-0 lg:border shadow-none lg:shadow-2xl 
             lg:rounded-3xl 
@@ -24,7 +24,7 @@ export default function LoginPage() {
             <div className="flex-1 flex flex-col p-6 lg:p-12 overflow-y-auto scrollbar-hide relative pb-6">
               
               <div className="flex items-center gap-2 mb-4 shrink-0">
-                <div className="bg-brand-gradient! p-2 rounded-lg shadow-sm">
+                <div className="bg-brand-gradient p-2 rounded-lg shadow-sm">
                    <RinovaLogo className="text-background w-8 h-8" />
                 </div>
                 <span className="text-2xl font-bold text-foreground tracking-tight">Rinova</span>

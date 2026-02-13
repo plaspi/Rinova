@@ -3,10 +3,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { 
-  LayoutDashboard, Zap, Building2, Leaf, 
+  LayoutDashboard, Zap, Leaf, 
   PanelLeft, LogOut, ChevronsUpDown, 
   BadgeCheck, Bell, Settings, Sparkles,
-  LifeBuoy, ChartNoAxesCombined,
+  LifeBuoy, ChartNoAxesCombined, Users,
 } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -133,7 +133,7 @@ function SidebarContent() {
     { title: "Dashboard", href: "/home", icon: LayoutDashboard },
     { title: "Produzione Live", href: "/production", icon: Zap },
     { title: "Storico Produzione", href: "/recap", icon: ChartNoAxesCombined },
-    { title: "Gestione CER", href: "/cer", icon: Building2 },
+    { title: "Gestione CER", href: "/cer", icon: Users },
     { title: "Impianti", href: "/plants", icon: Leaf },
   ];
 
@@ -160,13 +160,13 @@ function SidebarContent() {
       <div className="flex h-24 items-center shrink-0">
         <Link to="/home" className="flex items-center w-full h-full group hover:bg-muted/10 transition-colors">
           <div className="flex items-center justify-center w-20 min-w-20 h-full shrink-0">
-            <RinovaLogo></RinovaLogo>
+            <RinovaLogo className="text-primary"/>
           </div>
           <div className={cn(
             "flex flex-col overflow-hidden transition-all duration-500 ease-in-out whitespace-nowrap origin-left pl-2",
             expanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5 w-0"
           )}>
-            <span className="font-bold text-2xl tracking-tight leading-none">Rinova</span>
+            <span className="font-bold text-2xl tracking-tight leading-none text-primary">Rinova</span>
             <span className={cn("text-[10px] uppercase font-bold tracking-wider mt-1.5! px-3.5! py-0.5! rounded-full w-fit border", sidebarUser.roleStyle.color)}>
               {sidebarUser.roleStyle.label}
             </span>
@@ -188,8 +188,8 @@ function SidebarContent() {
                 "group flex items-center relative transition-all duration-300",
                 "h-14 w-full", 
                 isActive 
-                  ? "bg-primary/10 text-primary" 
-                  : "text-muted-foreground hover:bg-muted/10 hover:text-foreground", 
+                  ? "bg-primary/10" 
+                  : "hover:bg-muted/10", 
               )}
             >
                <div className={cn(
@@ -197,11 +197,12 @@ function SidebarContent() {
                  isActive ? "opacity-100" : "opacity-0"
                )} />
               <div className="flex items-center justify-center w-20 min-w-20 h-full shrink-0">
-                <item.icon className={cn("h-6 w-6 transition-transform duration-300", !isActive && "group-hover:scale-110", isActive && "text-primary drop-shadow-sm")} />
+                <item.icon className={cn("h-6 w-6 transition-transform duration-300 text-primary", !isActive && "group-hover:scale-110", isActive && "text-primary drop-shadow-sm")} />
               </div>
               <span className={cn(
                   "font-medium text-base whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out origin-left",
-                  expanded ? "opacity-100 translate-x-0 pr-4" : "opacity-0 -translate-x-5 w-0"
+                  expanded ? "opacity-100 translate-x-0 pr-4" : "opacity-0 -translate-x-5 w-0",
+                  isActive ? "text-primary" : "text-foreground"
               )}>
                 {item.title}
               </span>
@@ -274,25 +275,24 @@ function SidebarContent() {
               
               <DropdownMenuSeparator className="my-1" />
 
-              <DropdownMenuItem asChild className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" >
-                  <Link to="/user-area">
+              <DropdownMenuItem className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" onClick={()=> navigate("/user-area")}>
                     <BadgeCheck className="size-4" />
                     Account
-                  </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" onClick={()=> navigate("/settings?tab=notifiche")}>
-                  <Bell className="size-4" />
-                  Notifiche
-              </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" onClick={()=> navigate("/settings")}>
                   <Settings className="size-4" />
                   Impostazioni
               </DropdownMenuItem>
-
+              
+              <DropdownMenuItem className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md" onClick={()=> navigate("/settings?tab=notifiche")}>
+                  <Bell className="size-4" />
+                  Notifiche
+              </DropdownMenuItem>
+              
               <DropdownMenuItem 
                     className="gap-2 py-1.5 px-2 cursor-pointer focus:bg-primary/10 focus:text-primary rounded-md"
-                    onClick={() => navigate("/user-area/support")}
+                    onClick={() => navigate("/support")}
                 >
                     <LifeBuoy className="size-4" />
                     Supporto
@@ -307,7 +307,7 @@ function SidebarContent() {
                 await signOut();
                 navigate("/login");
               }}
-              className="gap-2 py-1.5 px-2 text-red-700 focus:text-red-700 focus:bg-red-400 cursor-pointer font-medium rounded-md"
+              className="gap-2 py-1.5 px-2 text-red-700 focus:text-red-700 focus:bg-red-300 cursor-pointer font-medium rounded-md"
             >
               <LogOut className="size-4" />
               Log out

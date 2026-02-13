@@ -6,17 +6,15 @@ PLANT_B_ID = "00000000-0000-0000-0000-000000000002"
 
 def test_dashboard_plants_empty(client, fake_db):
     async_db, _ = fake_db
-    # With reset_db_state, this starts empty
     r = client.get("/api/dashboard/plants")
     assert r.status_code == 200
-    # Should now be empty, not contain "Impianto Test Tetto"
     assert r.json() == []
 
 def test_dashboard_plants_some(client, fake_db):
     async_db, _ = fake_db
     async_db.datasets["impianti"] = [
-        {"id": PLANT_A_ID, "nome": "Impianto A", "status": "attivo"},
-        {"id": PLANT_B_ID, "nome": "Impianto B", "status": "offline"},
+        {"id": PLANT_A_ID, "nome": "Impianto A", "status": "attivo", "user_id": "user-1"},
+        {"id": PLANT_B_ID, "nome": "Impianto B", "status": "offline", "user_id": "user-1"},
     ]
     r = client.get("/api/dashboard/plants")
     assert r.status_code == 200
@@ -38,7 +36,7 @@ def test_dashboard_live_with_data(client, fake_db):
     start = now - timedelta(hours=1)
 
     async_db.datasets["impianti"] = [
-        {"id": PLANT_A_ID, "nome": "Impianto A", "status": "attivo"},
+        {"id": PLANT_A_ID, "nome": "Impianto A", "status": "attivo", "user_id": "user-1"},
     ]
     async_db.datasets["misurazioni"] = [
         {"impianto_id": PLANT_A_ID, "timestamp": start.isoformat(), "produzione_kw": 1.2},

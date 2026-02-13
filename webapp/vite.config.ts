@@ -47,7 +47,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         cleanupOutdatedCaches: true,
-        navigateFallback: 'index.html', //fondamentale per SPA
+        navigateFallback: 'index.html',
       }
     })
   ],

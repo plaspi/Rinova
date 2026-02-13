@@ -5,6 +5,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { UserAvatarCard } from "@/components/user-area/userAvatarCard";
 import { UserProfileForm } from "@/components/user-area/userProfileForm";
 import { UserPasswordForm } from "@/components/user-area/userPasswordForm";
+import { UserCog2 } from "lucide-react";
 
 export default function UserAreaPage() {
     return (
@@ -27,7 +28,10 @@ export default function UserAreaPage() {
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 animate-in fade-in zoom-in-95 duration-300">
                         <div className="max-w-6xl mx-auto space-y-8">
                             <div>
-                                <h1 className="text-3xl font-bold tracking-tight">Impostazioni Profilo</h1>
+                                <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                                    <UserCog2 className="h-8 w-8 text-primary" />
+                                    Impostazioni Profilo
+                                </h1>
                                 <p className="text-muted-foreground mt-1">Gestisci le tue informazioni personali e la sicurezza dell'account.</p>
                             </div>
 

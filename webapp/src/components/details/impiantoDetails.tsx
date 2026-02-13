@@ -60,12 +60,12 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
 
             <button
                 className="p-2 rounded-full bg-background! text-foreground transition-colors hover:border-transparent! transition-none!
-    active:border-transparent!
-    border-none!
-    focus:ring-0! 
-    focus:ring-offset-0! 
-    focus:outline-none! 
-    focus-visible:ring-0! hover:text-red-700 shrink-0 ml-2"
+                    active:border-transparent!
+                    border-none!
+                    focus:ring-0! 
+                    focus:ring-offset-0! 
+                    focus:outline-none! 
+                    focus-visible:ring-0! hover:text-red-700 shrink-0 ml-2"
                 onClick={onClose}
             >
                 <X className="h-6 w-6" />
@@ -131,9 +131,6 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
         <div className="bg-muted/20 border-t p-6 flex justify-end gap-3 rounded-b-2xl shrink-0 mt-auto">
             <Button variant="outline" className="border-2! hover:border-primary!" onClick={onClose}>
                 Chiudi
-            </Button>
-            <Button variant="outline" className="border-2! hover:border-yellow-500!"onClick={() => alert("Funzione modifica non ancora attiva")}>
-                Modifica Dati
             </Button>
         </div>
 

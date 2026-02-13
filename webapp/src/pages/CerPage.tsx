@@ -53,7 +53,7 @@ export type MemberData = {
     pod?: string | null;
 }
 
-// --- SUB-COMPONENTS (INVARIATI) ---
+// --- SUB-COMPONENTS ---
 
 function AnnouncementItem({ item, onClick }: { item: Annuncio, onClick: () => void }) {
     const formatDate = (dateString: string) => {
@@ -439,7 +439,7 @@ export default function CerPage() {
     const isLoading = isUserLoading; // Caricamento principale
 
     return (
-            <main className="flex-1 flex flex-col min-h-screen w-full h-full bg-background animate-in fade-in"> 
+            <main className="flex-1 flex flex-col min-h-screen w-full h-full bg-background animate-in fade-in overflow-y-scroll"> 
                 <NavLayout className="sticky top-0 z-20 h-16 border-b bg-background/80 backdrop-blur-md flex items-center px-6 gap-4 justify-between shrink-0">
                     <div className="flex items-center gap-4">
                         <SidebarTrigger className="bg-card!" />
@@ -458,7 +458,10 @@ export default function CerPage() {
                 <div className="flex-1 p-6 md:p-8 space-y-4">
                     
                     <div className="flex flex-col gap-1">
-                        <h1 className="text-4xl! font-bold tracking-tight">Comunità Energetica</h1>
+                        <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                            <Users className="h-8 w-8 text-primary" />
+                            Comunità Energetica
+                            </h1>
                         <p className="text-muted-foreground">Gestione operativa della CER.</p>
                     </div>
 
@@ -477,13 +480,9 @@ export default function CerPage() {
                                     <CardTitle className="text-2xl">Non fai ancora parte di una CER</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid md:grid-cols-2 gap-6 p-8 pt-2">
-                                     <Button className="w-full h-auto bg-brand-gradient! text-background  py-4 flex flex-col gap-2 hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" onClick={() => toast.info("Prossimamente!")}>
+                                     <Button className="w-full h-auto py-4 flex flex-col gap-2 bg-brand-gradient! text-background! hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" variant="outline" onClick={() => toast.info("Prossimamente!")}>
                                         <Search className="h-6 w-6" />
                                         <span>Trova CER</span>
-                                    </Button>
-                                    <Button className="w-full h-auto bg-brand-gradient! text-background  py-4 flex flex-col gap-2 hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" onClick={() => toast.info("Prossimamente!")}>
-                                        <PlusCircle className="h-6 w-6" />
-                                        <span>Crea CER</span>
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -589,17 +588,17 @@ export default function CerPage() {
                 {/* MODAL CREAZIONE ANNUNCIO */}
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogContent className="sm:max-w-125 p-6 bg-card border-border [&>button]:bg-background!
-    [&>button]:hover:text-red-700!
-    [&>button]:hover:border-transparent!
-    [&>button]:text-frontground!
-    [&>button]:hover:outline-none!
-    [&>button]:transition-none!
-    [&>button]:active:border-transparent!
-    [&>button]:border-none!
-    [&>button]:focus:ring-0! 
-    [&>button]:focus:ring-offset-0! 
-    [&>button]:focus:outline-none! 
-    [&>button]:focus-visible:ring-0!">
+                        [&>button]:hover:text-red-700!
+                        [&>button]:hover:border-transparent!
+                        [&>button]:text-frontground!
+                        [&>button]:hover:outline-none!
+                        [&>button]:transition-none!
+                        [&>button]:active:border-transparent!
+                        [&>button]:border-none!
+                        [&>button]:focus:ring-0! 
+                        [&>button]:focus:ring-offset-0! 
+                        [&>button]:focus:outline-none! 
+                        [&>button]:focus-visible:ring-0!">
                         <DialogHeader className="mb-4">
                             <DialogTitle className="text-xl">Nuovo Annuncio</DialogTitle>
                         </DialogHeader>
@@ -623,7 +622,7 @@ export default function CerPage() {
                                         value={newAnnuncio.tipo} 
                                         onValueChange={(val) => setNewAnnuncio({...newAnnuncio, tipo: val})}
                                     >
-                                        <SelectTrigger className="bg-card! text-foreground!">
+                                        <SelectTrigger className="bg-card text-foreground">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Zap, Activity, BatteryCharging, Loader2, Plus, MapPin } from "lucide-react"
+import { Zap, Activity, BatteryCharging, Loader2, Plus, MapPin, Leaf } from "lucide-react"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { supabase } from "@/services/supabase_client";
 import { useAuth } from "@/context/authContext";
@@ -166,7 +166,10 @@ export default function PlantsPage() {
                 {/* HEADER - SOLO TESTO, NESSUN BOTTONE QUI */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-4xl! font-bold tracking-tight">Gestione Impianti</h1>
+                        <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                            <Leaf className="h-8 w-8 text-primary" />
+                            Gestione Impianti
+                            </h1>
                         <p className="text-muted-foreground mt-1">
                             Configura i tuoi dispositivi di produzione e accumulo.
                         </p>
@@ -215,7 +218,7 @@ export default function PlantsPage() {
                          <h3 className="text-lg font-semibold">Lista Dispositivi</h3>
                          
                          {/* BOTTONE UNICO PER NUOVO IMPIANTO */}
-                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9 hover:border-yellow-500! text-foreground! bg-card!">
+                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9hover:border-yellow-500! text-foreground! bg-card!">
                             <Plus className="h-4 w-4" /> Nuovo Impianto
                          </Button>
                     </div>
@@ -233,19 +236,19 @@ export default function PlantsPage() {
             {/* MODALE DIALOG */}
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                 <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:text-primary! 
-    [&>button]:bg-background!
-    [&>button]:hover:text-red-700!
-    [&>button]:hover:border-transparent!
-    [&>button]:text-frontground!
-    [&>button]:hover:outline-none!
-    [&>button]:transition-none!
-    [&>button]:active:border-transparent!
-    [&>button]:border-none!
-    [&>button]:focus:ring-0! 
-    [&>button]:focus:ring-offset-0! 
-    [&>button]:focus:outline-none! 
-    [&>button]:focus-visible:ring-0!
-    ">
+                    [&>button]:bg-background!
+                    [&>button]:hover:text-red-700!
+                    [&>button]:hover:border-transparent!
+                    [&>button]:text-frontground!
+                    [&>button]:hover:outline-none!
+                    [&>button]:transition-none!
+                    [&>button]:active:border-transparent!
+                    [&>button]:border-none!
+                    [&>button]:focus:ring-0! 
+                    [&>button]:focus:ring-offset-0! 
+                    [&>button]:focus:outline-none! 
+                    [&>button]:focus-visible:ring-0!
+                    ">
                     <DialogHeader>
                         <DialogTitle>Registra Nuovo Impianto</DialogTitle>
                         <DialogDescription>Compila i dati tecnici richiesti per la connessione alla rete.</DialogDescription>
@@ -359,7 +362,7 @@ export default function PlantsPage() {
 
                     <DialogFooter>
                         <Button variant="outline" className="border-2! hover:border-primary!" onClick={() => setIsAddOpen(false)}>Annulla</Button>
-                        <Button variant="outline" className="border-2!  hover:border-yellow-500!" onClick={handleNewImpianto} disabled={createPlantMutation.isPending}>
+                        <Button variant="outline" className="border-2! hover:border-yellow-500!" onClick={handleNewImpianto} disabled={createPlantMutation.isPending}>
                             {createPlantMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Salva Impianto
                         </Button>

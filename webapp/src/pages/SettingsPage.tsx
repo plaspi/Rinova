@@ -20,7 +20,8 @@ import {
     Globe, 
     Eye,
     Check,
-    Save
+    Save,
+    Settings
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -131,7 +132,10 @@ export default function SettingsPage() {
             <div className="flex-1 overflow-y-auto p-6 md:p-8 animate-in fade-in zoom-in-95 duration-300">
                     
                     <div className="space-y-2 mb-4">
-                        <h1 className="text-4xl! font-bold tracking-tight text-foreground">Impostazioni</h1>
+                        <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
+                            <Settings className="h-8 w-8 text-primary" />
+                            Impostazioni
+                        </h1>
                     </div>
 
                     <div className="w-full">
@@ -384,7 +388,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="text-center pt-8">
                                     <p className="text-xs text-muted-foreground">
-                                        Rinova App v1.7.3 &copy; 2024 Rinova Energy.
+                                        Rinova App v1.8.1 &copy; 2024 Rinova Energy.
                                     </p>
                                 </div>
                             </div>

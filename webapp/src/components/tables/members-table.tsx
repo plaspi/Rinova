@@ -71,12 +71,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
         <div className="flex items-center gap-2 w-full sm:w-auto">
            {canManage && (
              <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(0); }}>
-                <SelectTrigger className="h-9 w-40 text-xs bg-card!                /* Sfondo del bottone (es. scuro/chiaro) */
-    border-input!           /* Colore del bordo a riposo */
-    text-foreground!        /* Colore del testo */
-    hover:border-primary!   /* (Opzionale) Bordo verde se ci passi sopra */
-    focus:ring-primary!     /* (Opzionale) Anello verde se cliccato */
-  ">
+                <SelectTrigger className="h-9 w-40 text-xs bg-card border-input text-foreground hover:border-primary focus:ring-primary">
                     <ListFilter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                     <SelectValue placeholder="Stato" />
                 </SelectTrigger>

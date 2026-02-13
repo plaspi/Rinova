@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@/components/themeProvider';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import DashboardLayout from "./Layout";
+import DashboardLayout from "@/Layout";
 import HomePage  from '@/pages/homePage';
 import LoginPage from '@/pages/LoginPage';
 import RegistrationPage from '@/pages/RegistrationPage';
@@ -9,14 +9,15 @@ import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import NewPasswordPage from '@/pages/NewPasswordPage';
 import UserAreaPage from '@/pages/UserAreaPage';
 import ProductionPage from '@/pages/ProductionPage';
-import HistoryPage from './pages/ProductionHistoryPage';
+import HistoryPage from '@/pages/ProductionHistoryPage';
 import PlantsPage from '@/pages/PlantsPage';
 import CerPage from '@/pages/CerPage';
 import SettingsPage from '@/pages/SettingsPage';
-import PlansPage from './pages/PlansPage';
+import SupportPage from '@/pages/SupportPage';
+import PlansPage from '@/pages/PlansPage';
 import NotFound from '@/pages/NotFound';
 import { Toaster } from "@/components/ui/sonner";
-import { ProtectedRoute } from "@/context/authContext"; // Importo la protezione
+import { ProtectedRoute } from "@/context/authContext"; 
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/subscription" element={<PlansPage/>} />
           <Route path="/user-area" element={<UserAreaPage/>} /> 
           <Route path="/settings" element={<SettingsPage/>} />
+          <Route path="/support" element={<SupportPage/>} />
         </Route>
 
         <Route path="*" element={<NotFound/>} />

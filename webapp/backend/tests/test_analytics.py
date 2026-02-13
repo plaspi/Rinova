@@ -16,6 +16,11 @@ def test_history_week_with_data(client, fake_db):
     async_db, _ = fake_db
     now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     
+    async_db.datasets["impianti"] = [
+        {"id": TEST_PLANT_ID, "user_id": "user-1"}
+    ]
+
+    # 2. Existing data for the history chart
     async_db.datasets["vista_settimanale"] = [
         {"impianto_id": TEST_PLANT_ID, "timestamp": (now - timedelta(days=2)).isoformat(), "produzione": 3.0},
         {"impianto_id": TEST_PLANT_ID, "timestamp": (now - timedelta(days=1)).isoformat(), "produzione": 7.0},

@@ -23,8 +23,9 @@ router = APIRouter(tags=["Dashboard"])
 async def get_live_dashboard(user=Depends(get_current_user)):
     try:
         db = get_db()
+        user_id = user.get('sub')
 
-        resp_plants = await db.table("impianti").select("id, nome, status").limit(20).execute()
+        resp_plants = await db.table("impianti").select("id, nome, status").eq("user_id", user_id).execute()
         plants = resp_plants.data or []
         
         if not plants:
@@ -99,15 +100,22 @@ async def get_live_dashboard(user=Depends(get_current_user)):
 async def get_dashboard_summary(user: dict = Depends(get_current_user)):
     try:
         db = get_db()
+        user_id = user.get('sub')
+
+        plants_res = await db.table('impianti').select('id').eq('user_id', user_id).execute()
+        if not plants_res.data:
+            return {"produzione": 0.0, "consumo": 0.0, "batteria": 0, "risparmio_co2": 0.0, "trend_produzione": "0%", "trend_consumo": "0%"}
+        
+        plant_ids = [p['id'] for p in plants_res.data]
             
         now = datetime.now()
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday_start = today_start - timedelta(days=1)
         week_start = now - timedelta(days=7) 
         
-        res_today = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').gte('ora', today_start.isoformat()).lte('ora', now.isoformat()).execute()
-        res_yesterday = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').gte('ora', yesterday_start.isoformat()).lt('ora', today_start.isoformat()).execute()
-        res_week = await db.table('vista_settimanale').select('produzione').gte('timestamp', week_start.strftime('%Y-%m-%d')).execute()
+        res_today = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impianto_id', plant_ids).gte('ora', today_start.isoformat()).lte('ora', now.isoformat()).execute()
+        res_yesterday = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impianto_id', plant_ids).gte('ora', yesterday_start.isoformat()).lt('ora', today_start.isoformat()).execute()
+        res_week = await db.table('vista_settimanale').select('produzione').in_('impianto_id', plant_ids).gte('timestamp', week_start.strftime('%Y-%m-%d')).execute()
 
         data_today = res_today.data or []
         data_yesterday = res_yesterday.data or []
@@ -140,9 +148,20 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
 async def get_dashboard_chart(user: dict = Depends(get_current_user)):
     try:
         db = get_db()
+        user_id = user.get('sub')
+
+        plants_res = await db.table("impianti").select("id").eq("user_id", user_id).execute()
+        if not plants_res.data: return []
+        plant_ids = [p['id'] for p in plants_res.data]
+
         now = datetime.now()
         start_date = now - timedelta(hours=4)
-        res = await db.table('misurazioni').select('timestamp, produzione_kw, consumo_kw').gte('timestamp', start_date.isoformat()).lte('timestamp', now.isoformat()).order('timestamp', desc=False).execute()
+        res = await db.table('misurazioni').select('timestamp, produzione_kw, consumo_kw')\
+            .in_('impianto_id', plant_ids)\
+            .gte('timestamp', start_date.isoformat())\
+            .lte('timestamp', now.isoformat())\
+            .order('timestamp', desc=False)\
+            .execute()
         data = res.data or []
         if not data: return []
 
@@ -162,7 +181,10 @@ async def get_dashboard_chart(user: dict = Depends(get_current_user)):
 async def get_dashboard_plants(user=Depends(get_current_user)):
     try:
         db = get_db()
-        res = await db.table("impianti").select("id, nome, status").order("nome").execute()
+        user_id = user.get('sub')
+
+
+        res = await db.table("impianti").select("id, nome, status").eq("user_id", user_id).order("nome").execute()
         return res.data or []
     except Exception:
         return []

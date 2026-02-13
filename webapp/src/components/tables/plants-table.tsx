@@ -46,7 +46,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead className="w-[50px]"></TableHead>
+              <TableHead className="w-12.5"></TableHead>
               <TableHead>Nome Impianto</TableHead>
               <TableHead className="hidden md:table-cell">Potenza</TableHead>
               <TableHead className="hidden md:table-cell">Installazione</TableHead>
@@ -96,7 +96,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="text-yellow-500!">
+                    <DropdownMenuContent align="end" className="text-yellow-500">
                       <DropdownMenuItem onClick={() => setSelected(row)}>
                         <Settings className="mr-2 h-4 w-4" /> Dettagli tecnici
                       </DropdownMenuItem>
