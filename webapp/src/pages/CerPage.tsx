@@ -154,7 +154,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                                 <span>{filterLabels[filterTime]}</span>
                             </div>
                         </SelectTrigger>
-                        <SelectContent align="end">
+                        <SelectContent align="end" className="bg-card! text-foreground!">
                             <SelectItem value="all">Tutti</SelectItem>
                             <SelectItem value="30gg">Ultimi 30 giorni</SelectItem>
                             <SelectItem value="90gg">Ultimi 90 giorni</SelectItem>
@@ -162,7 +162,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                     </Select>
 
                     {(canManage) && (
-                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-background" onClick={onCreate}>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 bg-card! text-foreground!" onClick={onCreate}>
                             <PlusCircle className="h-4 w-4 text-primary" />
                         </Button>
                     )}
@@ -472,7 +472,7 @@ export default function CerPage() {
                          </div>
                     ) : !isMember ? (
                         <div className="max-w-4xl mx-auto mt-10">
-                            <Card className="border-dashed border-2 bg-muted/20">
+                            <Card className="border-dashed border-2 border-primary bg-muted/20">
                                 <CardHeader className="text-center">
                                     <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4 w-fit">
                                         <Users className="h-10 w-10 text-primary" />
@@ -480,13 +480,9 @@ export default function CerPage() {
                                     <CardTitle className="text-2xl">Non fai ancora parte di una CER</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid md:grid-cols-2 gap-6 p-8 pt-2">
-                                     <Button className="w-full h-auto py-4 flex flex-col gap-2" variant="outline" onClick={() => toast.info("Prossimamente!")}>
+                                     <Button className="w-full h-auto py-4 flex flex-col gap-2 bg-brand-gradient! text-background! hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" variant="outline" onClick={() => toast.info("Prossimamente!")}>
                                         <Search className="h-6 w-6" />
                                         <span>Trova CER</span>
-                                    </Button>
-                                    <Button className="w-full h-auto py-4 flex flex-col gap-2" onClick={() => toast.info("Prossimamente!")}>
-                                        <PlusCircle className="h-6 w-6" />
-                                        <span>Crea CER</span>
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -591,7 +587,18 @@ export default function CerPage() {
 
                 {/* MODAL CREAZIONE ANNUNCIO */}
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-125 p-6 bg-card border-border">
+                    <DialogContent className="sm:max-w-125 p-6 bg-card border-border [&>button]:bg-background!
+                        [&>button]:hover:text-red-700!
+                        [&>button]:hover:border-transparent!
+                        [&>button]:text-frontground!
+                        [&>button]:hover:outline-none!
+                        [&>button]:transition-none!
+                        [&>button]:active:border-transparent!
+                        [&>button]:border-none!
+                        [&>button]:focus:ring-0! 
+                        [&>button]:focus:ring-offset-0! 
+                        [&>button]:focus:outline-none! 
+                        [&>button]:focus-visible:ring-0!">
                         <DialogHeader className="mb-4">
                             <DialogTitle className="text-xl">Nuovo Annuncio</DialogTitle>
                         </DialogHeader>
@@ -615,7 +622,7 @@ export default function CerPage() {
                                         value={newAnnuncio.tipo} 
                                         onValueChange={(val) => setNewAnnuncio({...newAnnuncio, tipo: val})}
                                     >
-                                        <SelectTrigger className="bg-background">
+                                        <SelectTrigger className="bg-card text-foreground">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -663,8 +670,8 @@ export default function CerPage() {
                         </div>
 
                         <DialogFooter className="mt-6 gap-2 sm:gap-0">
-                            <Button variant="ghost" onClick={() => setIsCreateOpen(false)}>Annulla</Button>
-                            <Button onClick={handleCreateAnnouncement} disabled={createMutation.isPending}>
+                            <Button variant="outline" className="border-2! hover:border-primary!" onClick={() => setIsCreateOpen(false)}>Annulla</Button>
+                            <Button variant="outline" className="border-2! hover:border-primary!" onClick={handleCreateAnnouncement} disabled={createMutation.isPending}>
                                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
                                 Pubblica
                             </Button>

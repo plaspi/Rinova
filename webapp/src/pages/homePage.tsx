@@ -202,8 +202,8 @@ export default function HomePage() {
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                                        <XAxis dataKey="ora" stroke="hsl(var(foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="hsl(var(foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                        <XAxis dataKey="ora" stroke="hsl(var(--foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="hsl(var(--foreground))" fontSize={12} tickLine={false} axisLine={false} />
                                         <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
                                         <Legend wrapperStyle={{ paddingTop: '10px' }} />
                                         <Area type="monotone" dataKey="produzione" name="Produzione" stroke="#22c55e" fillOpacity={1} fill="url(#colorProd)" strokeWidth={2} />

@@ -71,6 +71,10 @@
   --sidebar-accent-foreground: 118 46% 30%;
   --sidebar-border: 214.3 31.8% 91.4%;
   --sidebar-ring: 118 46% 30%;
+
+  --input-bg: 161 94% 96%; /* Chiaro per Light Mode */
+  --green-500: 142 71% 45%;    /* Il verde brillante */
+  --emerald-900: 161 94% 13%;   /* Il verde scuro profondo */
 }
 
 /* --- STILI ELEMENTI BASE --- */
@@ -184,6 +188,10 @@ button:focus-visible {
   /* NOTA: Questa è mappata SENZA hsl(), quindi accetta HEX, OKLCH, RGB */
   --color-brand-soft: var(--brand-soft);
   --color-brand-soft-foreground: hsl(var(--brand-soft-foreground));
+  --color-green-500: hsl(var(--green-500));
+  --color-emerald-900: hsl(var(--emerald-900));
+  --background-image-brand-gradient: linear-gradient(to bottom right, var(--color-green-500), var(--color-emerald-900));
+  --color-input-bg: hsl(var(--input-bg));
 } 
 
 /* --- PALETTE DARK MODE --- */
@@ -222,6 +230,8 @@ button:focus-visible {
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
+
+  --input-bg: 161 94% 13%; /* Scuro (Emerald 900) per Dark Mode */
 
   /* BRAND SOFT (Dark Mode) */
   /* Hex usato qui perché la mappatura nel tema NON ha hsl() */

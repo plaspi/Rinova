@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { TicketsTable, type Ticket } from "@/components/tables/ticket-table";
-// IMPORT YOUR DETAIL COMPONENT HERE (Adjust path if necessary)
 import { TicketDetail } from "@/components/details/ticketDetails"; 
 import { supabase } from "@/services/supabase_client";
 import { 
@@ -35,11 +34,15 @@ import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+// --- ATTACHMENTS CONFIGURATION ---
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+
 // --- VALIDATION SCHEMA ---
 const supportSchema = z.object({
     category: z.string().min(1, "Seleziona una categoria"),
-    subject: z.string().min(5, "L'oggetto deve avere almeno 5 caratteri"),
-    message: z.string().min(20, "Descrivi il problema con almeno 20 caratteri"),
+    subject: z.string().min(1, "Inserisci un oggetto"),
+    message: z.string().min(20, "Descrivi il problema con almeno 20 caratteri").max(300, "Descrivi il problema in massimo 300 caratteri"),
 });
 
 type SupportFormValues = z.infer<typeof supportSchema>;
@@ -50,8 +53,6 @@ export default function SupportPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // STATE FOR SELECTED TICKET (Fixes Blackout Issue)
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
     const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<SupportFormValues>({
@@ -82,8 +83,44 @@ export default function SupportPage() {
     // --- HANDLERS ---
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            const newFiles = Array.from(e.target.files);
-            setFiles(prev => [...prev, ...newFiles].slice(0, 3));
+            const selectedFiles = Array.from(e.target.files);
+            const validFiles: File[] = [];
+
+            selectedFiles.forEach(file => {
+                //check size
+                if(file.size > MAX_FILE_SIZE) {
+                    toast.error("File troppo grande", {
+                        description: `${file.name} supera il limite di 5MB.`
+                    });
+                    return;
+                }
+                //check type
+                if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+                    toast.error("Formato non supportato", {
+                        description: `${file.name} non è di un formato accettato.`
+                    });
+                    return;
+                }
+                validFiles.push(file);
+            });
+
+            if (validFiles.length === 0) return;
+
+            setFiles(prev => {
+                const combined = [...prev, ...validFiles];
+                //total limit count
+                if (combined.length > 3){
+                    toast.warning("Limite allegati raggiunto", {
+                        description: "Puoi allegare massimo 3 file. I file in eccesso sono stati esclusi."
+                    });
+                    return combined.slice(0,3);
+                }
+                return combined;
+            });
+            //reset input to allow selecting the same file again if needed
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         }
     };
 
@@ -117,8 +154,15 @@ export default function SupportPage() {
 
             if(files.length > 0) {
                 for (const file of files) {
-                    const fileExt = file.name.split('.').pop();
+
+                    //explicitly determine extension from MIME
+                    let fileExt = "bin";
+                    if (file.type === "image/png") fileExt = "png";
+                    else if (file.type === "image/jpeg") fileExt = "jpg";
+                    else if (file.type === "application/pdf") fileExt = "pdf";
+                    //sanitize filename
                     const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_');
+                    //final filepath: user_id/ticket_id/cleanName.ext
                     const filePath = `${user.id}/${ticketId}/${cleanName}.${fileExt}`;
 
                     const { error: uploadError } = await supabase.storage
@@ -131,7 +175,7 @@ export default function SupportPage() {
                     }
                     uploadedPaths.push(filePath);
                 }
-
+                //update ticket row with attachments
                 if (uploadedPaths.length > 0) {
                     const { error: updateError } = await supabase
                         .from('support_tickets')
@@ -196,14 +240,14 @@ export default function SupportPage() {
                             <Card className="border-border shadow-md bg-card">
                                 <CardHeader>
                                     <CardTitle>Nuova Richiesta</CardTitle>
-                                    <CardDescription>Compila il modulo sottostante. I campi contrassegnati sono obbligatori.</CardDescription>
+                                    <CardDescription>Compila il modulo sottostante. I campi contrassegnati con * sono obbligatori.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                         <input type="hidden" {...register("category")} />
 
                                         <div className="space-y-2">
-                                            <Label>Categoria</Label>
+                                            <Label>Categoria*</Label>
                                             <Select onValueChange={(val) => setValue("category", val, { shouldValidate: true })}>
                                                 <SelectTrigger className={cn(
                                                     "bg-background! text-foreground! border-input", 
@@ -223,7 +267,7 @@ export default function SupportPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="subject">Oggetto</Label>
+                                            <Label htmlFor="subject">Oggetto*</Label>
                                             <Input 
                                                 id="subject" 
                                                 placeholder="Es. Errore caricamento grafico produzione" 
@@ -234,7 +278,7 @@ export default function SupportPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="message">Messaggio</Label>
+                                            <Label htmlFor="message">Messaggio*</Label>
                                             <Textarea 
                                                 id="message" 
                                                 placeholder="Descrivi dettagliatamente il problema o la tua idea..." 
@@ -245,7 +289,7 @@ export default function SupportPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>Allegati (opzionale)</Label>
+                                            <Label>Allegati</Label>
                                             <div 
                                                 className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/30 transition-colors cursor-pointer bg-background/50"
                                                 onClick={() => fileInputRef.current?.click()}

@@ -3,13 +3,16 @@ import { describe, it, expect, vi } from 'vitest';
 import { MembersTable } from './members-table';
 import { BrowserRouter } from 'react-router-dom';
 
-// Mock simple dropdown for actions
+// --- MOCKS ---
+// FIX: Using <div> instead of <button> for Trigger to prevent nesting errors 
+// since MembersTable wraps a <Button> inside the Trigger.
 vi.mock('@/components/ui/dropdown-menu', () => ({
   DropdownMenu: ({ children }: any) => <div>{children}</div>,
-  DropdownMenuTrigger: ({ children }: any) => <button>{children}</button>,
+  DropdownMenuTrigger: ({ children }: any) => <div data-testid="dropdown-trigger">{children}</div>,
   DropdownMenuContent: ({ children }: any) => <div>{children}</div>,
   DropdownMenuItem: ({ children }: any) => <div>{children}</div>,
   DropdownMenuSeparator: () => null,
+  DropdownMenuLabel: ({ children }: any) => <div>{children}</div>,
 }));
 
 const mockData = Array.from({ length: 10 }, (_, i) => ({
@@ -31,10 +34,11 @@ const renderTable = () => render(
 describe('MembersTable', () => {
   it('renders correct number of rows (Pagination limit is 8)', () => {
     renderTable();
-    // 8 rows + headers/etc. We check for specific names.
+    
     expect(screen.getByText('User0 Test0')).toBeInTheDocument();
     expect(screen.getByText('User7 Test7')).toBeInTheDocument();
-    // User8 should be on page 2
+    
+    // User8 should be paginated to page 2
     expect(screen.queryByText('User8 Test8')).not.toBeInTheDocument();
   });
 

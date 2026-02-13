@@ -113,9 +113,9 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
         yesterday_start = today_start - timedelta(days=1)
         week_start = now - timedelta(days=7) 
         
-        res_today = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impiando_id', plant_ids).gte('ora', today_start.isoformat()).lte('ora', now.isoformat()).execute()
-        res_yesterday = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impiando_id', plant_ids).gte('ora', yesterday_start.isoformat()).lt('ora', today_start.isoformat()).execute()
-        res_week = await db.table('vista_settimanale').select('produzione').in_('impiando_id', plant_ids).gte('timestamp', week_start.strftime('%Y-%m-%d')).execute()
+        res_today = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impianto_id', plant_ids).gte('ora', today_start.isoformat()).lte('ora', now.isoformat()).execute()
+        res_yesterday = await db.table('mv_analytics_oraria').select('produzione_kwh, consumo_kwh').in_('impianto_id', plant_ids).gte('ora', yesterday_start.isoformat()).lt('ora', today_start.isoformat()).execute()
+        res_week = await db.table('vista_settimanale').select('produzione').in_('impianto_id', plant_ids).gte('timestamp', week_start.strftime('%Y-%m-%d')).execute()
 
         data_today = res_today.data or []
         data_yesterday = res_yesterday.data or []

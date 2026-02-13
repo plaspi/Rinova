@@ -24,8 +24,8 @@ export default function LoginPage() {
             <div className="flex-1 flex flex-col p-6 lg:p-12 overflow-y-auto scrollbar-hide relative pb-6">
               
               <div className="flex items-center gap-2 mb-4 shrink-0">
-                <div className="bg-green-500 p-2 rounded-lg shadow-sm">
-                   <RinovaLogo className="text-black w-8 h-8" />
+                <div className="bg-brand-gradient p-2 rounded-lg shadow-sm">
+                   <RinovaLogo className="text-background w-8 h-8" />
                 </div>
                 <span className="text-2xl font-bold text-foreground tracking-tight">Rinova</span>
               </div>

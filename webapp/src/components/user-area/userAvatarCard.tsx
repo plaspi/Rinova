@@ -57,7 +57,6 @@ export function UserAvatarCard() {
             setDeleteLoading(true);
 
             //call supabase rpc
-            //TODO: soft delete or hard delete?
             const { error } = await supabase.rpc('delete_user_account');
             if(error) throw error;
 
@@ -69,8 +68,7 @@ export function UserAvatarCard() {
             //Redirect registrazione
             navigate("/registration")
         } catch (error: any) {
-            console.error(error);
-            toast.error("Errore eliminazione account", { description: error.message});
+            toast.error("Errore eliminazione account");
         } finally {
             setDeleteLoading(false);
         }

@@ -2,15 +2,6 @@ from datetime import datetime, timedelta
 
 TEST_PLANT_ID = "00000000-0000-0000-0000-000000000001"
 
-def test_report_download_empty_data_returns_pdf(client, fake_db):
-    # Even with no data, non-live default falls back to empty plot but still returns a PDF
-    _async_db, sync_db = fake_db
-    r = client.get("/api/report/download", params={"period": "week", "plantId": "summary"})
-    # StreamingResponse -> 200 and application/pdf
-    assert r.status_code == 200
-    assert r.headers.get("content-type", "").startswith("application/pdf")
-
-
 def test_report_download_live_with_data(client, fake_db):
     _async_db, sync_db = fake_db
     now = datetime.now()

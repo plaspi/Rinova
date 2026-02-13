@@ -4,6 +4,7 @@ import { UserAvatarCard } from './userAvatarCard';
 import { useAuth } from '@/context/authContext';
 import { supabase } from '@/services/supabase_client';
 import { toast } from 'sonner';
+import { BrowserRouter } from 'react-router-dom';
 
 // --- MOCKS ---
 vi.mock('@/context/authContext', () => ({
@@ -18,13 +19,21 @@ vi.mock('@/services/supabase_client', () => ({
         getPublicUrl: vi.fn(),
       })),
     },
-    from: vi.fn(), // We mock the return value inside tests
+    from: vi.fn(), 
+    rpc: vi.fn(),
+    auth: { signOut: vi.fn() }
   },
 }));
 
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
+
+const renderComponent = () => render(
+  <BrowserRouter>
+    <UserAvatarCard />
+  </BrowserRouter>
+);
 
 describe('UserAvatarCard', () => {
   const mockRefreshProfile = vi.fn();
@@ -41,15 +50,14 @@ describe('UserAvatarCard', () => {
   });
 
   it('renders user info correctly', () => {
-    render(<UserAvatarCard />);
+    renderComponent();
     expect(screen.getByText('Mario Rossi')).toBeInTheDocument();
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
   it('handles avatar upload successfully', async () => {
-    const { container } = render(<UserAvatarCard />);
+    const { container } = renderComponent();
 
-    // 1. Mock Storage Upload
     const mockUpload = vi.fn().mockResolvedValue({ error: null });
     const mockGetUrl = vi.fn().mockReturnValue({ data: { publicUrl: 'http://new-avatar.jpg' } });
     
@@ -58,7 +66,6 @@ describe('UserAvatarCard', () => {
       getPublicUrl: mockGetUrl,
     });
 
-    // 2. Mock Database Update (Chained Mocks)
     const mockEq = vi.fn().mockResolvedValue({ error: null });
     const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
     
@@ -66,30 +73,20 @@ describe('UserAvatarCard', () => {
       update: mockUpdate,
     });
 
-    // 3. Simulate File Selection
-    const file = new File(['(⌐□_□)'], 'chucknorris.png', { type: 'image/png' });
-    
-    // Find hidden input
+    const file = new File(['dummy'], 'avatar.png', { type: 'image/png' });
     const fileInput = container.querySelector('#avatar-upload') as HTMLInputElement;
-    if (!fileInput) throw new Error("File input not found!");
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
-    // 4. Assertions
     await waitFor(() => {
-      // Check Upload
       expect(mockUpload).toHaveBeenCalledWith(
         expect.stringContaining('user_123/avatar-'), 
         file,
         expect.anything()
       );
-
-      // Check DB Update - Now mockUpdate captures the correct call
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ avatar_url: 'http://new-avatar.jpg' })
       );
-
-      // Check Refresh & Toast
       expect(mockRefreshProfile).toHaveBeenCalled();
       expect(toast.success).toHaveBeenCalledWith("Foto profilo aggiornata!");
     });

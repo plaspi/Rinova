@@ -174,6 +174,7 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     className="h-9 pr-9"
+                    placeholder="password"
                     {...register("password")}
                   />
                   <button

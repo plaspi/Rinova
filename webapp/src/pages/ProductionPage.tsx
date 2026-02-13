@@ -140,7 +140,7 @@ export default function ProductionPage() {
                     <div className="flex items-center gap-2"> 
                         <Button variant="outline" size="lg" onClick={handleRefresh} disabled={isLoading} className="gap-2 bg-card! text-foregroung!">
                             <RefreshCcw className={cn("h-4 w-4", isLoading && "animate-spin")} />
-                            Aggiorna Tutto
+                            Aggiorna
                         </Button>
                         <Button 
                             variant="default" 

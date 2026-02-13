@@ -71,7 +71,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
         <div className="flex items-center gap-2 w-full sm:w-auto">
            {canManage && (
              <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(0); }}>
-                <SelectTrigger className="h-9 w-40 text-xs">
+                <SelectTrigger className="h-9 w-40 text-xs bg-card border-input text-foreground hover:border-primary focus:ring-primary">
                     <ListFilter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                     <SelectValue placeholder="Stato" />
                 </SelectTrigger>
@@ -84,7 +84,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
              </Select>
            )}
 
-           <Button size="sm" className="h-9 text-xs ml-auto sm:ml-0" onClick={() => toast.info("Funzionalità inviti prossimamente disponibile")}>
+           <Button size="sm" className="h-9 text-xs ml-auto bg-card! sm:ml-0" onClick={() => toast.info("Funzionalità inviti prossimamente disponibile")}>
              + Invita
            </Button>
         </div>
@@ -141,7 +141,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
                     <TableCell className="text-right pr-6" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="ghost" className="h-8 w-8 p-0 bg-card! text-foreground!">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

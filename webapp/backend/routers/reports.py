@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 from backend.services.supabase_client import supabase as sync_db
 from backend.services.auth import get_current_user
-from backend.exceptions import NotFoundException, InternalServerErrorException
+from backend.exceptions import NotFoundException, InternalServerErrorException, ForbiddenException
 
 router = APIRouter(tags=["Reports"])
 
@@ -18,16 +18,29 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
     try:
         user_id = user.get('sub')
         now = datetime.now()
+
+        #plant ownership validation
+        plant_res = sync_db.table("impianti").select("id").eq("user_id", user_id).execute()
+
+        if not plant_res.data:
+            raise NotFoundException(detail="Nessun impianto associato all'utente.")
+        
+        user_plant_ids = [str(p['id']) for p in plant_res.data]
+
+        if plantId != 'summary' and plantId not in user_plant_ids:
+            #403 Forbidden: User is authenticated but not authorized for this resource
+            raise ForbiddenException(detail="Non hai i permessi per accedere ai dati di questo impianto.")
         
         if period == 'live':
-            target_plant = plantId if plantId != 'summary' else None
             start_live = now - timedelta(hours=24)
             query = sync_db.table("misurazioni").select("*").gte("timestamp", start_live.isoformat()).lte("timestamp", now.isoformat()).order("timestamp")
             
-            if target_plant: 
-                query = query.eq("impianto_id", target_plant)
-            else: 
-                query = query.limit(200)
+            #scope the query to ensure data isolation
+            if plantId != 'summary':
+                query = query.eq("impianto_id", plantId)
+            else:
+                #only user plants
+                query = query.in_("impianto_id", user_plant_ids)
             
             res = query.execute()
             
@@ -80,8 +93,12 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
 
             query = sync_db.table(table_name).select("*").gte("timestamp", start_date.isoformat()).lte("timestamp", now.isoformat()).order("timestamp")
             
-            if plantId and plantId != 'summary':
+            #scope the query here as well
+            if plantId != 'summary':
                 query = query.eq("impianto_id", plantId)
+            else:
+                #only user plants
+                query = query.in_("impianto_id", user_plant_ids)
                 
             res = query.execute()
             

@@ -17,7 +17,7 @@ MONTHS_IT = {1:'Gen', 2:'Feb', 3:'Mar', 4:'Apr', 5:'Mag', 6:'Giu', 7:'Lug', 8:'A
     responses={400: {"model": ErrorResponse}}
 )
 async def get_production_history(
-    period: str = Query(..., description="Periodo: day, week, month, year, custom"), 
+    period: str = Query(..., description="Periodo: week, month, year, custom"), 
     plantId: str = Query(..., description="ID Impianto"), 
     startDate: str = Query(None), 
     endDate: str = Query(None),   
@@ -48,10 +48,7 @@ async def get_production_history(
         now = datetime.now()
 
         # --- 2. DETERMINE TABLE & FREQUENCY ---
-        if period == 'day':
-            start_date = now - timedelta(hours=24)
-            table_name, col_time, col_val, resample_freq = "mv_analytics_oraria", "ora", "produzione_kwh", '1h'
-        elif period == 'week':
+        if period == 'week':
             start_date = (now - timedelta(days=6)).replace(hour=0, minute=0, second=0, microsecond=0)
             table_name, col_time, col_val, resample_freq = "vista_settimanale", "timestamp", "produzione", '1D'
         elif period == 'month':
@@ -99,7 +96,7 @@ async def get_production_history(
         
         #Reindex to fill gaps
         full_idx = pd.date_range(start=start_date, end=now, freq=resample_freq)
-        if period != 'day': full_idx = full_idx.normalize()
+        full_idx = full_idx.normalize()
         
         df = df.set_index('timestamp')
         df_resampled = df.reindex(full_idx, fill_value=0).reset_index()
@@ -116,8 +113,7 @@ async def get_production_history(
         peak_label = "-"
         if total_prod > 0:
             pk_ts = df_resampled.iloc[df_resampled['value'].idxmax()]['timestamp']
-            if period == 'day': peak_label = pk_ts.strftime('%H:%M')
-            elif period in ['year'] or (period == 'custom' and resample_freq == 'MS'): peak_label = MONTHS_IT.get(pk_ts.month, '-')
+            if period in ['year'] or (period == 'custom' and resample_freq == 'MS'): peak_label = MONTHS_IT.get(pk_ts.month, '-')
             else: peak_label = f"{pk_ts.day} {MONTHS_IT.get(pk_ts.month,'')}"
         
         #Build chart data
@@ -125,8 +121,7 @@ async def get_production_history(
         for _, row in df_resampled.iterrows():
             ts = row['timestamp']
             label = ""
-            if period == 'day': label = ts.strftime('%H:%M')
-            elif period == 'week': label = DAYS_IT.get(ts.weekday(), '-')
+            if period == 'week': label = DAYS_IT.get(ts.weekday(), '-')
             elif period == 'month': label = ts.strftime('%d')
             elif period == 'year' or (period=='custom' and resample_freq=='MS'): label = MONTHS_IT.get(ts.month, '-')
             else: label = f"{ts.day} {MONTHS_IT.get(ts.month,'')}"
