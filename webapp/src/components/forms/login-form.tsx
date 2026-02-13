@@ -156,7 +156,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button 
                 variant="outline" 
                 type="button" 
-                className="w-full h-10 bg-white! text-neutral-900! border-neutral-200! hover:bg-neutral-100! hover:text-neutral-900! font-medium"
+                className="w-full h-10 bg-brand-gradient! text-background hover:bg-neutral-100! hover:text-neutral-900! font-medium"
                 onClick={()=> handleSocialLogin('google')}
                 disabled={isLoading}
               >
@@ -172,7 +172,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             <Button 
               variant="outline" 
               type="button" 
-              className="w-full h-10 font-medium"
+                className="w-full h-10 bg-brand-gradient! text-background hover:bg-neutral-100! hover:text-neutral-900! font-medium"
               onClick={() => handleSocialLogin('azure')}
               disabled={isLoading}
             >

@@ -304,7 +304,7 @@ export default function PlantsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="tensione">Tensione Lavoro</Label>
                                     <Select value={formData.tensione} onValueChange={v => setFormData({...formData, tensione: v})}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="bg-background! hover:border-transparent!"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="230">Monofase (230V)</SelectItem>
                                             <SelectItem value="400">Trifase (400V)</SelectItem>
