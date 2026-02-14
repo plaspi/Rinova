@@ -27,9 +27,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "bg-background group/calendar p-3 [--cell-size:2rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
-        String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
-        String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
+        "bg-background group/calendar p-3 [--cell-size:2rem]",
         className
       )}
       captionLayout={captionLayout}
@@ -49,14 +47,15 @@ function Calendar({
           "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
           defaultClassNames.nav
         ),
+        // STILE FRECCE NAVIGAZIONE
         button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
-          "h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50",
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           defaultClassNames.button_previous
         ),
         button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
-          "h-[--cell-size] w-[--cell-size] select-none p-0 aria-disabled:opacity-50",
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           defaultClassNames.button_next
         ),
         month_caption: cn(
@@ -76,50 +75,27 @@ function Calendar({
           defaultClassNames.dropdown
         ),
         caption_label: cn(
-          "select-none font-medium",
-          captionLayout === "label"
-            ? "text-sm"
-            : "[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5",
+          "select-none font-medium text-sm",
           defaultClassNames.caption_label
         ),
-        table: "w-full border-collapse",
+        table: "w-full border-collapse space-y-1",
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
           "text-muted-foreground flex-1 select-none rounded-md text-[0.8rem] font-normal",
           defaultClassNames.weekday
         ),
         week: cn("mt-2 flex w-full", defaultClassNames.week),
-        week_number_header: cn(
-          "w-[--cell-size] select-none",
-          defaultClassNames.week_number_header
-        ),
-        week_number: cn(
-          "text-muted-foreground select-none text-[0.8rem]",
-          defaultClassNames.week_number
-        ),
         day: cn(
-          "group/day relative aspect-square h-full w-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md",
+          "p-0 text-center text-sm focus-within:relative focus-within:z-20",
           defaultClassNames.day
         ),
-        range_start: cn(
-          "bg-accent rounded-l-md",
-          defaultClassNames.range_start
-        ),
-        range_middle: cn("rounded-none", defaultClassNames.range_middle),
-        range_end: cn("bg-accent rounded-r-md", defaultClassNames.range_end),
-        today: cn(
-          "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
-          defaultClassNames.today
-        ),
-        outside: cn(
-          "text-muted-foreground aria-selected:text-muted-foreground",
-          defaultClassNames.outside
-        ),
-        disabled: cn(
-          "text-muted-foreground opacity-50",
-          defaultClassNames.disabled
-        ),
-        hidden: cn("invisible", defaultClassNames.hidden),
+        range_start: "range-start",
+        range_end: "range-end",
+        range_middle: "range-middle",
+        today: "today",
+        outside: "text-muted-foreground opacity-50",
+        disabled: "text-muted-foreground opacity-50",
+        hidden: "invisible",
         ...classNames,
       }}
       components={{
@@ -134,35 +110,11 @@ function Calendar({
           )
         },
         Chevron: ({ className, orientation, ...props }) => {
-          if (orientation === "left") {
-            return (
-              <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-            )
-          }
-
-          if (orientation === "right") {
-            return (
-              <ChevronRightIcon
-                className={cn("size-4", className)}
-                {...props}
-              />
-            )
-          }
-
-          return (
-            <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          )
+            // Logica frecce
+            const Icon = orientation === "left" ? ChevronLeftIcon : (orientation === "right" ? ChevronRightIcon : ChevronDownIcon);
+            return <Icon className={cn("size-4", className)} {...props} />
         },
-        DayButton: CalendarDayButton,
-        WeekNumber: ({ children, ...props }) => {
-          return (
-            <td {...props}>
-              <div className="flex size-[--cell-size] items-center justify-center text-center">
-                {children}
-              </div>
-            </td>
-          )
-        },
+        DayButton: CalendarDayButton, // Usiamo il nostro bottone custom qui sotto
         ...components,
       }}
       {...props}
@@ -170,42 +122,66 @@ function Calendar({
   )
 }
 
+// --- QUI C'È LA LOGICA DEI COLORI HARDCODED ---
+// components/ui/calendar.tsx
+
 function CalendarDayButton({
   className,
   day,
   modifiers,
   ...props
 }: React.ComponentProps<typeof DayButton>) {
-  const defaultClassNames = getDefaultClassNames()
-
   const ref = React.useRef<HTMLButtonElement>(null)
-  React.useEffect(() => {
-    if (modifiers.focused) ref.current?.focus()
-  }, [modifiers.focused])
+
+  // 1. Definiamo gli stati basandoci sui modifiers
+  const isSelected = modifiers.selected;
+  const isRangeStart = modifiers.range_start;
+  const isRangeEnd = modifiers.range_end;
+  const isRangeMiddle = modifiers.range_middle;
+  const isOutside = modifiers.outside;
+  const isToday = modifiers.today;
 
   return (
     <Button
       ref={ref}
-      variant="ghost"
+      variant="ghost" // Usiamo ghost per evitare lo sfondo bianco di default
       size="icon"
-      data-day={day.date.toLocaleDateString()}
-      data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
-      }
-      data-range-start={modifiers.range_start}
-      data-range-end={modifiers.range_end}
-      data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square h-auto w-full min-w-[--cell-size] flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] [&>span]:text-xs [&>span]:opacity-70",
-        defaultClassNames.day,
+        "h-9 w-9 p-0 font-normal transition-colors relative",
+        
+        // 1. GIORNI NORMALI (Non selezionati)
+        // Usiamo bg-[#1e293b] o simile se bg-card non basta a coprire il bianco
+        !isSelected && "bg-card! hover:border-primary! text-foreground! hover:bg-muted",
+
+        // 2. EVIDENZIAZIONE GIORNO CORRENTE (Oggi)
+        // Se è oggi e NON è selezionato, mettiamo un bordo e il testo colorato
+        (isToday && !isSelected) && "border-2 hover:border-primary! border-yellow-500! text-primary font-bold",
+        // Se è oggi ed è ANCHE selezionato, aggiungiamo solo un piccolo indicatore (es. un puntino in basso) 
+        // o lo lasciamo semplicemente col colore primary pieno
+        (isToday && isSelected) && "after:content-[''] after:absolute hover:border-primary! after:bottom-1 after:w-1 after:h-1 after:bg-white after:rounded-full",
+        
+        // 3. GIORNI FUORI DAL MESE (Grigiati)
+        isOutside && "bg-transparent text-muted-foreground opacity-50",
+
+        // 4. RANGE MIDDLE (Il periodo nel mezzo - Sbiadito)
+        // Forziamo il colore con ! per vincere su tutto
+        isRangeMiddle && "bg-primary/20! text-foreground! border-0! rounded-none hover:bg-primary/30!",
+
+        // 5. START / END / SELEZIONE SINGOLA (Pieno)
+        (isRangeStart || isRangeEnd || (isSelected && !isRangeMiddle)) && 
+          "bg-primary! text-primary-foreground! hover:bg-primary! border-0! hover:text-primary-foreground! rounded-md",
+
+        // 6. LOGICA ARROTONDAMENTI PER IL RANGE
+        isRangeStart && "rounded-r-none",
+        isRangeEnd && "rounded-l-none",
+
+        // 7. OGGI
+        (isToday && !isSelected) && "border border-primary text-primary font-bold",
+
         className
       )}
       {...props}
     />
   )
 }
-
 export { Calendar, CalendarDayButton }

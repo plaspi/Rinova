@@ -227,13 +227,22 @@ export default function HistoryPage() {
                                         <div className="h-6 w-px bg-border mx-1 hidden sm:block"></div>
                                         <Popover>
                                             <PopoverTrigger asChild>
-                                                <Button variant="outline" size="sm" className="h-8 border-dashed border-input bg-card!">
+                                                <Button variant="outline" size="sm" className="h-8 border-dashed border-input hover:border-primary! border-2! hover-text-primary! bg-card!">
                                                     <CalendarIcon className="mr-2 h-3.5 w-3.5 opacity-70" />
                                                     {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "dd MMM", {locale:it})} - {format(dateRange.to, "dd MMM", {locale:it})}</> : format(dateRange.from, "dd MMM", {locale:it})) : "Date"}
                                                 </Button>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-auto p-0" align="end">
-                                                <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} locale={it} />
+                                                <Calendar 
+                                                    initialFocus 
+                                                    mode="range" 
+                                                    defaultMonth={dateRange?.from} 
+                                                    selected={dateRange} 
+                                                    onSelect={setDateRange} 
+                                                    numberOfMonths={2} 
+                                                    locale={it}
+                                                    disabled={{ after: new Date() }}
+                                                />
                                             </PopoverContent>
                                         </Popover>
                                     </>
