@@ -18,7 +18,7 @@ export function MemberDetails({ member, onClose }: MemberDetailsProps) {
       <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl p-6 w-full max-w-xl relative animate-in zoom-in-95 duration-200">
 
         <button
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition rounded-full p-1 hover:bg-muted"
+          className="absolute top-4 right-4 text-foreground! bg-card! hover:border-transparent! transition rounded-full p-1 hover:bg-muted"
           onClick={onClose}
         >
           <X className="h-5 w-5" />
@@ -81,7 +81,7 @@ export function MemberDetails({ member, onClose }: MemberDetailsProps) {
         <div className="mt-8 flex justify-end pt-4 border-t border-border">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition text-sm font-medium"
+            className="px-4 py-2 rounded-md bg-primary! text-foreground! hover:bg-primary/90! transition text-sm font-medium"
           >
             Chiudi
           </button>

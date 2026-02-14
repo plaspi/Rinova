@@ -323,7 +323,7 @@ export default function SupportPage() {
                                                             <button 
                                                                 type="button"
                                                                 onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                                                                className="text-muted-foreground hover:text-destructive p-1"
+                                                                className="bg-card! text-foreground! border-0! hover:text-red-500! p-1"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </button>
@@ -334,7 +334,7 @@ export default function SupportPage() {
                                         </div>
 
                                         <div className="flex justify-end pt-4">
-                                            <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto gap-2 shadow-md bg-primary!">
+                                            <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto gap-2 shadow-md hover:border-primary! bg-primary!">
                                                 {isSubmitting ? (
                                                     <>
                                                         <Loader2 className="h-4 w-4 animate-spin" /> Invio...

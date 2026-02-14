@@ -197,7 +197,7 @@ export default function HistoryPage() {
                         <p className="text-muted-foreground">Monitoraggio performance e reportistica avanzata.</p>
                     </div>
                     <Select value={selectedPlant || ""} onValueChange={selectPlant} disabled={plantsLoading}>
-                        <SelectTrigger className="w-50 h-9 bg-card! shadow-sm border-input">
+                        <SelectTrigger className="w-50 h-9 bg-card! outline-0! focus:border-0 hover:border-primary! shadow-sm border-input">
                             <SelectValue placeholder={plantsLoading ? "Caricamento..." : "Seleziona Impianto"} />
                         </SelectTrigger>
                         <SelectContent>

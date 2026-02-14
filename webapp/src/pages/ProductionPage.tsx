@@ -138,7 +138,7 @@ export default function ProductionPage() {
                     </div>
                     
                     <div className="flex items-center gap-2"> 
-                        <Button variant="outline" size="lg" onClick={handleRefresh} disabled={isLoading} className="gap-2 bg-card! text-foregroung!">
+                        <Button variant="outline" size="lg" onClick={handleRefresh} disabled={isLoading} className="gap-2 bg-card! outline-0! hover:border-primary! hover:text-primary! border! text-foregroung!">
                             <RefreshCcw className={cn("h-4 w-4", isLoading && "animate-spin")} />
                             Aggiorna
                         </Button>
@@ -147,7 +147,7 @@ export default function ProductionPage() {
                             size="lg" 
                             onClick={handleDownloadReport} 
                             disabled={pdfLoading || isLoading}
-                            className="gap-2 bg-card! hover:bg-primary/90 text-foreground!"
+                            className="gap-2 bg-card! hover:bg-primary/90 text-foreground! hover:text-primary! hover:border-primary!"
                         >
                             {pdfLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                             Scarica Report

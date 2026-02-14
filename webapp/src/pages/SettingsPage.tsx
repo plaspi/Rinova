@@ -89,7 +89,7 @@ export default function SettingsPage() {
                 <Button 
                     onClick={handleSave} 
                     disabled={isSaving} 
-                    className="ml-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-md transition-all"
+                    className="ml-auto bg-card! text-foreground! outline-0! border-2! hover:border-yellow-500! shadow-md transition-all"
                 >
                     {isSaving ? (
                         "Salvataggio..."
@@ -147,9 +147,9 @@ export default function SettingsPage() {
                                         key={tab.id}
                                         onClick={() => setTab(tab.id)}
                                         className={cn(
-                                            "flex flex-col bg-card! items-center justify-center gap-3 p-4 rounded-xl border transition-all duration-200 h-24 sm:h-28",
+                                            "flex flex-col bg-card! items-center border-0! justify-center gap-3 p-4 rounded-xl border transition-all duration-200 h-24 sm:h-28",
                                             isActive
-                                                ? "border-primary bg-primary/5 text-primary shadow-sm ring-1 ring-primary/20"
+                                                ? "ring-offset-0! focus:outline-none! hover-ring  hover:outline-none! hover:border-transparent! ring-2! ring-black dark:ring-primary!"
                                                 : "border-border bg-card text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-foreground"
                                         )}
                                     >
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                                                 />
                                             </div>
                                             
-                                            <div className="flex items-center justify-between">
+                                           {/*} <div className="flex items-center justify-between">
                                                 <div className="space-y-0.5">
                                                     <Label className="text-base">Notifiche Push</Label>
                                                     <p className="text-sm text-muted-foreground">Avvisi live su produzione e consumi.</p>
@@ -230,7 +230,7 @@ export default function SettingsPage() {
                                                     checked={localSettings.notifications.push} 
                                                     onCheckedChange={(c) => updateNotify('push', c)} 
                                                 />
-                                            </div>
+                                            </div>*/}
                                         </div>
 
                                         <Separator />
@@ -336,7 +336,7 @@ export default function SettingsPage() {
                                     <DirtySaveFooter />
                                 </Card>
 
-                                <Card>
+                                {/*<Card>
                                     <CardHeader>
                                         <CardTitle>Accessibilità Visiva</CardTitle>
                                     </CardHeader>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                                             <Switch />
                                         </div>
                                     </CardContent>
-                                </Card>
+                                </Card>*/}
                             </div>
                         )}
 

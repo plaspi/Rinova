@@ -28,7 +28,6 @@ export function PlantsTable({ data }: PlantsTableProps) {
   return (
     <div className="space-y-4">
       
-      {/* TOOLBAR - RIMOSSO IL BOTTONE "NUOVO IMPIANTO" DA QUI */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="relative w-full"> {/* Search prende tutta la larghezza disponibile */}
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

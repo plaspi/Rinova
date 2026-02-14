@@ -218,7 +218,7 @@ export default function PlantsPage() {
                          <h3 className="text-lg font-semibold">Lista Dispositivi</h3>
                          
                          {/* BOTTONE UNICO PER NUOVO IMPIANTO */}
-                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9hover:border-yellow-500! text-foreground! bg-card!">
+                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9hover:border-yellow-500! text-foreground! hover:border-primary! bg-card!">
                             <Plus className="h-4 w-4" /> Nuovo Impianto
                          </Button>
                     </div>

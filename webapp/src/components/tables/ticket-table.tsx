@@ -35,11 +35,11 @@ export interface Ticket {
 const getStatusConfig = (status: string) => {
     switch (status) {
         case 'open':
-            return { label: 'Aperto', color: 'bg-blue-500/10 text-blue-600 border-blue-200', icon: AlertCircle };
+            return { label: 'Aperto', color: 'bg-blue-500/10 text-blue-600 border-blue-600', icon: AlertCircle };
         case 'in_progress':
-            return { label: 'In Corso', color: 'bg-amber-500/10 text-amber-600 border-amber-200', icon: Clock };
+            return { label: 'In Corso', color: 'bg-amber-500/10 text-amber-600 border-amber-600', icon: Clock };
         case 'resolved':
-            return { label: 'Risolto', color: 'bg-green-500/10 text-green-600 border-green-200', icon: CheckCircle2 };
+            return { label: 'Risolto', color: 'bg-green-500/10 text-green-600 border-green-600', icon: CheckCircle2 };
         case 'closed':
             return { label: 'Chiuso', color: 'bg-muted text-muted-foreground border-border', icon: XCircle };
         default:
@@ -134,7 +134,7 @@ export function TicketsTable({ tickets, onTicketSelect }: TicketsTableProps) {
                                                 <StatusIcon className="w-3 h-3" />
                                                 {status.label}
                                             </Badge>
-                                        </TableCell>
+                                        </TableCell>    
 
                                         {/* 5. ARROW & ATTACHMENT ICON */}
                                         <TableCell className="text-right pr-6 py-4">

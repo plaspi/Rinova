@@ -148,7 +148,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                 
                 <div className="flex items-center gap-2">
                     <Select value={filterTime} onValueChange={(val) => { setFilterTime(val); setPage(0); }}>
-                        <SelectTrigger className="h-8 w-32.5 text-xs bg-background px-2.5 flex items-center justify-between">
+                        <SelectTrigger className="h-8 w-32.5 text-xs bg-card! px-2.5 outline-0! focus:border-primary! border-2! hover:border-primary! flex items-center justify-between">
                             <div className="flex items-center gap-2 truncate">
                                 <CalendarRange className="h-3.5 w-3.5 opacity-70 shrink-0" />
                                 <span>{filterLabels[filterTime]}</span>
@@ -162,7 +162,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                     </Select>
 
                     {(canManage) && (
-                        <Button size="icon" variant="ghost" className="h-8 w-8 bg-card! text-foreground!" onClick={onCreate}>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 bg-card! hover:border-primary!" onClick={onCreate}>
                             <PlusCircle className="h-4 w-4 text-primary" />
                         </Button>
                     )}
@@ -478,11 +478,14 @@ export default function CerPage() {
                                         <Users className="h-10 w-10 text-primary" />
                                     </div>
                                     <CardTitle className="text-2xl">Non fai ancora parte di una CER</CardTitle>
+                                    <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
+                                        Unisciti a una Comunità Energetica per condividere energia pulita, risparmiare in bolletta e accedere agli incentivi statali.
+                                    </p>
                                 </CardHeader>
-                                <CardContent className="grid md:grid-cols-2 gap-6 p-8 pt-2">
+                                <CardContent className="flex md:grid-cols-2 gap-6 p-8 pt-2">
                                      <Button className="w-full h-auto py-4 flex flex-col gap-2 bg-brand-gradient! text-background! hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" variant="outline" onClick={() => toast.info("Prossimamente!")}>
                                         <Search className="h-6 w-6" />
-                                        <span>Trova CER</span>
+                                        <span>Trova la tua Comunità</span>
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -564,7 +567,7 @@ export default function CerPage() {
                                                     <p className="text-sm font-medium truncate">{admin.nome} {admin.cognome}</p>
                                                     <p className="text-[10px] text-muted-foreground capitalize">{admin.ruolo}</p>
                                                 </div>
-                                                <Button size="icon" variant="ghost" className="h-7 w-7 bg-card! text-foreground!" onClick={() => toast.info("Chat in arrivo...")}>
+                                                <Button size="icon" variant="ghost" className="h-7 w-7 bg-card! hover:border-primary!" onClick={() => toast.info("Chat in arrivo...")}>
                                                     <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                                                 </Button>
                                             </div>

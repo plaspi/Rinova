@@ -222,6 +222,9 @@ function SidebarContent() {
                     "w-full h-20 border-0 focus-visible:ring-0 rounded-none transition-all",
                     "p-0 hover:bg-muted/10 data-[state=open]:bg-muted/10",
                     "justify-start",
+                    "border-0!",
+                    "focus:outline-none!",
+                    "focus:ring-0!"
                 )}
             >
                 {/* Avatar Container */}
