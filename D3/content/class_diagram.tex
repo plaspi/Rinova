@@ -7,16 +7,24 @@ rappresenta le entità e gli attori principali del sistema, definendone la strut
 attributi ed il comportamento mediante metodi che ne descrivono le funzionalità.
 Vengono inoltre esplicitate associazioni fra le diverse classi, utili a comprendere come le classi
 si relazionino tra loro.
-Sono riportate di seguito le classi individuate.
+Sono riportate di seguito le classi individuate con le relative descrizioni.
 
 \subsubsection*{1 - Utente}
 Rappresenta l'attore principale del sistema, questa classe gestisce i dati anagrafici, le
 credenziali di accesso e funge da punto di ingresso per la navigazione verso le entità collegate
-(Impianti, Notifiche, CER). È responsabile della gestione e personalizzazione del proprio profilo.
+come gli impianti posseduti, le impostazioni dell'account e l'eventuale appartenenza ad una CER.
+È responsabile della gestione del ciclo di vita dell'account.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{images/classes/class_utente.jpeg}
+    \caption{classe Utente (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/classes/class_utente2.jpeg}
     \caption{classe Utente (class diagram)}
     \label{fig:class_diagram}
 \end{figure}
@@ -35,7 +43,7 @@ della CER.
 
 \subsubsection*{3 - Impianto}
 Rappresenta l'entità fisica del sistema fotovoltaico. Contiene le specifiche tecniche fisse e lo
-stato operativo corrente. Funge da contenitore per lo storico delle misurazioni energetiche.
+stato operativo corrente. Funge da aggregatore per lo storico delle misurazioni, permettendo al sistema di calcolare l'efficienza e la produzione nel tempo.
 
 \begin{figure}[H]
     \centering
@@ -46,7 +54,7 @@ stato operativo corrente. Funge da contenitore per lo storico delle misurazioni 
 
 \subsubsection*{4 - Misurazioni}
 Rappresenta il singolo pacchetto di dati energetici inviato dallo Smart Meter in un preciso istante
-temporale. È l'unità fondamentale per la costruzione dei grafici storici e del monitoraggio live.
+di tempo. È l'unità fondamentale per la costruzione dei grafici storici e del monitoraggio live.
 
 \begin{figure}[H]
     \centering
@@ -58,8 +66,9 @@ temporale. È l'unità fondamentale per la costruzione dei grafici storici e del
 
 
 \subsubsection*{5 - CER}
-Rappresenta l'entità CER, ha accesso alla lista dei membri, alla bacheca avvisi ed è in grado di aggregare
-i dati di produzione di tutti i membri per calcolare le performance collettive.
+Rappresenta l'entità CER. Funge da hub centrale per l'aggregazione dei dati di produzione
+di tutti i membri per calcolare le performance collettive. Ha accesso alla lista dei membri ed alla bacheca degli avvisi.
+.
 
 \begin{figure}[H]
     \centering
@@ -70,7 +79,7 @@ i dati di produzione di tutti i membri per calcolare le performance collettive.
 
 \subsubsection*{6 - Membro}
 Classe d'associazione fra utente e CER, gestisce le azioni all'interno della CER e ne memorizza lo stato
-di partecipazione ed il ruolo.
+di partecipazione ed il ruolo, storicizzandone l'adesione.
 
 \begin{figure}[H]
     \centering
@@ -81,7 +90,7 @@ di partecipazione ed il ruolo.
 
 \subsubsection*{7 - Annuncio}
 Rappresenta un post pubblicato nella bacheca della Comunità Energetica, utilizzato dagli amministratori
-come mezzo di comunicazione verso i Membri.
+come mezzo di comunicazione verso i Membri per diffondere avvisi, notizie di manutenzione o eventi.
 
 \begin{figure}[H]
     \centering
@@ -91,8 +100,10 @@ come mezzo di comunicazione verso i Membri.
 \end{figure}
 
 \subsubsection*{8 - Impostazioni}
-Permette il salvataggio e la modifica delle preferenze di configurazione dell'applicazione
-associate all'utente, Separa la logica di visualizzazione e notifica dai dati anagrafici dell'utente.
+Permette il salvataggio e la modifica delle preferenze di configurazione dell'applicazione.
+Separa la logica di presentazione e notifica dai dati anagrafici dell'utente,
+permettendo di salvare preferenze come il tema dell'interfaccia (chiaro/scuro), i consensi per le comunicazioni
+e la presa visione delle informative legali (Privacy Policy, Termini di Servizio).
 
 \begin{figure}[H]
     \centering
@@ -101,14 +112,15 @@ associate all'utente, Separa la logica di visualizzazione e notifica dai dati an
     \label{fig:class_diagram}
 \end{figure}
 
-\subsubsection*{9 - Notifica}
-Rappresenta un messaggio asincrono inviato dal sistema all'utente, può essere un allarme tecnico o un
-avviso informativo. E' tenuto traccia del suo stato di lettura.
+\subsubsection*{9 - Ticket di supporto}
+Rappresenta una richiesta di assistenza che un utente di Rinova può aprire per segnalare
+errori o richiedere assistenza tecnica o amministrativa. Funziona come un contenitore per la
+conversazione fra l'utente e lo staff, tracciandone lo stato di avanzamento (Aperto, In Lavorazione, Risolto).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{images/classes/class_notifica.jpeg}
-    \caption{classe Notifica (class diagram)}
+    \includegraphics[width=1\textwidth]{images/classes/class_ticket.jpeg}
+    \caption{classe Ticket di supporto (class diagram)}
     \label{fig:class_diagram}
 \end{figure}
 
@@ -120,6 +132,18 @@ Rappresenta il log di database, offre sicurezza registrando ogni operazione di m
     \centering
     \includegraphics[width=1\textwidth]{images/classes/class_attivita.jpeg}
     \caption{classe Attività (class diagram)}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsubsection*{11 - Messaggio ticket}
+Rappresenta il singlo messaggio di conversazione fra l'utente e lo staff Rinova.
+Modella la conversazione, mantenendo l'ordine cronologico, il contenuto testuale e l'autore del messaggio.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/classes/class_messaggio.jpeg}
+    \caption{classe Messaggio ticket (class diagram)}
     \label{fig:class_diagram}
 \end{figure}
 

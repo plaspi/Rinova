@@ -16,7 +16,7 @@ tra i componenti e verso sistemi esterni
 \textbf{Descrizione:} Il componente costituisce il punto di ingresso per la sicurezza dell'applicazione.
 Si occupa del cilo di vita dell'identità digitale dell'utente. Dalla fase di registrazione, al login,
 logout e recupero delle credenziali. Supporta l'autenticazione mediante email e password o
-mediante providers esterni (es: google, apple), si occupa della gestione dei token di sessione
+mediante providers esterni (es: Google, Microsoft), si occupa della gestione dei token di sessione
 utilizzati dagli altri componenti.
 
 \textbf{Interfaccia richiesta - credenziali di accesso:}
@@ -86,6 +86,7 @@ fornisce al frontend i dati dell'utente esclusa la password per permetterne la v
 \textbf{Interfaccia fornita - modifica informazioni personali:}
 permette la modifica nel database delle proprie informazioni personali, restituendo l'esito
 dell'operazione d'aggioranemnto.
+
 \textbf{Interfaccia fornita - modifica credenziali d'accesso:}
 permette la modifica nel database delle proprie credenziali d'accesso, restituendo l'esito
 dell'operazione d'aggioranemnto.
@@ -96,18 +97,17 @@ con conseguente rimozione ed anonimizzazione dei dati associati per garantirne l
 
 \subsubsection*{CMP3: Gestione impostazioni utente e di sistema:}
 \textbf{Descrizione:} Il componente si occupa della gestione delle preferenze di configurazione dell'applicazione
-permettendo all'utente di personalizzare l'esperienza d'uso attraverso la selezione della lingua,
-delle impostazioni di visibilità (tema, livello di contrasto), del fuso orario, gestisce i consensi per la ricezione delle notifiche push
-ed email e fornisce l'accesso alla visualizzazione delle informative legali (termini di servizio e privacy policy). 
+permettendo all'utente di personalizzare l'esperienza d'uso, gestisce i consensi per la ricezione delle email, la selezione del tema
+e permette la visualizzazione delle informative legali (termini di servizio e privacy policy). 
 
 \textbf{Interfaccia richiesta – sessione autenticata:}
 richiede il token di sessione per verificare l'identità dell'utente.
 
 \textbf{Interfaccia richiesta - input configurazione UI:}
-riceve l'input inserito dall'utente riguardante la preferenza del tema ed il livello di contrasto da impostare.
+riceve l'input inserito dall'utente riguardante la preferenza del tema da impostare.
 
 \textbf{Interfaccia richiesta - input preferenza notifiche:}
-riceve le scelte dell'utente relative la ricezione delle notifiche push ed email (es: solo urgenti, disattivate...).
+riceve le scelte dell'utente relative la ricezione delle email.
 
 \textbf{Interfaccia fornita - salvataggio preferenze:}
 Comunica al Database le modifiche apportate dall'utente affinché vengano applicate.
@@ -152,7 +152,7 @@ fornisce la possibilità attraverso l'interfaccia utente di aggiornare lo stato 
 fornisce la possibilità d'inserimento dei dati identificativi, tecnici e di locazione di nuovi impianti da associare.
 
 \textbf{Interfaccia fornita - salvataggio nuovo impianto:}
-finalizza l'aggiunta di un nuovo impianto inviando i dati al database.
+finalizza l'aggiunta di un nuovo impianto inviando i dati al database e ponendolo "in attesa" di verifica e successiva conferma.
 
 \textbf{Interfaccia fornita - specifiche tecniche:}
 Fornisce ai componenti di calcolo (CMP5, CMP6) i parametri fissi (es. potenza nominale)
@@ -170,18 +170,13 @@ riceve le specifiche tecniche utili a normalizzare i dati e restituire percentil
 
 \textbf{Interfaccia richiesta - dati live degli impianti:}
 %scrivere ogni quanto
-riceve i dati ogni x minuti dagli strumenti di misurazione (es: picco massimo, potenza, stato batteria...)
+riceve i dati ogni 5 minuti dagli strumenti di misurazione (es: picco massimo, potenza, stato batteria...)
 
 \textbf{Interfaccia fornita - dashboard live: }
 fornisce al frontend i valori aggiornati per riempire le dashboard di produzione live.
 
 \textbf{Interfaccia fornita - KPI giornalieri:}
 Calcola e restituisce i totalizzatori della giornata corrente (energia prodotta, risparmio CO2).
-
-\textbf{Interfaccia fornita - rilevamento anomalie:}
-analizza la frequenza di arrivo dei dati per determinare se un impianto è online, offline o se sono rilevate anomalie
-nei dati. Invia un segnare al componente Gestione Comunicazioni (CMP8) se vengono rilevati stati critici
-per l'eventuale notifica all'utente.
 
 \textbf{Interfaccia fornita - storicizzazione telemetria:}
 Formatta e invia periodicamente i dati ricevuti al componente Gestione Database (CMP9),
@@ -221,8 +216,7 @@ genera e restituisce il file del report, formattato e pronto per il download.
 
 \subsubsection*{CMP7: Gestione comunità energetica (CER)}
 \textbf{Descrizione: } Il componente gestisce la logica strutturale e sociale delle Comunità
-Energetiche Rinnovabili. Permette agli utenti di cercare e unirsi a una CER esistente o di
-crearne una nuova. Gestisce i ruoli (Membro, Admin) e, per gli amministratori, fornisce gli
+Energetiche Rinnovabili. Permette agli utenti di cercare e unirsi a una CER esistente. Gestisce i ruoli (Membro, Admin) e, per gli amministratori, fornisce gli
 strumenti per accettare o rimuovere partecipanti. Si occupa inoltre di aggregare i dati di
 produzione di tutti i membri per calcolare le performance collettive della comunità.
 
@@ -284,13 +278,9 @@ fornisce al database tutti dati aggiornati.
 
 \subsubsection*{CMP8: Gestione Comunicazioni e Bacheca}
 \textbf{Descrizione:} Il componente gestisce le funzioni di comunicazioni verso l'utente.
-Ha il compito di generare e inviare avvisi tempestivi in caso di rilevamento di
-anomalie nell'impianto o di informare gli utenti della pubblicazione di annunci e news di
+Ha il compito di generare e inviare avvisi tempestivi per informare gli utenti della pubblicazione di annunci e news di
 servizio. Gestisce inoltre lo stato delle notifiche ricevute e si
 interfaccia con i sistemi esterni di invio.
-
-\textbf{Interfaccia richiesta - trigger anomalie:}
-Riceve dal componente di monitoraggio (CMP5) i segnali d'allarme da notificare tempestivamente all'utente.
 
 \textbf{Interfaccia richiesta - contenuto annunci:}
 Riceve dagli amministratori (di CER o di sistema) i dati relativi agli annunci da
@@ -298,18 +288,17 @@ notificare (titolo, data, orario, mittente, destinatari, corpo del messaggio...)
 
 \textbf{Interfaccia richiesta - verifica preferenze:}
 interroga il CMP3 per verificare le preferenze impostate dall'utente per quanto riguarda
-la ricezione di notifiche push o email.
+la ricezione di email.
 
-\textbf{Interfaccia fornita - invio email/notifiche:}
-si interfaccia con i servizi esterni per la spedizione fisica del messaggio al dispositivo
-o alla casella di posta dell'utente.
+\textbf{Interfaccia fornita - invio email:}
+si interfaccia con i servizi esterni per la spedizione fisica del messaggio alla casella di posta dell'utente.
 
 \textbf{Interfaccia fornita - pubblicazione annunci:}
 offre la possibilità di pubblicare nuovi annunci nella bacheca della comunità.
 
 \textbf{Interfaccia fornita - aggiornamento stato lettura:}
 permette al sistema di marcare lo stato della notifica, così da aggiornare il contatore
-delle notifiche non visualizzate dell'applicazione.
+dei messaggi non visualizzati nell'applicazione.
 
 \subsubsection*{CMP9: Gestione database}
 \textbf{Descrizione: }Il componente rappresenta il livello di persistenza trasversale
@@ -317,7 +306,7 @@ dell'intera applicazione. Ha il compito di memorizzare, aggiornare e recuperare 
 entità gestite dal sistema (Utenti, Impianti, Rilevazioni, Annunci, CER), garantendo l'integrità,
 la sicurezza e la disponibilità dei dati. Si interfaccia con tutti i componenti del sistema.
 
-\textbf{Interfaccia richiesta - operazioni di scrittura (CRUD):}
+\textbf{Interfaccia richiesta - operazioni di scrittura/cancellazione:}
 riceve richieste di creazione, aggiornamento o cancellazione record datutti gli altri componenti
 del sistema.
 
@@ -328,6 +317,40 @@ componenti.
 \textbf{Interfaccia fornita - persistenza e integrità dei dati:}
 Garantisce l'archiviazione sicura, la coerenza transazionale e l'accessibilità a lungo
 termine di tutte le informazioni del sistema, proteggendo i dati da perdite o corruzioni.
+
+\subsubsection*{CMP10: Gestione Supporto e Ticket}
+\textbf{Descrizione:} Il componente gestisce l'intero ciclo di vita delle richieste di assistenza tecnica
+e amministrativa. Permette agli utenti di aprire segnalazioni (ticket), monitorarne lo stato
+di avanzamento e interagire con l'amministrazione tramite un sistema di messaggistica dedicato.
+Fornisce agli amministratori gli strumenti per prendere in carico, rispondere e risolvere le
+problematiche segnalate.
+
+\textbf{Interfaccia richiesta – sessione autenticata:}
+richiede il token di sessione per identificare l'autore della segnalazione.
+
+\textbf{Interfaccia richiesta - tickets utente:}
+richiede la lista di ticket aperti dall'utente.
+
+\textbf{Interfaccia richiesta - dati nuovo ticket:}
+riceve dall'utente i dati necessari per l'apertura di una segnalazione (categoria, oggetto,
+descrizione del problema, eventuali allegati).
+
+\textbf{Interfaccia richiesta - aggiornamento stato (admin):}
+riceve dall'amministratore la richiesta di modifica dello stato del ticket (es: da "Aperto"
+a "In Lavorazione" o "Chiuso").
+
+\textbf{Interfaccia richiesta - Nuovi messaggi:}
+riceve i messaggi di risposta fra gli admin di sistema e l'utente.
+
+\textbf{Interfaccia fornita - lista ticket utente:}
+fornisce all'utente l'elenco delle proprie segnalazioni con il relativo stato corrente.
+
+\textbf{Interfaccia fornita - dettagli conversazione:}
+restituisce la cronologia completa dei messaggi scambiati all'interno di uno specifico ticket.
+
+\textbf{Interfaccia fornita - creazione ticket:}
+salva nel database la nuova richiesta di supporto garantendone la persistenza e
+assegnando un identificativo univoco.
 
 \subsection{Diagramma dei componenti}
 Viene riportato di seguito un diagramma complessivo di tutti i componenti di sistema e le loro

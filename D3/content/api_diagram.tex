@@ -40,7 +40,8 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
  & scarica\_report() & GET & /api/report/download & ?period=... & \textbf{FastAPI}: Ritorna stream binario (application/pdf). \\ \hline
 
  & cerca\_cer() & GET & /rest/v1/cer?codice\_fiscale=eq.\{cod\} & - & \textbf{Supabase}: Ritorna lista CER corrispondenti. \\ \hline
- & cerca\_impianto() & GET & .../rest/v1/impianti?... & - & \textbf{Supabase}: Ritorna oggetto Impianto singolo. \\ \hline
+& cerca\_impianto() & GET & /rest/v1/impianti?nome=ilike.*\{q\}* & - & \textbf{Supabase}: Filtra impianti per nome (case insensitive). \\ \hline& apri\_ticket() & POST & /rest/v1/ticket & \begin{tabular}[c]{@{}l@{}} \{"user\_id": "...", "categoria": "...", \\ "oggetto": "...", "descrizione": "..."\} \end{tabular} & \textbf{Supabase}: Crea il ticket con stato default 'APERTO'. Ritorna oggetto creato. \\ \hline
+& visualizza\_ticket() & GET & /rest/v1/ticket?user\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array JSON dei ticket aperti dall'utente, ordinati per data. \\ \hline
 
 \end{tabular}%
 }
@@ -146,13 +147,9 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 % UPDATE SPECIFICI (Modifica JSONB)
 \textbf{Settings} & salva\_modifiche() & PATCH & /rest/v1/users?id=eq.\{id\} & \{"settings": \{...\}\} & \textbf{Supabase}: Ritorna JSON Utente aggiornato. \\ \hline
 
- & modifica\_tema() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+ & modifica\_tema() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI (in attesa di salvataggio). \\ \hline
 
- & modifica\_lingua() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
-
- & modifica\_fusoOrario() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
-
- & modifica\_notifiche() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI. \\ \hline
+ & modifica\_notifiche() & - & - & - & \textbf{Frontend Only}: Aggiorna stato locale UI (in attesa di salvataggio). \\ \hline
 
 % DOCUMENTI LEGALI (Statici)
  & visualizza\_termini() & - & - & - & \textbf{Frontend}: Renderizza asset statico (PDF/HTML). \\ \hline
@@ -170,17 +167,17 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 \resizebox{\textwidth}{!}{
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
-\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Gestore / Ritorno} \\ \hline
+\textbf{Classe} & \textbf{Metodo} & \textbf{Method} & \textbf{Endpoint / URI} & \textbf{Request} & \textbf{Note (Ritorno / Gestione)} \\ \hline
 
-\textbf{Notifica} & segna\_come\_letta() & PATCH & /rest/v1/notifiche?id=eq.\{id\} & \{"letta": \textit{true}\} & \textbf{Supabase}: Ritorna notifica aggiornata (UI sync). \\ \hline
+\textbf{Ticket} & cambia\_stato() & PATCH & /rest/v1/ticket?id=eq.\{id\} & \{stato: "..."\} & \textbf{Supabase}: (Admin) Aggiorna lo stato del ticket. \\ \hline
 
- & elimina() & DELETE & /rest/v1/notifiche?id=eq.\{id\} & - & \textbf{Supabase}: Elimina riga (Status 204). \\ \hline
-
+& scarica\_allegato() & GET & \begin{tabular}[c]{@{}l@{}}/storage/v1/object/ticket/\\ \{ticket\_id\}/\{filename\}\end{tabular} & - & \textbf{Storage}: Scarica il singolo file specificato dall'array allegati. \\ \hline
 \end{tabular}%
 }
-\caption{Specifiche API per la gestione delle Notifiche}
-\label{tab:api_notifiche}
+\caption{API della classe TicketDiSupporto (Gestione e Operatività)}
+\label{tab:api_ticket_gestione}
 \end{table}
+
 
 \vspace{1em} % Un po' di spazio dopo le tabelle
 
