@@ -18,11 +18,11 @@ una corretta visualizzazione delle interfacce ed il corretto
 funzionamento di tutte le funzionalità presenti.
 \subsection*{RNF-02-Performance}
 Il sistema deve garantire tempi di risposta rapidi in modo da completare
-tutte le principali operazioni (accesso, caricamento dashboard, consultazione dati)
-in un tempo inferiore ai 2 secondi o nel caso di operazioni pesanti (grosse aggregazioni/grossi resoconti territoriali)
+tutte le principali operazioni (accesso, navigazioni)
+in un tempo inferiore ai 2 secondi o nel caso di operazioni pesanti (grosse aggregazioni di dati, creazione KPI)
 inferiore ai 5 secondi con un feedback visivo di caricamento.
 Questi tempi devono essere rispettati anche durante i picchi di utilizzo dell'applicazione
-che deve supportare un carico massimo di X utenti. La struttura del sistema deve 
+che deve supportare un carico massimo di 100 utenti attivi negli ultimi minuti. La struttura del sistema deve 
 inoltre essere scalabile in modo da essere facilemente adattata per supportare eventuali
 aumenti di utenza.
 \subsection*{RNF-03-Scalabilità}
@@ -36,8 +36,8 @@ del numero di:
 Il sistema deve poter essere facilmente esteso ad un maggior parco d'utenza%a nuovi \textbf{comuni o regioni}
 senza modifiche sostanziali all'infrastruttura.
 \subsection*{RNF-04-Affidabilità}
-Il sistema deve garantire un livello di disponibilità non inferiore al XX\%,
-che corrisponde ad un downtime massimo di X ore, Y minuti, Z secondi.
+Il sistema deve garantire un livello di disponibilità non inferiore al 99.9\%,
+che corrisponde ad un downtime massimo di 8 ore, 45 minuti, 36 secondi su base annua o circa 43 minuti su base mensile.
 Il sistema deve essere progettato per garantire accessibilità anche durante i
 periodi di picco d'utilizzo. Deve inoltre essere previsto un piano di ripristino
 automatico dei dati in caso di guasto (disaster recovery).
@@ -60,6 +60,7 @@ e tracciabile, devono essere garantiti:
 \end{itemize}
 
 %da valutare
+\begin{comment}
 \subsection*{RNF-07-Lingua}
 L'interfaccia utente deve essere disponibile in lingua italiana
 come predefinita, deve includere la possibilità di estensione
@@ -69,13 +70,14 @@ agli utenti di madrelingua diversa dall'italiano.
 L'opzione deve essere facilmente accessibile ed applicabile in
 qualsiasi momento, garantendo una traduzione automatica di tutti i contenuti
 testuali e di tutte le funzionalità.
-\subsection*{RNF-08-Manutentibilità}
+\end{comment}
+\subsection*{RNF-07-Manutentibilità}
 Il codice sorgente deve essere modulare e documentato,
 per consentire aggiornamenti e manutenzione evolutiva
 senza compromettere la stabilità del sistema.
 Devono essere previsti strumenti di versionamento (es: git)
 e ambienti separati per sviluppo, test e produzione.
-\subsection*{RNF-09-Usabilità}
+\subsection*{RNF-08-Usabilità}
 L'interfaccia deve essere intuitiva e deve prevedere:
 \begin{itemize}
     \item layout coerente e navigazione semplice
@@ -84,22 +86,22 @@ L'interfaccia deve essere intuitiva e deve prevedere:
     \item tempi di risposta rapidi e feedback visivo alle azioni dell'utente
 \end{itemize}
 così da fornire un esperienza chiara ed intuitiva anche per utenti meno
-tecnici o avvezzi a queste tipi di tecnologie.
-\subsection*{RNF-10-Interoperabilità}
+tecnici o avvezzi a questi tipi di tecnologie.
+\subsection*{RNF-09-Interoperabilità}
 Il sistema deve poter interagire con piattaforme esterne
 (es. GSE, sistemi comunali, database open-data energetici) tramite API RESTful
 standard e scambio dati in formato JSON o XML.
-\subsection*{RNF-11-Tracciabilità delle operazioni}
-Tutte le operazioni critiche (login, modifica dei dati, caricamento di documenti)
+\subsection*{RNF-10-Tracciabilità delle operazioni}
+Tutte le operazioni critiche (operazioni CRUD)
 devono essere salvate in un log di sistema con timestamp,
 ID utente e descrizione dell’azione. I log devono essere consultabili solo dagli
 amministratori autorizzati e conservati secondo le politiche GDPR.
-\subsection*{RNF-09-Responsività}
+\subsection*{RNF-11-Responsività}
 L’interfaccia utente deve essere completamente responsiva,
 garantendo la fruibilità da smartphone, tablet e desktop.
 Con obbiettivo quello di migliorare l'acessibilità e l'inclusione
 dei cittadini.
-\subsection*{RNF-10-Gestione errori}
+\subsection*{RNF-12-Gestione errori}
 Il sistema deve gestire in modo chiaro e sicuro eventuali
 errori (es: connessione, inserimento dati errato, server non
 disponibile) mostrando messaggi descrittivi e non

@@ -12,6 +12,7 @@ Il sistema deve consentire agli utenti di potersi registrare autonomamente diret
     \item Codice fiscale
     \item Numero di telefono
     \item Comune di residenza
+    \item Indirizzo
     \item Password
 \end{itemize}
 Il sistema deve validare i dati inseriti dall'utente, verificando che:
@@ -59,16 +60,19 @@ Il sistema deve permettere ad un utente di cercare una CER attraverso il suo nom
 \subsubsection*{RF-09-Richiesta adesione CER}
 Il sistema deve permettere ad un utente di fare richiesta di adesione per una CER, verrà posto nella lista delle richieste d'adesione della CER, in attesa di una risposta da parte di un amministratore di quella comunità.
 
+\subsubsection*{RF-10-Apertura ticket segnalazioni}
+Il sistema deve permettere ad un utente di aprire un ticket di segnalazione al fine di richiedere supporto tecnico ed amministrativo. Deve inoltre garantirne la persistenza dei dati e del suo stato.
+
 \subsection{Requisiti per Admin della CER}
-\subsubsection*{RF-10-Gestione membri della CER}
-Il sistema deve consentire all’amministratore della comunità di visualizzare l’elenco dei membri appartenenti alla CER, aggiungere nuovi membri e modificare o rimuovere quelli esistenti. Per ogni membro devono essere mostrati i dati identificativi, i punti di consumo o produzione associati e lo stato della loro partecipazione (attivo, in attesa, sospeso). Le operazioni di modifica e rimozione devono essere tracciate nel registro delle attività.
-\subsubsection*{RF-11-Gestione richieste di adesione}
+\subsubsection*{RF-11-Gestione membri della CER}
+Il sistema deve consentire all’amministratore della comunità di visualizzare l’elenco dei membri appartenenti alla CER, con la possibilità di modificarne lo stato. Per ogni membro devono essere mostrati i dati identificativi, i punti di consumo o produzione associati e lo stato della loro partecipazione (attivo, in attesa, sospeso). Le operazioni di modifica.
+\subsubsection*{RF-12-Gestione richieste di adesione}
 Il sistema deve consentire all’amministratore di approvare o rifiutare le richieste di adesione alla CER. Le richieste devono contenere i dati dell’utente e le informazioni necessarie alla valutazione (es. nome, cognome, indirizzo dell’abitazione). In caso di approvazione, il sistema deve inviare una notifica email all’utente e aggiornarne lo stato a “membro attivo”.
-\subsubsection*{RF-12-Visualizzazione dati energetici e reportistica}
+\subsubsection*{RF-13-Visualizzazione dati energetici e reportistica}
 Il sistema deve consentire all’amministratore di visualizzare report aggregati sulla produzione e il consumo energetico della CER. L’interfaccia deve permettere la selezione di un intervallo temporale (giornaliero, mensile, annuale) e la visualizzazione di grafici e tabelle riassuntive. I dati devono poter essere esportati in formato PDF.
-\subsubsection*{RF-13-Gestione bacheca avvisi}
+\subsubsection*{RF-14-Gestione bacheca avvisi}
 Il sistema deve consentire all'amministratore di gestire la bacheca avvisi della comunità, eliminando o aggiungendo nuovi avvisi per i membri.
-\subsubsection*{RF-14-Visualizzazione notifiche}
+\subsubsection*{RF-15-Visualizzazione notifiche}
 Il sistema deve permettere all'amministratore di visualizzare i messaggi inviati dai membri della sua CER in un area dedicata.
 
 
@@ -88,11 +92,11 @@ Il sistema deve permettere all'amministratore di visualizzare i messaggi inviati
 %\subsubsection*{RF-14-Comunicazioni istituzionali}
 %Il sistema deve consentire al rappresentante del Comune di inviare comunicazioni o avvisi a tutte le CER registrate nel territorio. Le comunicazioni devono poter includere testo e allegati (PDF, immagini) e devono essere visibili nell’area notifiche delle rispettive comunità.
 \subsection{Requisiti per i membri della CER}
-\subsubsection*{RF-15-Notifiche e avvisi}
+\subsubsection*{RF-16-Notifiche e avvisi}
 Il sistema deve notificare ai membri eventi rilevanti, come l’aggiunta di una comunicazione, un avviso o l’approvazione di una richiesta. I membri vengono notificati via posta elettronica.
-\subsubsection*{RF-16-Partecipazione e segnalazioni}
+\subsubsection*{RF-17-Partecipazione e segnalazioni}
 Il sistema deve consentire ai membri di inviare segnalazioni o richieste di supporto tecnico/amministrativo all’amministratore della CER via messaggio.
-\subsubsection*{RF-17-Abbandona CER}
+\subsubsection*{RF-18-Abbandona CER}
 Il sistema deve consentire al membro di una CER di abbandonarla in qualsiasi momento. 
 
 \subsection{Requisiti per l'Amministratore di Sistema (Staff Rinova)}
@@ -108,3 +112,6 @@ Il sistema deve consentire all'amministratore di sistema di eliminare definitiva
 
 \subsubsection*{RF-AS-04-Validazione impianto}
 Il sistema deve consentire all'amministratore di sistema di validare l'aggiunta di un impianto, modificandone lo stato in "attivo".
+
+\subsubsection*{RF-AS-05-Gestione ticket di supporto}
+Il sistema deve consentire all'amministratore di sistema di vsualizzare, rispondere e modificare lo stato dei ticket di supporto aperti dagli utenti.

@@ -1,4 +1,4 @@
-\setcounter{section}{4}
+\setcounter{section}{3}
 \setlength{\parindent}{0pt}  % nessun rientro
 \setlength{\parskip}{6pt}    % spazio tra paragrafi
 
@@ -9,7 +9,7 @@ Per ogni gruppo funzionale viene riportato il relativo \textit{Use Case Diagram 
 dei singoli requisiti funzionali (\textit{RF}) con riassunto, flusso principale ed eventuali eccezioni.
 
 % =========================================================
-\subsection*{Use Case Diagram – Requisiti funzionali comuni}
+\subsection{Use Case Diagram – Requisiti funzionali comuni}
 % =========================================================
 
 \subsubsection*{UCD-01 – Registrazione e login utente}
@@ -33,12 +33,12 @@ Questo use case descrive come l'utente anonimo effettua la prima registrazione a
 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
-    \item L’utente anonimo visualizza la schermata di registrazione con il form contenente i campi obbligatori: Nome, Cognome, Email, Codice fiscale, Numero di telefono, Comune di residenza e Password.
-    \item L’utente compila i campi obbligatori e, opzionalmente, quelli non obbligatori; quindi preme il pulsante ``Registrati''.
+    \item L’utente anonimo visualizza la schermata di registrazione con il form contenente i campi obbligatori: Nome, Cognome, Email, Codice fiscale, Numero di telefono, Indirizzo di residenza e Password.
+    \item L’utente compila i campi obbligatori; quindi preme il pulsante ``Registrati''.
     \item L'utente accetta i termini e condizioni per la privacy.
     \item Il sistema valida i dati inseriti (campi obbligatori, formato di nome/cognome, formato email, unicità email e codice fiscale, formato numero di telefono, criteri password).
-    \item Se la validazione ha esito positivo, il sistema crea il profilo utente e invia una email di conferma contenente un link di verifica e/o una password temporanea.
-    \item L’utente clicca il link nella email per confermare l’indirizzo; il sistema finalizza la registrazione e imposta lo stato account a ``attivo'' (o ``in attesa'' se è previsto controllo manuale).
+    \item Se la validazione ha esito positivo, il sistema crea il profilo utente e invia una email di conferma contenente un link di verifica.
+    \item L’utente clicca il link nella email per confermare l’indirizzo; il sistema finalizza la registrazione e imposta lo stato account a ``attivo''.
 \end{enumerate}
 
 \subparagraph*{Eccezioni:}
@@ -82,7 +82,6 @@ Questo use case descrive come un utente che ha dimenticato la password richiede 
 
 \subparagraph*{Eccezioni:}
 \begin{itemize}
-    \item Se l’email non è registrata, il sistema notifica l’utente (senza rivelare dati sensibili).
     \item Se il token è scaduto o invalido, il sistema richiede una nuova richiesta di recupero.
 \end{itemize}
 
@@ -143,44 +142,6 @@ Questo use case descrive come un utente modifica o elimina (se permesso) i propr
     \item Se i dati inseriti non superano la validazione (formati errati, duplicati), il sistema mostra errori e non salva.
     \item Alcuni campi obbligatori non possono essere eliminati: il sistema impedisce la rimozione e informa l’utente.
 \end{itemize}
-%NON PRESENTI
-% ------------------------
-%\paragraph*{Use Case RF-03.2: Modifica email}
-%\subparagraph*{Riassunto:}
-%Questo use case descrive come un utente modifica l’indirizzo email associato al proprio account.
-
-%\subparagraph*{Descrizione:}
-%\begin{enumerate}
-%    \item L’utente accede all’area personale e seleziona ``Cambia email''.
-%    \item Inserisce il nuovo indirizzo email; il sistema verifica il formato e che non sia già in uso.
-%    \item Il sistema invia una email di conferma al nuovo indirizzo con un link di verifica.
-%    \item L’utente clicca il link: il sistema valida il token e aggiorna l’email nel profilo, eventualmente notificando il vecchio indirizzo.
-%\end{enumerate}
-
-%\subparagraph*{Eccezioni:}
-%\begin{itemize}
-%    \item Se il nuovo indirizzo è già registrato, il sistema blocca l’operazione e segnala l’errore.
-%    \item Se l’utente non conferma la mail (link non cliccato / token scaduto), la modifica non viene applicata.
-%\end{itemize}
-
-% =========================================================
-%\paragraph*{Use Case RF-03.3: Modifica numero di telefono}
-%\subparagraph*{Riassunto:}
-%Questo use case descrive come l'utente modifica il proprio numero di telefono dall'area personale.
-
-%\subparagraph*{Descrizione:}
-%\begin{enumerate}
-%    \item L’utente seleziona ``Modifica numero di telefono'' nell’area personale.
-%    \item Inserisce il nuovo numero; il sistema verifica il formato internazionale e la validità di base.
-%    \item Il sistema può inviare un SMS con un codice OTP al nuovo numero; l’utente inserisce il codice per confermare.
-%    \item Se la verifica ha esito positivo, il sistema aggiorna il numero nel profilo.
-%\end{enumerate}
-
-%\subparagraph*{Eccezioni:}
-%\begin{itemize}
-%    \item Se il formato del numero è errato, il sistema segnala l’errore.
-%    \item Se l’OTP non è corretto o scade, la modifica non viene applicata.
-%\end{itemize}
 
 % =========================================================
 \paragraph*{Use Case RF-03.2: Cancellazione dell'account}
@@ -197,7 +158,7 @@ Questo use case descrive come l'utente può richiedere la cancellazione permanen
 \subparagraph*{Eccezioni:}
 \begin{itemize}
     \item Se l’utente non fornisce conferma esplicita, la cancellazione non procede.
-    \item Se esistono vincoli legali o dati che devono essere conservati (es. obblighi normativi), il sistema informa l’utente e non cancella tali dati; esegue invece l’anonimizzazione quando possibile.
+    \item Se esistono vincoli legali o dati che devono essere conservati (es. obblighi normativi), il sistema informa l’utente e non cancella tali dati; esegue invece l’anonimizzazione.
 \end{itemize}
 
 % =========================================================
@@ -249,6 +210,11 @@ Questo use case descrive come l'utente visualizza i propri dati energetici (cons
     \item L'utente può filtrare la visualizzazione per intervallo temporale (es. giorno, settimana, mese) o visualizzare i dati in tempo reale.
 \end{enumerate}
 
+\subparagraph*{Eccezioni:}
+\begin{itemize}
+    \item Se non sono disponibili dati il sistema mostra un messaggio appropriato.
+\end{itemize}
+
 % ------------------------
 \paragraph*{Use Case RF-06: Reportistica utente}
 \subparagraph*{Riassunto:}
@@ -270,8 +236,8 @@ Questo use case descrive le operazioni di registrazione, modifica stato (sospens
 \begin{enumerate}
     \item L’utente accede alla sezione "Impianti".
     \item \textbf{Registrazione:} L'utente seleziona "Aggiungi impianto" e compila il form con i dati obbligatori: codice identificativo, potenza nominale, posizione geografica, tipo di impianto, data di installazione. Il sistema valida i dati e registra il nuovo impianto, ponendo il suo stato in "Attesa".
-    \item \textbf{Sospensione:} L'utente seleziona un impianto esistente e modifica lo stato operativo in "Sospeso". Il sistema aggiorna lo stato e interrompe temporaneamente il calcolo della produzione per quell'impianto.
-    \item \textbf{Rimozione:} L'utente seleziona l'opzione di rimozione per un impianto non più operativo. Il sistema richiede una conferma esplicita e, dopo l'approvazione, rimuove o archivia l'impianto.
+    \item \textbf{Sospensione:} L'utente seleziona un impianto esistente e modifica lo stato operativo in "Sospeso" segnalando un guasto. Il sistema aggiorna lo stato e interrompe temporaneamente il calcolo della produzione per quell'impianto.
+    \item \textbf{Rimozione:} L'utente seleziona l'opzione di rimozione per un impianto non più operativo. Il sistema richiede una conferma esplicita e, dopo l'approvazione, rimuove l'impianto.
 \end{enumerate}
 
 \subparagraph*{Eccezioni:}
@@ -280,7 +246,7 @@ Questo use case descrive le operazioni di registrazione, modifica stato (sospens
 \end{itemize}
 
 % ------------------------
-% Diagramma UCD-03
+% Diagramma UCD-04
 % ------------------------
 \subsubsection*{UCD-04 – Ricerca e Adesione CER}
 \begin{itemize}
@@ -338,9 +304,9 @@ Questo use case descrive il processo con cui un utente invia una richiesta forma
 
 
 % =========================================================
-\subsection*{Use Case Diagram – Requisiti funzionali per Admin della CER}
+\subsection{Use Case Diagram – Requisiti funzionali per Admin della CER}
 % =========================================================
-\subsubsection*{UCD-03 – Gestione e approvazione membri della CER}
+\subsubsection*{UCD-05 – Gestione e approvazione membri della CER}
 \begin{itemize}
     \item RF-10 – Gestione membri della CER
     \item RF-11 – Approvazione richieste di adesione
@@ -350,30 +316,28 @@ Questo use case descrive il processo con cui un utente invia una richiesta forma
     \centering
     \includegraphics[width=0.9\textwidth]{images/use_case/ucd_05.pdf}
     \caption{UCD-05 – Gestione e approvazione membri della CER}
-    \label{fig:ucd03}
+    \label{fig:ucd05}
 \end{figure}
 
 % ------------------------
-\paragraph*{Use Case RF-05: Gestione membri della CER (Admin)}
+\paragraph*{Use Case RF-10: Gestione membri della CER (Admin)}
 \subparagraph*{Riassunto:}
-Questo use case descrive come l’amministratore della CER gestisce l’elenco dei membri (visualizza, aggiunge, modifica, rimuove).
+Questo use case descrive come l’amministratore della CER gestisce l’elenco dei membri (visualizza, modifica, rimuove).
 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
-    \item L’amministratore effettua login con privilegi admin e accede al pannello di gestione membri.
+    \item L’amministratore effettua login con privilegi admin e accede alla pagina della CER, visualizzando la tabella di gestione membri.
     \item Il sistema mostra la lista dei membri con dati identificativi, punti di consumo/produzione e stato di partecipazione.
-    \item L’amministratore può invitare un nuovo membro selezionando il pulsante ``invita membro'' ed inserendo i dati richiesti; il sistema li verifica e invia l'invito.
-    \item L’amministratore può selezionare un membro per modificarne i dati o rimuoverlo attraverso l'opzione ``rimuovi membro''; tutte le operazioni sono tracciate nel registro attività.
+    \item L’amministratore può selezionare un membro per modificarne lo stato o rimuoverlo attraverso l'opzione ``rimuovi membro''; tutte le operazioni sono tracciate nel registro attività.
 \end{enumerate}
 
 \subparagraph*{Eccezioni:}
 \begin{itemize}
     \item Se i dati inseriti non sono validi o confliggono con record esistenti, il sistema segnala l’errore.
-    \item La rimozione di un membro con vincoli (es. impianti associati) può richiedere passaggi aggiuntivi (reassegnazione impianti).
 \end{itemize}
 
 % ------------------------
-\paragraph*{Use Case RF-06: Approvazione richieste di adesione (Admin)}
+\paragraph*{Use Case RF-11: Approvazione richieste di adesione (Admin)}
 \subparagraph*{Riassunto:}
 Questo use case descrive come l’amministratore approva o rifiuta le richieste di adesione alla CER.
 
@@ -393,22 +357,22 @@ Questo use case descrive come l’amministratore approva o rifiuta le richieste 
 
 
 
-\subsubsection*{UCD- – Visualizzazione dati e comunicazione}
+\subsubsection*{UCD-06 – Visualizzazione dati e comunicazione}
 \begin{itemize}
-    \item RF-12 – Visualizzazione dati energetici e reportistica
-    \item RF-13 – Gestione bacheca avvisi
-    \item RF-14 - Visualizza notifiche
+    \item RF-13 – Visualizzazione dati energetici e reportistica
+    \item RF-14 – Gestione bacheca avvisi
+    \item RF-15 - Visualizzazione notifiche
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_05darinominare.pdf}
-    \caption{UCD-05 – Gestione e approvazione membri della CER}
-    \label{fig:ucd03}
+    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_06.pdf}
+    \caption{UCD-06 – Gestione e approvazione membri della CER}
+    \label{fig:ucd06}
 \end{figure}
 
 % ------------------------
-\paragraph*{Use Case RF-12: Visualizzazione dati energetici e reportistica}
+\paragraph*{Use Case RF-13: Visualizzazione dati energetici e reportistica}
 \subparagraph*{Riassunto:}
 Questo use case descrive la visualizzazione, aggregazione e esportazione dei dati energetici della CER.
 
@@ -426,13 +390,13 @@ Questo use case descrive la visualizzazione, aggregazione e esportazione dei dat
 \end{itemize}
 
 % ------------------------
-\paragraph*{Use Case RF-13: Gestione bacheca avvisi}
+\paragraph*{Use Case RF-14: Gestione bacheca avvisi}
 \subparagraph*{Riassunto:}
 Questo use case descrive le operazioni di creazione, modifica e cancellazione delle comunicazioni ufficiali da parte dell'amministratore della CER, destinate a essere visualizzate da tutti i membri della comunità.
 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
-    \item \textbf{Pubblicazione:} L'amministratore seleziona il pulsante "+" e compila i campi obbligatori: Titolo, Testo del messaggio e Tipo (es. Info, Avviso, Manutenzione, Evento). Alla conferma, il sistema pubblica il messaggio rendendolo visibile a tutti i membri e invia una notifica (cfr. RF-15).
+    \item \textbf{Pubblicazione:} L'amministratore seleziona il pulsante "+" e compila i campi obbligatori: Titolo, Testo del messaggio e Tipo (es. Info, Avviso, Manutenzione, Evento). Alla conferma, il sistema pubblica il messaggio rendendolo visibile a tutti i membri e invia una notifica (cfr. RF-16).
     \item \textbf{Rimozione:} L'amministratore elimina un avviso selezionandolo e premendo l'icona del cestino. Il sistema lo rimuove permanentemente dalla bacheca dei membri.
 \end{enumerate}
 
@@ -443,7 +407,7 @@ Questo use case descrive le operazioni di creazione, modifica e cancellazione de
 \end{itemize}
 
 % ------------------------
-\paragraph*{Use Case RF-14: Visualizza notifiche}
+\paragraph*{Use Case RF-15: Visualizzazione notifiche}
 \subparagraph*{Riassunto:}
 Questo use case descrive come l'amministratore consulta la sezione dedicata ai messaggi ricevuti dai membri della sua CER.
 
@@ -460,163 +424,15 @@ Questo use case descrive come l'amministratore consulta la sezione dedicata ai m
     \item Se non sono presenti notifiche, il sistema mostra un messaggio informativo ("Nessuna notifica presente").
 \end{itemize}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%FUNZIONALITA COMUNE NON PRESENTI
-\begin{comment}
 % =========================================================
-\subsection*{Use Case Diagram – Requisiti funzionali per il Rappresentante del Comune}
+\subsection{Use Case Diagram – Requisiti funzionali per Membri della CER}
 % =========================================================
 
-% ------------------------
-\paragraph*{UCD-05 – Supervisione delle CER territoriali}
+% =========================================================
+\paragraph*{UCD-07 – Notifiche e segnalazioni}
 \begin{itemize}
-    \item RF-11 – Gestione e supervisione delle CER comunali
-    \item RF-12 – Visualizzazione dati aggregati
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_05.pdf}
-    \caption{UCD-05}
-    \label{fig:ucd05}
-\end{figure}
-
-% =========================================================
-\paragraph*{Use Case RF-11: Gestione e supervisione delle CER comunali (Rappresentante del Comune)}
-\subparagraph*{Riassunto:}
-Questo use case descrive come il rappresentante del Comune visualizza e supervisiona le CER attive nel territorio.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il rappresentante effettua login con credenziali istituzionali accedendo alla homepage per il lato Comune e seleziona ``Elenco CER''.
-    \item Il sistema mostra l’elenco delle CER attive con indicatori sintetici (numero membri, produzione complessiva, energia condivisa, stato operativo).
-    \item Il rappresentante può selezionare una singola CER premendola, per consultare i dettagli (ma non modificarne la configurazione interna).
-    \item Il sistema permette il filtraggio dei dati e delle CER selezionabili per area geografica o periodo attraverso un pannello filtri.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se non ci sono CER nel territorio, il sistema mostra uno stato vuoto e suggerimenti.
-    \item Se i dati di una CER sono riservati, l’accesso è limitato secondo i permessi.
-\end{itemize}
-
-% =========================================================
-\paragraph*{Use Case RF-12: Visualizzazione dati aggregati (Rappresentante del Comune)}
-\subparagraph*{Riassunto:}
-Questo use case descrive la consultazione di indicatori energetici aggregati sul territorio comunale.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il rappresentante effettua login con credenziali istituzionali accedendo alla homepage dedicata al Comune e seleziona ``Visualizza dati''.
-    \item Il sistema mostra energia prodotta, energia condivisa, numero di cittadini coinvolti e riduzione totale di emissioni delle CER presenti nel territorio.
-    \item È possibile filtrare e generare grafici comparativi per periodo o per CER interagendo con gli appositi filtri.
-    \item Il rappresentante può esportare i dati attraverso il pulsante ``Esporta dati''.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se alcuni dati non sono disponibili o aggiornati, il sistema mostra l’avviso e i dati parziali.
-    \item Se il filtro non trova risultati, il sistema informa l’utente.
-\end{itemize}
-
-% =========================================================
-\paragraph*{UCD-06 – Gestione relazionale e comunicativa}
-\begin{itemize}
-    \item RF-13 – Gestione richieste di approvazione o supporto
-    \item RF-14 – Comunicazioni istituzionali
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_06.pdf}
-    \caption{UCD-06}
-    \label{fig:ucd06}
-\end{figure}
-
-% =========================================================
-\paragraph*{Use Case RF-13: Gestione richieste di approvazione o supporto (Rappresentante del Comune)}
-\subparagraph*{Riassunto:}
-Questo use case descrive come il rappresentante visualizza e gestisce le richieste e comunicazioni inviate dalle CER che necessitano supervisione.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il rappresentante accede all’elenco richieste (nuove comunità da validare, segnalazioni tecniche/amministrative) dall'homepage dedicata al Comune.
-    \item Seleziona una richiesta per visualizzarne i dettagli e la documentazione allegata.
-    \item Aggiorna lo stato della richiesta (es. in lavorazione, approvata, respinta) dal menù a tendina e aggiunge un commento visibile agli amministratori della CER scrivendo nell'apposita area.
-    \item Il sistema invia notifiche agli interessati e registra le azioni svolte.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se la richiesta manca di informazioni, il rappresentante può richiedere integrazioni prima di decidere.
-    \item Se la decisione richiede verifiche esterne, lo stato può essere temporaneamente sospeso.
-\end{itemize}
-
-% =========================================================
-\paragraph*{Use Case RF-14: Comunicazioni istituzionali (Rappresentante del Comune)}
-\subparagraph*{Riassunto:}
-Questo use case descrive come il rappresentante invia comunicazioni o avvisi alle CER del territorio.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il rappresentante apre la sezione ``Comunicazioni'' dall'homepage dedicata al Comune e compone un messaggio includendo testo e allegati (PDF, immagini).
-    \item Seleziona le CER destinatarie (tutte o subset) e invia la comunicazione.
-    \item Il sistema recapita i messaggi nelle aree notifiche delle CER e invia opzionalmente email.
-    \item Le comunicazioni vengono registrate e disponibili per consultazione futura.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se gli allegati superano il limite di dimensione, il sistema blocca l’invio e richiede riduzione.
-    \item Se alcuni destinatari non sono raggiungibili, il sistema notifica l’errore e fornisce la lista parziale di recapito.
-\end{itemize}
-\end{comment}
-
-
-
-
-
-
-
-
-
-% =========================================================
-\subsection*{Use Case Diagram – Requisiti funzionali per i Membri della CER}
-% =========================================================
-
-%NON PRESENTE E SPOSTATO ALL'UTENTE
-\begin{comment}
-% ------------------------
-\paragraph*{UCD-07 – Visualizzazione e confronto}
-\begin{itemize}
-    \item RF-15 – Visualizzazione dati energetici personali
-    \item RF-16 – Confronto con la comunità
+    \item RF-16 – Notifiche e avvisi
+    \item RF-17 – Partecipazione e segnalazioni
 \end{itemize}
 
 \begin{figure}[H]
@@ -627,65 +443,7 @@ Questo use case descrive come il rappresentante invia comunicazioni o avvisi all
 \end{figure}
 
 % =========================================================
-\paragraph*{Use Case RF-15: Visualizzazione dati energetici personali (Membro CER)}
-\subparagraph*{Riassunto:}
-Questo use case descrive come un membro della CER visualizza i propri dati energetici personali.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il membro accede all’area personale e seleziona ``I miei dati energetici''.
-    \item Il sistema mostra consumo, quota di energia condivisa, produzione (se prosumer) e trend temporali tramite grafici e valori numerici.
-    \item I dati possono essere aggiornati periodicamente o in tempo reale se disponibile il feed.
-    \item L’utente può esportare o salvare viste specifiche tramite le opzioni ``Salva'' ed ``Esporta''.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se il feed dati non è aggiornato, il sistema mostra l’ultima rilevazione valida e un avviso di staleness.
-    \item Se manca l’associazione tra utente e smart meter, il sistema indica il problema.
-\end{itemize}
-
-\subparagraph*{Estensioni:}
-\begin{itemize}
-    \item Avvisi personalizzabili (es. soglie consumo).
-\end{itemize}
-
-% =========================================================
-\paragraph*{Use Case RF-16: Confronto con la comunità (Membro CER)}
-\subparagraph*{Riassunto:}
-Questo use case descrive come un membro confronta i propri consumi/produzione con la media della comunità in forma anonima.
-
-\subparagraph*{Descrizione:}
-\begin{enumerate}
-    \item Il membro seleziona la funzione ``Confronta con la comunità'' dall'area personale.
-    \item Il sistema aggrega i dati della comunità (anonimizzati) di cui l'utente è membro e calcola medie e percentili per il periodo selezionato.
-    \item Viene mostrato un grafico comparativo o tabella riassuntiva che evidenzia la posizione del membro rispetto alla media.
-    \item L’utente può filtrare per periodo, tipologia di consumo e visualizzare suggerimenti per migliorare l’efficienza.
-\end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se i dati aggregati non sono sufficienti per preservare l’anonimato (troppi pochi membri), il sistema non mostra i confronti e informa l’utente.
-    \item Se i dati comunitari sono incompleti, il sistema mostra risultati parziali.
-\end{itemize}
-\end{comment}
-
-% =========================================================
-\paragraph*{UCD-08 – Notifiche e segnalazioni}
-\begin{itemize}
-    \item RF-17 – Notifiche e avvisi
-    \item RF-18 – Partecipazione e segnalazioni
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_10.pdf}
-    \caption{UCD-10}
-    \label{fig:ucd10}
-\end{figure}
-
-% =========================================================
-\paragraph*{Use Case RF-17: Notifiche e avvisi (Membro CER)}
+\paragraph*{Use Case RF-16: Notifiche e avvisi (Membro CER)}
 \subparagraph*{Riassunto:}
 Questo use case descrive come il sistema notifica ai membri eventi rilevanti e come i membri consultano le notifiche.
 
@@ -701,7 +459,7 @@ Questo use case descrive come il sistema notifica ai membri eventi rilevanti e c
 \end{itemize}
 
 % =========================================================
-\paragraph*{Use Case RF-18: Partecipazione e segnalazioni (Membro CER)}
+\paragraph*{Use Case RF-17: Partecipazione e segnalazioni (Membro CER)}
 \subparagraph*{Riassunto:}
 Questo use case descrive come i membri inviano comunicazioni o richieste di supporto agli amministratori delle CER.
 
@@ -709,30 +467,29 @@ Questo use case descrive come i membri inviano comunicazioni o richieste di supp
 \begin{enumerate}
     \item Il membro accede alla pagina dedicata alla propria CER.
     \item Nella sezione referenti può inviare, premendo l'icona della busta un messaggio all'amministratore scelto.
-    \item L'amministratore può visualizzare il messaggio inviato nell'apposita sezione.
+    \item L'amministratore può visualizzare il messaggio inviato nell'apposita sezione(RF-15).
 \end{enumerate}
 
 % ------------------------
-% Diagramma UCD-04
+% Diagramma UCD-08
 % ------------------------
-\subsubsection*{UCD-04 – Abbandono CER}
+\subsubsection*{UCD-08 – Abbandono CER}
 \begin{itemize}
-    \item RF-16 – Abbandono CER
+    \item RF-18 – Abbandono CER
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    % Assicurati di salvare l'immagine come ucd_04.pdf
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_12.pdf}
-    \caption{UCD-04 – Abbandono CER}
-    \label{fig:ucd04}
+    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_08.pdf}
+    \caption{UCD-08 – Abbandono CER}
+    \label{fig:ucd08}
 \end{figure}
 
 % ------------------------
 % Dettaglio Use Case
 % ------------------------
 
-\paragraph*{Use Case RF-16: Abbandono CER}
+\paragraph*{Use Case RF-18: Abbandono CER}
 \subparagraph*{Riassunto:}
 Questo use case descrive la procedura formale con cui un membro della Comunità Energetica decide volontariamente di recedere dal contratto di partecipazione, interrompendo la condivisione dell'energia e la maturazione degli incentivi.
 
@@ -752,12 +509,13 @@ Questo use case descrive la procedura formale con cui un membro della Comunità 
 
 
 
+\subsection*{Use Case Diagram – Requisiti funzionali per Amministratori dei Sistema}
 
 
 % ------------------------
-% Diagramma UCD-05 (Super Admin)
+% Diagramma UCD-09 (Super Admin)
 % ------------------------
-\subsubsection*{UCD-05 – Gestione Piattaforma (Super Admin)}
+\subsubsection*{UCD-09 – Gestione Piattaforma (Super Admin)}
 \begin{itemize}
     \item RF-AS-01 – Registrazione Nuova CER
     \item RF-AS-02 – Modifica Dati Anagrafici CER
@@ -767,9 +525,9 @@ Questo use case descrive la procedura formale con cui un membro della Comunità 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_11.pdf}
-    \caption{UCD-05 – Gestione Piattaforma }
-    \label{fig:ucd05}
+    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_09.pdf}
+    \caption{UCD-09 – Gestione Piattaforma }
+    \label{fig:ucd09}
 \end{figure}
 
 % ------------------------
@@ -810,3 +568,58 @@ Questo use case descrive il processo di approvazione tecnica di un nuovo impiant
 \begin{itemize}
     \item Se i dati non sono conformi (es. POD inesistente o potenza errata), l'amministratore rifiuta la validazione inserendo una motivazione.
 \end{itemize}
+
+% ------------------------
+% Diagramma UCD-10
+% ------------------------
+\subsubsection*{UCD-10 – Sistema di Supporto e Ticket}
+\begin{itemize}
+    \item RF-10 – Apertura ticket segnalazioni
+    \item RF-AS-05 – Gestione ticket di supporto
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/use_case/ucd_10.pdf}
+    \caption{UCD-10 – Sistema di Supporto e Ticket}
+    \label{fig:ucd10}
+\end{figure}
+
+% ------------------------
+% Dettaglio Use Case
+% ------------------------
+
+\paragraph*{Use Case RF-10: Apertura Ticket Segnalazioni}
+\subparagraph*{Riassunto:}
+Questo use case descrive la procedura con cui un utente (Membro o Utente semplice) apre una segnalazione per richiedere assistenza tecnica o amministrativa allo staff di Rinova.
+
+\subparagraph*{Descrizione:}
+\begin{enumerate}
+    \item L’utente accede alla sezione "Supporto".
+    \item I'utente compila il modulo con:
+    \begin{itemize}
+        \item Categoria (es. Problema Tecnico, Fatturazione e Contratti, Feedback, Gestione Account).
+        \item Oggetto della richiesta.
+        \item Descrizione dettagliata del problema.
+        \item Eventuali allegati (screenshot o documenti).
+    \end{itemize}
+    \item L'utente conferma l'invio.
+    \item Il sistema registra il ticket nel database assegnandogli un ID univoco, imposta lo stato su "Aperto" e mostra una conferma a video.
+    \item Il ticket diventa visibile nella lista "I miei Ticket" dell'utente per monitorarne l'evoluzione.
+\end{enumerate}
+
+\paragraph*{Use Case RF-AS-05: Gestione Ticket di Supporto}
+\subparagraph*{Riassunto:}
+Questo use case descrive le attività del Super Admin (Staff Rinova) volte alla risoluzione delle problematiche segnalate dagli utenti.
+
+\subparagraph*{Descrizione:}
+\begin{enumerate}
+    \item Il Super Admin accede alla lista dei ticket.
+    \item L'Admin seleziona un ticket per visualizzarne i dettagli e lo storico messaggi.
+    \item L'Admin può eseguire diverse azioni:
+    \begin{itemize}
+        \item \textbf{Rispondere:} Inserisce un messaggio di risposta che verrà notificato all'utente.
+        \item \textbf{Cambiare Stato:} Aggiorna lo stato del ticket (es. da "Aperto" a "In Lavorazione" o "Risolto").
+    \end{itemize}
+    \item Il sistema salva le modifiche e aggiorna la vista lato utente.
+\end{enumerate}

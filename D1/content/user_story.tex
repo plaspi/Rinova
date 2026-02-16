@@ -1,4 +1,4 @@
-\setcounter{section}{3}
+\setcounter{section}{4}
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}
 \setlength{\itemsep}{3pt}
@@ -112,6 +112,7 @@ Come utente autenticato, voglio potermi disconnettere in modo sicuro, in modo da
 \end{itemize}
 \subsubsection*{User story 7 - associata a FR-05-06: Visualizzazione dati e reportistica}
 In quanto utente, voglio poter vedere i dati di produzione dei miei impianti associati ed avere la possibilità di scaricarli.
+
 \textbf{Criteri di accettazione:}
 \begin{itemize}
     \item Le aree dedicate alle dashboard mostrano grafici interattivi (lineari o a barre) che visualizzano l'andamento di produzione e consumi aggregati per l'intervallo temporale selezionato (giorno, settimana, mese), o live nell'apposita sezione.
@@ -140,7 +141,7 @@ In quanto utente, voglio poter visualizzare e gestire gli impianti a me associat
     \item Sviluppare il Backend necessario per le operazioni CRUD (Lettura, Aggiornamento stato, Eliminazione).
     \item Aggiungere il controllo lato backend che esclude gli impianti con stato "In Manutenzione" dai calcoli energetici della CER.
 \end{itemize}
-\subsubsection{User story 9 . associata a FR-08-09: Ricerca ed adesione CER}
+\subsubsection*{User story 9 . associata a FR-08-09: Ricerca ed adesione CER}
 In quanto utente, voglio poter usare Rinova per cercare una comunità energetica a cui fare richiesta d'adesione.
 \textbf{Criteri di accettazione:}
 \begin{itemize}
@@ -154,12 +155,29 @@ In quanto utente, voglio poter usare Rinova per cercare una comunità energetica
 \begin{itemize}
     \item Sviluppare l'interfaccia di ricerca con filtri e la visualizzazione dei risultati (Frontend).
     \item Implementare l'endpoint API per la ricerca delle CER nel database (filtro per nome/ID).
-    \item Creare la tabella di associazione "Richieste" (User\_ID, CER\_ID, Stato, Data).
+    \item Creare la relazione fra una CER e gli utenti in lista d'attesa.
     \item Sviluppare la logica backend per l'invio della richiesta e il controllo dei duplicati.
 \end{itemize}
 
+\subsubsection*{User Story 10 – associata a RF-10: Apertura Ticket di Supporto}
+\textbf{Richiesta di assistenza tecnica}
+
+Come utente, voglio poter aprire un ticket di segnalazione per richiedere supporto tecnico o amministrativo alla piattaforma, in modo da risolvere problemi che non posso gestire autonomamente.
+
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item L'utente può accedere a una sezione "Supporto" e compilare un form con oggetto e descrizione del problema.
+    \item Il sistema assegna un ID univoco al ticket e lo salva con stato "Aperto".
+    \item L'utente può visualizzare la lista dei propri ticket e il loro stato corrente (Aperto, In lavorazione, Chiuso).
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Creare l'interfaccia di inserimento ticket e la dashboard utente per lo storico segnalazioni.
+    \item Implementare la tabella database per i ticket e le API di creazione.
+\end{itemize}
+
 \subsection{User Story legate ai requisiti funzionali specifici per gli amministratori della CER}
-\subsubsection*{User Story 10 – associata a RF-10: Gestione membri della CER}
+\subsubsection*{User Story 11 – associata a RF-11: Gestione membri della CER}
 \textbf{Gestione elenco membri e loro dati}
 
 Come amministratore della CER, voglio visualizzare e gestire i membri della comunità, in modo da poter mantenere aggiornata la composizione della CER.
@@ -174,7 +192,7 @@ Come amministratore della CER, voglio visualizzare e gestire i membri della comu
     \item Creare tabella membri con azioni CRUD.
     \item Aggiornare stato membro in tempo reale.
 \end{itemize}
-\subsubsection*{User Story 11 – associata a RF-11: Approvazione richieste di adesione}
+\subsubsection*{User Story 12 – associata a RF-12: Approvazione richieste di adesione}
 \textbf{Gestione richieste di nuovi membri}
 Come amministratore della CER, voglio approvare o rifiutare le richieste di adesione, in modo da controllare chi entra nella comunità.
 
@@ -210,7 +228,7 @@ Come amministratore della CER, voglio registrare e monitorare gli impianti energ
     \item Mostrare alert in caso di guasto.
 \end{itemize}
 \end{comment}
-\subsubsection*{User Story 12 – associata a RF-12: Reportistica e analisi energetica}
+\subsubsection*{User Story 13 – associata a RF-13: Reportistica e analisi energetica}
 \textbf{Visualizzazione report e analisi dei benefici}
 
 Come amministratore della CER, voglio consultare report energetici e analisi economiche, in modo da monitorare l’efficienza e i benefici della CER.
@@ -227,7 +245,7 @@ Come amministratore della CER, voglio consultare report energetici e analisi eco
     \item Collegare il servizio di generazione PDF per creare il report dinamico.
 \end{itemize}
 
-\subsubsection*{User Story 13 – associata a RF-13-14: Gestione comunicazioni e avvisi}
+\subsubsection*{User Story 14 – associata a RF-14-15: Gestione comunicazioni e avvisi}
 \textbf{Pubblicazione avvisi e consultazione notifiche}
 
 In quanto amministratore della CER, voglio poter gestire la bacheca comune e visualizzare i messaggi ricevuti dai membri, per garantire una comunicazione efficace e bidirezionale all'interno della comunità.
@@ -245,7 +263,7 @@ In quanto amministratore della CER, voglio poter gestire la bacheca comune e vis
     \item Implementare il componente UI per la bacheca con form di pubblicazione e lista avvisi.
     \item Sviluppare le API backend per le operazioni CRUD (Create, Read, Delete) sugli avvisi.
     \item Creare il centro notifiche per l'admin, con logica di distinzione letto/non letto.
-    \item Implementare il meccanismo di aggiornamento del contatore notifiche (badge) nell'header.
+    \item Implementare il meccanismo di aggiornamento del contatore notifiche.
 \end{itemize}
 
 
@@ -253,7 +271,7 @@ In quanto amministratore della CER, voglio poter gestire la bacheca comune e vis
 \subsection{User story legate ai requisti funzionali specifici per i membri della CER}
 %SPOSRATO LATO UTENTE
 
-\subsubsection*{User Story 14 – associata a RF-15: Notifiche e avvisi}
+\subsubsection*{User Story 15 – associata a RF-16: Notifiche e avvisi}
 \textbf{Ricezione di notifiche e aggiornamenti}
 
 Come membro della CER, voglio ricevere notifiche sulle attività della mia CER, in modo da essere sempre informato su cambiamenti e novità.
@@ -268,7 +286,7 @@ Come membro della CER, voglio ricevere notifiche sulle attività della mia CER, 
     \item Gestione invio messaggi via posta elettronica.
 \end{itemize}
 
-\subsubsection*{User Story 15 – associata a RF-16: Segnalazioni e richieste}
+\subsubsection*{User Story 16 – associata a RF-17: Segnalazioni e richieste}
 \textbf{Invio segnalazioni tecniche o amministrative}
 
 Come membro della CER, voglio poter comunicare con gli amministratori della mia CER in modo da poter inviare sengalazioni o richiedere assistenza.
@@ -289,7 +307,7 @@ Come membro della CER, voglio poter comunicare con gli amministratori della mia 
     \item Implementare la logica backend per la gestione degli stati (Inviato/Letto) e l'aggiornamento dello stato quando l'amministratore apre la notifica.
 \end{itemize}
 
-\subsubsection*{User Story 16 – associata a RF-17: Abbandono CER}
+\subsubsection*{User Story 17 – associata a RF-18: Abbandono CER}
 \textbf{Recesso volontario dalla comunità}
 
 In quanto membro della CER, voglio poter abbandonare la comunità in qualsiasi momento, per interrompere la condivisione dei miei dati energetici e la partecipazione al sistema di incentivi.
@@ -305,14 +323,14 @@ In quanto membro della CER, voglio poter abbandonare la comunità in qualsiasi m
 \textbf{Tasks:}
 \begin{itemize}
     \item Implementare il pulsante di abbandono e la finestra modale di conferma nell'interfaccia utente.
-    \item Sviluppare l'endpoint API per gestire la logica di uscita (aggiornamento stato membro nel database).
+    \item Sviluppare l'endpoint API per gestire la logica di uscita (eliminazione membro nel database).
     \item Implementare la logica di backend che interrompe il calcolo dell'energia condivisa per quell'utente a partire dalla data di uscita.
     \item Configurare il sistema di notifica per avvisare l'amministratore dell'avvenuto recesso.
 \end{itemize}
 
 \subsection{User Story specifiche per Super Admin (Staff Rinova)}
 
-\subsubsection*{User Story 19 – associata a RF-AS-01/02/03: Gestione ciclo di vita CER}
+\subsubsection*{User Story 18 – associata a RF-AS-01/02/03: Gestione ciclo di vita CER}
 \textbf{CRUD Comunità Energetiche}
 Come Super Admin, voglio creare, modificare ed eliminare le CER sulla piattaforma, per gestire i clienti del servizio Rinova.
 \textbf{Criteri di accettazione:}
@@ -325,7 +343,7 @@ Come Super Admin, voglio creare, modificare ed eliminare le CER sulla piattaform
     \item rendere disponibili le operazioni CRUD solo agli amministratori autorizzati.
 \end{itemize}
 
-\subsubsection*{User Story 20 – associata a RF-AS-04: Validazione Impianti}
+\subsubsection*{User Story 19 – associata a RF-AS-04: Validazione Impianti}
 \textbf{Approvazione tecnica impianti}
 Come Super Admin, voglio validare gli impianti inseriti dagli utenti, per garantire che solo impianti certificati partecipino al calcolo dell'energia.
 \textbf{Criteri di accettazione:}
@@ -341,4 +359,23 @@ Come Super Admin, voglio validare gli impianti inseriti dagli utenti, per garant
     \item Sviluppare l'endpoint backend per l'aggiornamento dello stato (Approvato/Rifiutato).
     \item Implementare un modale per l'inserimento della motivazione in caso di rifiuto.
     \item Configurare il trigger per l'invio automatico della notifica email all'utente al cambio di stato.
+\end{itemize}
+
+\subsubsection*{User Story 20 – associata a RF-AS-05: Gestione Ticket di Supporto}
+\textbf{Risoluzione problematiche utenti}
+
+Come Amministratore di Sistema (Staff Rinova), voglio visualizzare e gestire i ticket aperti dagli utenti, per fornire assistenza e risolvere malfunzionamenti.
+
+\textbf{Criteri di accettazione:}
+\begin{itemize}
+    \item L'admin visualizza una lista di tutti i ticket aperti, filtrabili per stato.
+    \item L'admin può entrare nel dettaglio di un ticket e inserire una risposta.
+    \item L'admin può modificare lo stato del ticket (es. da "Aperto" a "Risolto").
+    \item Alla risposta o al cambio di stato, l'utente riceve una notifica.
+\end{itemize}
+\textbf{Tasks:}
+\begin{itemize}
+    \item Sviluppare il pannello di amministrazione per la gestione dei ticket.
+    \item Implementare la logica di risposta all'interno del ticket.
+    \item Collegare il sistema di notifiche agli aggiornamenti del ticket.
 \end{itemize}
