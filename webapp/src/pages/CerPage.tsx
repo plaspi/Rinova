@@ -247,7 +247,7 @@ function AnnouncementDetail({ announcement, currentUserId, onClose, onDelete }: 
                         </div>
                         <h2 className="text-xl font-bold leading-tight">{announcement.titolo}</h2>
                     </div>
-                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors p-1 hover:bg-muted rounded-full">
+                    <button onClick={onClose} className="text-muted-foreground bg-card! hover:text-red-600! border-0! transition-colors p-1 hover:bg-muted rounded-full">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -279,14 +279,14 @@ function AnnouncementDetail({ announcement, currentUserId, onClose, onDelete }: 
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-2"
+                                className="text-red-600 bg-card! hover:border-red-600! hover:text-red-700 hover:bg-red-50 gap-2"
                                 onClick={() => onDelete(announcement.id)}
                             >
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only sm:not-sr-only">Elimina</span>
                             </Button>
                         )}
-                        <Button onClick={onClose} variant="outline" size="sm">Chiudi</Button>
+                        <Button onClick={onClose} variant="outline" size="sm" className="hover:border-primary!">Chiudi</Button>
                     </div>
                 </div>
             </div>

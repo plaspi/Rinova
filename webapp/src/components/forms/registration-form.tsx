@@ -164,7 +164,7 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="email" className="text-xs">Email</Label>
-              <Input id="email" type="email" placeholder="mail@example.com" className="h-9 bg-brand-gradient! placeholder:text-background" {...register("email")} />
+              <Input id="email" type="email" placeholder="mail@example.com" className="h-9 bg-card focurs:border-primary! " {...register("email")} />
               {errors.email && <p className="text-[10px] text-destructive">{errors.email.message}</p>}
             </div>
             <div className="space-y-1">
@@ -180,9 +180,9 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground bg-brand-gradient! focus:outline-none flex items-center justify-center"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground bg-card! hover:border-primary! hover:text-foreground bg-brand-card! flex items-center justify-center"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-background" /> : <Eye className="h-4 w-4 text-background" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
               </div>
               {errors.password && <p className="text-[10px] text-destructive">{errors.password.message}</p>}
@@ -193,12 +193,12 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="name" className="text-xs">Nome</Label>
-              <Input id="name" placeholder="Mario" className="h-9 bg-brand-gradient! placeholder:text-background" {...register("name")} />
+              <Input id="name" placeholder="Mario" className="h-9 bg-card! focus:border-primary! " {...register("name")} />
               {errors.name && <p className="text-[10px] text-destructive">{errors.name.message}</p>}
             </div>
             <div className="space-y-1">
               <Label htmlFor="surname" className="text-xs">Cognome</Label>
-              <Input id="surname" placeholder="Rossi" className="h-9 bg-brand-gradient! placeholder:text-background" {...register("surname")} />
+              <Input id="surname" placeholder="Rossi" className="h-9 bg-card! focus:border-primary!" {...register("surname")} />
               {errors.surname && <p className="text-[10px] text-destructive">{errors.surname.message}</p>}
             </div>
           </div>
@@ -207,7 +207,7 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="fiscalCode" className="text-xs">Codice Fiscale</Label>
-              <Input id="fiscalCode" placeholder="RSSMRA..." className="h-9 uppercase font-mono bg-brand-gradient! placeholder:text-background" maxLength={16} {...register("fiscalCode")} />
+              <Input id="fiscalCode" placeholder="RSSMRA..." className="h-9 uppercase font-mono bg-card! focus:border-primary!" maxLength={16} {...register("fiscalCode")} />
               {errors.fiscalCode && <p className="text-[10px] text-destructive">{errors.fiscalCode.message}</p>}
             </div>
             <div className="space-y-1">
@@ -217,10 +217,10 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
                 <div className="flex items-center justify-center h-full px-3 bg-muted/30 border-r border-input rounded-l-md text-xs font-medium text-muted-foreground select-none">
                   +39
                 </div>
-                <input 
+                <Input 
                   id="phoneNumber" 
                   type="tel"
-                  className="flex-1 bg-transparent px-3 py-1 text-sm outline-none w-full h-full rounded-r-md bg-brand-gradient! placeholder:text-background"
+                  className="flex-1 px-3 py-1 text-sm  w-full h-full rounded-r-md bg-card! "
                   placeholder="3331234567"
                   {...register("phoneNumber")} 
                 />
@@ -236,14 +236,14 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
               {/* VIA */}
               <div className="space-y-1">
                 <Label htmlFor="street_name" className="text-xs">Via / Piazza</Label>
-                <Input id="street_name" placeholder="Via Roma" className="h-9 bg-brand-gradient! placeholder:text-background" {...register("street_name")} />
+                <Input id="street_name" placeholder="Via Roma" className="h-9 bg-card! focus:border-primary!" {...register("street_name")} />
                 {errors.street_name && <p className="text-[10px] text-destructive absolute">{errors.street_name.message}</p>}
               </div>
 
               {/* NUMERO */}
               <div className="space-y-1">
                 <Label htmlFor="street_number" className="text-xs">N°</Label>
-                <Input id="street_number" placeholder="10" className="h-9 bg-brand-gradient! placeholder:text-background" {...register("street_number")} />
+                <Input id="street_number" placeholder="10" className="h-9 bg-card! focus:border-primary!" {...register("street_number")} />
                 {errors.street_number && <p className="text-[10px] text-destructive absolute">{errors.street_number.message}</p>}
               </div>
               
@@ -255,7 +255,7 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
                       id="zip_code" 
                       placeholder="00100" 
                       maxLength={5} 
-                      className="h-9 bg-brand-gradient! placeholder:text-background" 
+                      className="h-9 bg-card! focus:border-primary!" 
                       {...register("zip_code")} 
                     />
                     {isFetchingCap && (

@@ -124,7 +124,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground bg-transparent outline-none! flex items-center justify-center transition-colors select-none!"
+                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground bg-card! outline-none! flex items-center justify-center transition-colors select-none!"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -136,11 +136,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         <CardFooter className="flex flex-col gap-4 p-0 pt-6">
           <Button 
             type="submit" 
-            className="w-full h-10 font-semibold shadow-md text-foreground! bg-primary!" 
+            className="w-full h-10 font-semibold shadow-md text-background! bg-brand-gradient!" 
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Accedi <ArrowRight className="ml-2 h-4 w-4 text-foreground!"/>
+            Accedi <ArrowRight className="ml-2 h-4 w-4 text-background!"/>
           </Button>
 
           {/* SEPARATORE */}
