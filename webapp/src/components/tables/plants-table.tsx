@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { 
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu"
-import { Sun, Wind, Zap, Settings, AlertTriangle, Search, MoreHorizontal } from "lucide-react"; // Tolto Plus dagli import
+import { Sun, Wind, Flame, Zap, Settings, AlertTriangle, Search, MoreHorizontal, Check, Wrench } from "lucide-react";
 import { ImpiantoDetails } from "../details/impiantoDetails"
+import { usePlants } from "@/context/plantsContext"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface PlantsTableProps {
     data: any[]; 
@@ -18,12 +20,19 @@ interface PlantsTableProps {
 export function PlantsTable({ data }: PlantsTableProps) {
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<any | null>(null);
+  const { updatePlantStatus } = usePlants(); // Context function to update plant status
+  const queryClient = useQueryClient();
 
   // Filtro client-side
   const filteredData = data.filter(item => 
     item.nome?.toLowerCase().includes(filter.toLowerCase()) ||
     item.id?.toString().includes(filter)
   );
+
+  const handleStatusUpdate = async (plant: any, status: "attivo" | "offline" | "manutenzione") => {
+    await updatePlantStatus(plant.id, status);
+    queryClient.invalidateQueries({ queryKey: ['plants-list'] });
+  }
 
   return (
     <div className="space-y-4">
@@ -48,7 +57,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
               <TableHead className="w-12.5"></TableHead>
               <TableHead>Nome Impianto</TableHead>
               <TableHead className="hidden md:table-cell">Potenza</TableHead>
-              <TableHead className="hidden md:table-cell">Installazione</TableHead>
+              <TableHead className="md:table-cell">Installazione</TableHead>
               <TableHead>Stato</TableHead>
               <TableHead className="text-right">Azioni</TableHead>
             </TableRow>
@@ -60,7 +69,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
                 {/* Icona Tipo */}
                 <TableCell>
                   <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    {row.tipo?.toLowerCase().includes("eolico") ? <Wind className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                    {row.tipo?.toLowerCase().includes("eolico") ? <Wind className="h-5 w-5" /> : row.tipo?.toLowerCase().includes("fotovoltaico") ? <Sun className="h-5 w-5" /> : <Flame className="h-5 w-5" />}
                   </div>
                 </TableCell>
                 
@@ -78,7 +87,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
                    </div>
                 </TableCell>
 
-                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                <TableCell className=" md:table-cell text-sm text-muted-foreground">
                   {new Date(row.data_attivazione).toLocaleDateString()}
                 </TableCell>
 
@@ -95,14 +104,30 @@ export function PlantsTable({ data }: PlantsTableProps) {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="text-yellow-500">
+                    <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setSelected(row)}>
                         <Settings className="mr-2 h-4 w-4" /> Dettagli tecnici
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600">
-                         <AlertTriangle className="mr-2 h-4 w-4" /> Segnala guasto
-                      </DropdownMenuItem>
+                      {/* case 1: allowed states: offline, manutenzione */}
+                      {["offline", "manutenzione"].includes(row.stato) && (
+                        <DropdownMenuItem className="text-green-600" onClick={() => handleStatusUpdate(row, "attivo")}>
+                          <Check className="mr-2 h-4 w-4 text-green-600" /> Attiva impianto
+                        </DropdownMenuItem>
+                      )}
+                      {/* case 2: allowed states: active, offline */}
+                      {["attivo", "offline"].includes(row.stato) && (
+                        <DropdownMenuItem className="text-yellow-600" onClick={() => handleStatusUpdate(row, "manutenzione")}>
+                          <Wrench className="mr-2 h-4 w-4 text-yellow-600" /> Segnala manutenzione
+                        </DropdownMenuItem>
+                      )}
+
+                      {/* case 3: allowed states: active, manutenzione */}
+                      {["attivo", "manutenzione"].includes(row.stato) && (
+                        <DropdownMenuItem className="text-red-600" onClick={() => handleStatusUpdate(row, "offline")}>
+                          <AlertTriangle className="mr-2 h-4 w-4 text-red-600" /> Segnala guasto
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

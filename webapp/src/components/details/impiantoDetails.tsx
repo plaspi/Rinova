@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils"
-import { X, CheckCircle, AlertTriangle, CloudOff, Sun, Wind, Zap, MapPin, Activity } from "lucide-react"
+import { X, CheckCircle, AlertTriangle, CloudOff, Sun, Wind, Zap, MapPin, Activity, Flame } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+// --- IMPORT PER LA MAPPA (OpenStreetMap) ---
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface ImpiantoDetailsProps {
   impianto: any
@@ -26,7 +30,7 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
       statusColor = "text-yellow-600 bg-yellow-500/10 border-yellow-500/20"; 
   }
 
-  const TypeIcon = impianto.tipo?.toLowerCase().includes("eolico") ? Wind : Sun;
+  const TypeIcon = impianto.tipo?.toLowerCase().includes("eolico") ? Wind : impianto.tipo?.toLowerCase().includes("fotovoltaico") ? Sun : Flame;
 
   return (
     // OVERLAY SFOCATO
@@ -46,10 +50,6 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                         {impianto.nome}
                     </h2>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-sm text-muted-foreground font-mono">
-                            ID: {impianto.id}
-                        </span>
-                        <span className="text-muted-foreground hidden sm:inline">•</span>
                         <span className={cn("text-xs px-2.5 py-0.5 rounded-full font-medium border flex items-center gap-1.5", statusColor)}>
                             <StatusIcon className="h-3 w-3" />
                             {impianto.stato}
@@ -85,9 +85,8 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                     </h3>
                     <div className="bg-muted/30 rounded-xl p-5 border space-y-4">
                         <Row label="Tipologia" value={impianto.tipo} />
-                        <Row label="Potenza Nominale" value={`${impianto.potenza} kW`} highlight />
+                        <Row label="Potenza Nominale" value={`${impianto.pot_nominale} kW`} highlight />
                         <Row label="Produttore" value={impianto.produttore} />
-                        <Row label="Modello Pannelli" value={impianto.modelloPannelli || "N/D"} />
                         <Row label="Data Attivazione" value={new Date(impianto.data_attivazione).toLocaleDateString()} />
                     </div>
                 </div>
@@ -98,10 +97,10 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                         <Zap className="h-4 w-4 text-yellow-500" /> Connessione Rete
                     </h3>
                     <div className="bg-muted/30 rounded-xl p-5 border space-y-4">
-                         <Row label="Codice POD" value={impianto.pod || "IT001E..."} mono />
-                         <Row label="Inverter Serial No." value="INV-X998877" mono />
-                         <Row label="Tensione Lavoro" value="230 V" />
-                         <Row label="Convenzione" value="SSP (Scambio sul posto)" />
+                         <Row label="Codice POD" value={impianto.pod_code || "IT001E..."} mono />
+                         <Row label="Inverter Serial No." value={impianto.seriale_inverter || "INV-X998877"} mono />
+                         <Row label="Tensione Lavoro" value={`${impianto.tensione || 230} V`} />
+                         <Row label="Convenzione" value={impianto.convenzione?.includes("SSP") ? "SSP (Scambio sul posto)" : "RID (Ritiro Dedicato)"} />
                     </div>
                 </div>
             </div>
@@ -113,14 +112,23 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                 </h3>
                 <div className="bg-muted/30 rounded-xl p-5 border flex flex-col md:flex-row justify-between gap-6">
                     <div className="space-y-4 flex-1">
-                        <Row label="Indirizzo" value="Via Roma 10, Milano (MI)" />
-                        <Row label="Coordinate" value="45.4642° N, 9.1900° E" mono />
+                        <Row label="Coordinate" value={`${impianto.latitudine || 0}° N, ${impianto.longitudine || 0}° E`} mono />
                         <Row label="Orientamento" value="Sud (180°)" />
                         <Row label="Inclinazione" value="30°" />
                     </div>
                     {/* Placeholder Mappa */}
                     <div className="w-full md:w-64 h-32 bg-muted rounded-lg border border-dashed flex items-center justify-center text-xs text-muted-foreground shrink-0">
-                        Mappa Impianto
+                        <MapContainer 
+                            center={[impianto.latitudine || 45.4642, impianto.longitudine || 9.1900]}
+                            zoom={13} 
+                            style={{ height: '100%', width: '100%' }}
+                        >
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            <Marker position={[impianto.latitudine || 45.4642, impianto.longitudine || 9.1900]}></Marker>
+                        </MapContainer>
                     </div>
                 </div>
             </div>

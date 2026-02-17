@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MoreHorizontal, Search, Mail, UserCog, Ban, CheckCircle, Leaf, ListFilter, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
+import { MoreHorizontal, Search, Mail, UserCog, Ban, CheckCircle, Leaf, ListFilter, ChevronLeft, ChevronRight, Sparkles} from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MemberDetails } from "@/components/details/memberDetails"
 import { toast } from "sonner"
+import { supabase } from "@/services/supabase_client"
+import { useQueryClient } from "@tanstack/react-query"
 import type { MemberData } from "@/pages/CerPage"
 
 interface MembersTableProps {
@@ -22,7 +24,22 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedRow, setSelectedRow] = useState<MemberData | null>(null);
 
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const updateMemberStatus = async (memberId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("cer_members")
+        .update({ status: newStatus })
+        .eq("user_id", memberId);
+      if (error) throw error;
+      //refresh data after update by invalidating query
+      queryClient.invalidateQueries({ queryKey: ['cer-membri'] });
+    } catch (error) {
+      console.error("Error updating member status");
+    }
+  };
   
   // PAGINATION STATE
   const [page, setPage] = useState(0);
@@ -94,7 +111,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
               <TableHead className="w-16 pl-6"></TableHead> 
               <TableHead>Membro</TableHead>
               <TableHead className="hidden md:table-cell">Ruolo</TableHead>
-              <TableHead className="hidden md:table-cell">POD</TableHead>
+              <TableHead className="hidden md:table-cell">Data di Iscrizione</TableHead>
               <TableHead>Stato</TableHead>
               {canManage && <TableHead className="text-right pr-6">Azioni</TableHead>}
             </TableRow>
@@ -126,7 +143,7 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
                 </TableCell>
 
                 <TableCell className="hidden md:table-cell font-mono text-xs text-muted-foreground">
-                  {row.pod || "—"}
+                  {row.joined_at ? new Date(row.joined_at).toLocaleDateString('it-IT') : "—"}
                 </TableCell>
 
                 <TableCell>
@@ -150,12 +167,12 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           {row.stato !== "attivo" && (
-                              <DropdownMenuItem className="text-green-600" onClick={() => toast.info("Prossimamente")}>
+                              <DropdownMenuItem className="text-green-600" onClick={() => updateMemberStatus(row.id, "attivo")}>
                                  <CheckCircle className="mr-2 h-4 w-4" /> Attiva utente
                               </DropdownMenuItem>
                           )}
                           {row.stato === "attivo" && (
-                              <DropdownMenuItem className="text-red-600" onClick={() => toast.info("Prossimamente")}>
+                              <DropdownMenuItem className="text-red-600" onClick={() => updateMemberStatus(row.id, "sospeso")}>
                                  <Ban className="mr-2 h-4 w-4" /> Sospendi
                               </DropdownMenuItem>
                           )}

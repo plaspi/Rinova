@@ -26,7 +26,7 @@ export default function UserAreaPage() {
                     </NavLayout>
 
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 animate-in fade-in zoom-in-95 duration-300">
-                        <div className="max-w-6xl mx-auto space-y-8">
+                        <div className="space-y-8">
                             <div>
                                 <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-2">
                                     <UserCog2 className="h-8 w-8 text-primary" />

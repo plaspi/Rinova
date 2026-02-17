@@ -223,7 +223,7 @@ export default function SupportPage() {
             {/* --- CONTENT --- */}
             <div className="flex-1 p-6 md:p-8 overflow-y-auto">
                 
-                <div className="max-w-6xl mx-auto space-y-8">
+                <div className="space-y-8">
                     <div className="flex flex-col gap-1">
                         <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-3 text-foreground">
                             <LifeBuoy className="h-8 w-8 text-primary" /> Centro Assistenza

@@ -55,18 +55,21 @@ export function MemberDetails({ member, onClose }: MemberDetailsProps) {
                 member.stato === "in_attesa" && "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
                 member.stato === "sospeso" && "bg-red-500/10 text-red-600 border-red-500/20"
               )}>
-              {member.stato}
+              {member.stato === "attivo" ? "Attivo" :
+                member.stato === "in_attesa" ? "In Attesa" :
+                member.stato === "sospeso" ? "Sospeso" :
+                member.stato}
             </span>
           </div>
 
           <div className="col-span-1">
             <p className="font-medium text-muted-foreground mb-1">Codice Fiscale</p>
-            <p className="font-mono">{member.codiceFiscale || "—"}</p>
+            <p className="font-mono">{member.ssn || "—"}</p>
           </div>
 
           <div className="col-span-1">
-            <p className="font-medium text-muted-foreground mb-1">POD Associati</p>
-            <p className="font-mono text-xs truncate" title={member.pod}>{member.pod || "Nessun POD"}</p>
+            <p className="font-medium text-muted-foreground mb-1">Data di Iscrizione</p>
+            <p className="font-mono text-xs truncate" title={member.joined_at}>{member.joined_at ? new Date(member.joined_at).toLocaleDateString('it-IT') : "—"}</p>
           </div>
 
           {member.impianto && (
@@ -81,7 +84,7 @@ export function MemberDetails({ member, onClose }: MemberDetailsProps) {
         <div className="mt-8 flex justify-end pt-4 border-t border-border">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md bg-primary! text-foreground! hover:bg-primary/90! transition text-sm font-medium"
+            className="px-4 py-2 rounded-md bg-primary! text-primary-foreground! hover:bg-primary/90! transition text-xs font-medium!"
           >
             Chiudi
           </button>

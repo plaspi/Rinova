@@ -4,8 +4,26 @@ import { MembersTable } from './members-table';
 import { BrowserRouter } from 'react-router-dom';
 
 // --- MOCKS ---
-// FIX: Using <div> instead of <button> for Trigger to prevent nesting errors 
-// since MembersTable wraps a <Button> inside the Trigger.
+// 1. Mock Tanstack Query so useQueryClient doesn't crash the test
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: () => ({ invalidateQueries: vi.fn() })
+}));
+
+// 2. Mock Supabase for the status update function
+vi.mock('@/services/supabase_client', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      update: vi.fn(() => ({ eq: vi.fn() }))
+    }))
+  }
+}));
+
+// 3. Mock Sonner for the toast notifications
+vi.mock('sonner', () => ({
+  toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() }
+}));
+
+// 4. Mock Dropdown to prevent nested button warnings
 vi.mock('@/components/ui/dropdown-menu', () => ({
   DropdownMenu: ({ children }: any) => <div>{children}</div>,
   DropdownMenuTrigger: ({ children }: any) => <div data-testid="dropdown-trigger">{children}</div>,

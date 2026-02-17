@@ -20,7 +20,11 @@ vi.mock('@tanstack/react-query', async () => {
   };
 });
 
-// CRITICAL: Mock Leaflet Map to avoid JSDOM errors
+// ADDED THIS MOCK:
+vi.mock('@/context/plantsContext', () => ({
+  usePlants: () => ({ updatePlantStatus: vi.fn() })
+}));
+
 vi.mock('react-leaflet', () => ({
   MapContainer: ({ children }: any) => <div data-testid="mock-map">{children}</div>,
   TileLayer: () => <div />,
@@ -54,8 +58,8 @@ const renderPage = () => render(
 
 describe('PlantsPage', () => {
   const mockPlants = [
-    { id: '1', nome: 'Impianto Casa', potenza: 6.0, stato: 'attivo', tipo: 'fotovoltaico', data_attivazione: '2023-01-01' },
-    { id: '2', nome: 'Impianto Box', potenza: 3.0, stato: 'offline', tipo: 'eolico', data_attivazione: '2023-05-01' }
+    { id: '1', nome: 'Impianto Casa', pot_nominale: 6.0, stato: 'attivo', tipo: 'fotovoltaico', data_attivazione: '2023-01-01' },
+    { id: '2', nome: 'Impianto Box', pot_nominale: 3.0, stato: 'offline', tipo: 'eolico', data_attivazione: '2023-05-01' }
   ];
 
   beforeEach(() => {
@@ -71,10 +75,7 @@ describe('PlantsPage', () => {
 
     renderPage();
 
-    // Check KPIs
     expect(screen.getByText('9.00 kW')).toBeInTheDocument();
-    
-    // Check Table
     expect(screen.getByText('Impianto Casa')).toBeInTheDocument();
     expect(screen.getByText('Impianto Box')).toBeInTheDocument();
     expect(screen.getAllByText(/attivo/i).length).toBeGreaterThan(0);
@@ -84,7 +85,6 @@ describe('PlantsPage', () => {
     (useQuery as any).mockImplementation(() => ({ data: [], isLoading: false }));
     renderPage();
 
-    // Use regex to find button flexibly
     const addBtn = screen.getByText(/nuovo impianto/i);
     fireEvent.click(addBtn);
 

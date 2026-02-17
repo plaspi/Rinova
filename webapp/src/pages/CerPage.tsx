@@ -46,11 +46,12 @@ export type MemberData = {
     id: string;
     nome: string;
     cognome: string;
+    ssn: string;
     email: string;
     ruolo: string;
     stato: 'attivo' | 'sospeso' | 'in_attesa';
     avatar_url: string | null;
-    pod?: string | null;
+    joined_at: string;
 }
 
 // --- SUB-COMPONENTS ---
@@ -361,22 +362,22 @@ export default function CerPage() {
             const { data } = await supabase
                 .from('cer_members')
                 .select(`
-                    user_id, role, status,
-                    users:user_id (name, surname, email, avatar_url)
+                    user_id, role, status, joined_at,
+                    users:user_id (name, surname, ssn, email, avatar_url)
                 `)
                 .eq('cer_id', myCerId);
             
             if (!data) return [];
-
             return data.map((row: any) => ({
                 id: row.user_id,
                 nome: row.users?.name || "Utente",
                 cognome: row.users?.surname || "",
+                ssn: row.users?.ssn || "",
                 email: row.users?.email || "N/A",
                 avatar_url: row.users?.avatar_url || null,
                 ruolo: row.role === 'admin' ? 'Amministratore' : row.role === 'representative' ? 'Referente' : 'Membro',
                 stato: row.status || 'attivo',
-                pod: null 
+                joined_at: row.joined_at || "" 
             })) as MemberData[];
         },
         enabled: !!myCerId,
