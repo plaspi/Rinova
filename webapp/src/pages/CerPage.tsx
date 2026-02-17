@@ -452,6 +452,7 @@ export default function CerPage() {
                 console.log("Simulazione: Utente  ha abbandonato la CER ");
             },
             onSuccess: () => {
+                toast.success("Hai abbandonato la CER")
             },
             onError: (error: any) => {
                 toast.error("Errore durante l'operazione", { description: error.message });
