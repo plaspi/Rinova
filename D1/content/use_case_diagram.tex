@@ -230,14 +230,14 @@ Questo use case descrive come l'utente genera e scarica un report in formato PDF
 % ------------------------
 \paragraph*{Use Case RF-07: Gestione impianti energetici}
 \subparagraph*{Riassunto:}
-Questo use case descrive le operazioni di registrazione, modifica stato (sospensione) e rimozione degli impianti di produzione energetica da parte dell'utente.
+Questo use case descrive le operazioni di registrazione, visualizzazione dettagli e segnalazione malfunzionamenti degli impianti di produzione energetica associati dell'utente.
 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
     \item L’utente accede alla sezione "Impianti".
     \item \textbf{Registrazione:} L'utente seleziona "Aggiungi impianto" e compila il form con i dati obbligatori: codice identificativo, potenza nominale, posizione geografica, tipo di impianto, data di installazione. Il sistema valida i dati e registra il nuovo impianto, ponendo il suo stato in "Attesa".
-    \item \textbf{Sospensione:} L'utente seleziona un impianto esistente e modifica lo stato operativo in "Sospeso" segnalando un guasto. Il sistema aggiorna lo stato e interrompe temporaneamente il calcolo della produzione per quell'impianto.
-    \item \textbf{Rimozione:} L'utente seleziona l'opzione di rimozione per un impianto non più operativo. Il sistema richiede una conferma esplicita e, dopo l'approvazione, rimuove l'impianto.
+    \item \textbf{Visualizzazione:} L'utente può visualizzare i dettagli del proprio impianto cliccando l'apposito pulsante "Visualizza dettagli".
+    \item \textbf{Segnalazione:} L'utente seleziona un impianto esistente e ne segnala un guasto attraverso l'apposito pulsante.
 \end{enumerate}
 
 \subparagraph*{Eccezioni:}
@@ -322,19 +322,14 @@ Questo use case descrive il processo con cui un utente invia una richiesta forma
 % ------------------------
 \paragraph*{Use Case RF-10: Gestione membri della CER (Admin)}
 \subparagraph*{Riassunto:}
-Questo use case descrive come l’amministratore della CER gestisce l’elenco dei membri (visualizza, modifica, rimuove).
+Questo use case descrive come l’amministratore della CER gestisce l’elenco dei membri (visualizza, modifica).
 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
     \item L’amministratore effettua login con privilegi admin e accede alla pagina della CER, visualizzando la tabella di gestione membri.
-    \item Il sistema mostra la lista dei membri con dati identificativi, punti di consumo/produzione e stato di partecipazione.
-    \item L’amministratore può selezionare un membro per modificarne lo stato o rimuoverlo attraverso l'opzione ``rimuovi membro''; tutte le operazioni sono tracciate nel registro attività.
+    \item Il sistema mostra la lista dei membri con dati identificativi e stato di partecipazione.
+    \item L’amministratore può selezionare un membro per modificarne lo stato o visualizzarne i dettagli.
 \end{enumerate}
-
-\subparagraph*{Eccezioni:}
-\begin{itemize}
-    \item Se i dati inseriti non sono validi o confliggono con record esistenti, il sistema segnala l’errore.
-\end{itemize}
 
 % ------------------------
 \paragraph*{Use Case RF-11: Approvazione richieste di adesione (Admin)}
@@ -455,7 +450,7 @@ Questo use case descrive come il sistema notifica ai membri eventi rilevanti e c
 
 \subparagraph*{Eccezioni:}
 \begin{itemize}
-    \item Se il membro disabilita notifiche via email/SMS, il sistema non invia comunicazioni esterne.
+    \item Se il membro disabilita notifiche via email, il sistema non invia comunicazioni esterne.
 \end{itemize}
 
 % =========================================================
@@ -496,7 +491,8 @@ Questo use case descrive la procedura formale con cui un membro della Comunità 
 \subparagraph*{Descrizione:}
 \begin{enumerate}
     \item L’utente accede all'area della propria CER.
-    \item L'utente seleziona la funzione "Abbandona Comunità".
+    \item L'utente apre il menù di gestione iscrizione
+    \item L'utente seleziona la funzione "Abbandona CER".
     \item Il sistema visualizza un messaggio di allerta (warning) che riepiloga le conseguenze dell'azione:
     \begin{itemize}
         \item Perdita immediata del diritto agli incentivi futuri.

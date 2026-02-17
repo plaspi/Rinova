@@ -127,21 +127,21 @@ In quanto utente, voglio poter vedere i dati di produzione dei miei impianti ass
     \item Configurare il servizio di generazione PDF per creare il report dinamico.
 \end{itemize}
 \subsubsection*{User story 8 - associata a FR-07: Gestione impianti energetici}
-In quanto utente, voglio poter visualizzare e gestire gli impianti a me associati, con la possibilità di segnalarne un malfunzionamento o visualizzarne i dettagli tecnici.
+In quanto utente, voglio poter visualizzare i dettagli degli impianti a me associati, con la possibilità di segnalarne un malfunzionamento o una manutenzione.
 \textbf{Criteri di accettazione:}
 \begin{itemize}
     \item L'utente visualizza l'elenco completo dei propri impianti con indicazione immediata dello stato (Attivo, In Manutenzione, Sospeso).
     \item Cliccando sui dettagli tecnici di un impianto, l'utente accede a una scheda che ne mostra tutte le specifiche.
-    \item L'utente può modificare lo stato dell'impianto segnalando un guasto; questa azione deve interrompere il calcolo della produzione per quell'impianto.
-    \item L'utente può rimuovere un impianto non più operativo (cancellazione logica), previa conferma di sicurezza.
+    \item L'utente può segnalare un guasto o una manutenzione ad un impianto a lui associato attraverso gli appositi pulsanti.
+    \item Gli impianti in uno stato diverso da "Attivo" non devono contare nei calcoli per la creazione delle dashboard.
 \end{itemize}
 \textbf{Tasks:}
 \begin{itemize}
     \item Realizzare l'interfaccia frontend per la lista degli impianti e la scheda di dettaglio.
-    \item Sviluppare il Backend necessario per le operazioni CRUD (Lettura, Aggiornamento stato, Eliminazione).
-    \item Aggiungere il controllo lato backend che esclude gli impianti con stato "In Manutenzione" dai calcoli energetici della CER.
+    \item Sviluppare il Backend necessario per le operazioni CRUD.
+    \item Aggiungere il controllo lato backend che esclude gli impianti con stato diverso da "Attivo" dai calcoli energetici.
 \end{itemize}
-\subsubsection*{User story 9 . associata a FR-08-09: Ricerca ed adesione CER}
+\subsubsection*{User story 9 - associata a FR-08-09: Ricerca ed adesione CER}
 In quanto utente, voglio poter usare Rinova per cercare una comunità energetica a cui fare richiesta d'adesione.
 \textbf{Criteri di accettazione:}
 \begin{itemize}
@@ -184,7 +184,7 @@ Come amministratore della CER, voglio visualizzare e gestire i membri della comu
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item L’amministratore può aggiungere, modificare o rimuovere membri.
+    \item L’amministratore può aggiungere o modificare lo stato dei membri.
     \item Lo stato di ciascun membro è visibile (attivo, sospeso, in attesa).
 \end{itemize}
 \textbf{Tasks:}
@@ -314,9 +314,9 @@ In quanto membro della CER, voglio poter abbandonare la comunità in qualsiasi m
 
 \textbf{Criteri di accettazione:}
 \begin{itemize}
-    \item È presente un'opzione "Abbandona Comunità" nella pagina della CER.
+    \item È presente un'opzione "Abbandona Comunità" nel menù di gestione iscrizione nella pagina della CER.
     \item Cliccando sull'opzione, il sistema mostra un messaggio di avviso (alert) chiaro che informa l'utente delle conseguenze (es. perdita degli incentivi maturandi).
-    \item È richiesta una conferma esplicita (es. doppio click) per rendere effettiva l'uscita.
+    \item È richiesta una conferma esplicita per rendere effettiva l'uscita.
     \item Dopo la conferma, i dati non vegono più resi disponibili per quella CER.
 \end{itemize}
 
