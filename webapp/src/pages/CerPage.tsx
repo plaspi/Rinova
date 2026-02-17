@@ -16,6 +16,7 @@ import {
     Bell, Users, PlusCircle, Leaf, Crown, 
     Mail, Pin, Search, CalendarRange,
     ChevronLeft, ChevronRight, X, Trash2,
+    MoreVertical, LogOut,
 } from "lucide-react"
 import {
   Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -25,6 +26,24 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 // --- TYPES ---
 type Annuncio = {
@@ -55,6 +74,7 @@ export type MemberData = {
 }
 
 // --- SUB-COMPONENTS ---
+
 
 function AnnouncementItem({ item, onClick }: { item: Annuncio, onClick: () => void }) {
     const formatDate = (dateString: string) => {
@@ -304,6 +324,7 @@ export default function CerPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Annuncio | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
     
     // Form States
     const [newAnnuncio, setNewAnnuncio] = useState({
@@ -382,6 +403,7 @@ export default function CerPage() {
         },
         enabled: !!myCerId,
     });
+    
 
     // --- MUTATION CREAZIONE ANNUNCIO ---
     const createMutation = useMutation({
@@ -422,6 +444,25 @@ export default function CerPage() {
         },
         onError: (e: any) => toast.error("Errore eliminazione", { description: e.message })
     });
+    // --- MUTATION PER ABBANDONARE LA CER ---
+        const leaveCerMutation = useMutation({
+            mutationFn: async () => {
+                // --- MODALITÀ TEST (Simulazione) ---
+                // Simula un'attesa di 1 secondo e poi successo, senza cancellare nulla dal DB.
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                console.log("Simulazione: Utente  ha abbandonato la CER ");
+            },
+            onSuccess: () => {
+                toast.success("Hai abbandonato la CER")
+            },
+            onError: (error: any) => {
+                toast.error("Errore durante l'operazione", { description: error.message });
+            }
+        });
+        
+        const handleLeaveCer = () => {
+            leaveCerMutation.mutate();
+        };
 
     const handleCreateAnnouncement = () => {
         if (!newAnnuncio.titolo || !newAnnuncio.messaggio) {
@@ -526,7 +567,59 @@ export default function CerPage() {
                                             </span>
                                         </div>
                                     </div>
+                                    <div className="ml-auto">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground bg-background! hover:border-primary! focus:outline-0! ">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                    <span className="sr-only">Opzioni</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Gestione Iscrizione</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem 
+                                                    className="text-red-600 focus:text-red-600 cursor-pointer gap-2"
+                                                    onClick={() => setIsLeaveDialogOpen(true)}
+                                                >
+                                                    <LogOut className="h-4 w-4" />
+                                                    Abbandona CER
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 </div>
+
+                                {/* MODAL CONFERMA ABBANDONO CER */}
+                                <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Sei assolutamente sicuro?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Stai per abbandonare questa Comunità Energetica. 
+                                                Per rientrare dovrai ricevere un nuovo invito o fare una nuova richiesta.
+                                                Non avrai più accesso ai dati storici di questa CER.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel className="bg-muted hover:border-primary! outline-0! focus:border-0! border-2! hover:bg-muted/80">Annulla</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={(e) => {
+                                                    e.preventDefault(); // Previene la chiusura automatica immediata
+                                                    handleLeaveCer();
+                                                }}
+                                                className="bg-red-500! dark:bg-red-600! hover:border-red-700! hover:bg-red-600! focus:outline-0 dark:hover:bg-red-700! text-white!"
+                                                disabled={leaveCerMutation.isPending}
+                                            >
+                                                {leaveCerMutation.isPending ? (
+                                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Uscita in corso...</>
+                                                ) : (
+                                                    "Procedi e Abbandona"
+                                                )}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
 
                                 {/* TABELLA MEMBRI */}
                                 <Card className="border-border/60 shadow-sm overflow-hidden h-fit">
@@ -710,13 +803,12 @@ export default function CerPage() {
                             </div>
                         </div>
                         
-                        <div className="flex items-center justify-end gap-3 p-4 bg-muted/30 border-t border-border">
+                        <div className="flex items-center justify-end gap-3 p-4 border-t border-border">
                             <Button 
-                                variant="ghost" 
                                 size="sm"
                                 onClick={() => setDeleteId(null)}
                                 disabled={deleteMutation.isPending}
-                                className="h-9 px-4"
+                                className="h-9 px-4 bg-card! hover:border-primary! focus:border-primary! focus:outline-0! text-foreground! border-2!"
                             >
                                 Annulla
                             </Button>
@@ -725,7 +817,7 @@ export default function CerPage() {
                                 size="sm"
                                 onClick={executeDelete}
                                 disabled={deleteMutation.isPending}
-                                className="h-9 px-6 bg-red-500! hover:bg-red-700! text-white! font-medium shadow-sm gap-2"
+                                className="h-9 px-6 bg-red-500! hover:bg-red-700! text-white! hover:border-red-700! font-medium shadow-sm gap-2"
                             >
                                 {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Elimina"}
                             </Button>
