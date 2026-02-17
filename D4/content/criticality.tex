@@ -2,12 +2,27 @@
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}
 \section{Criticità}
-Nel corso dello sviluppo del progetto Rinova il gruppo ha dovuto affrontare diverse criticità tecniche ed organizzative. La prima delle quali la variazione improvvisa dell'organico del gruppo, nella fase iniziale infatti, immediatamente successiva alla definizione degli obbiettivi e dei macro requisiti il terzo membro del gruppo ha dovuto abbandonare il progetto a causa di un cambio di percorso di studi, questo ha necessariamente portato ad un adattamento del perimetro del progetto, in modo da adattarne il carico di lavoro.
-La seconda criticità è stata dovuta alla marcata incompatibilità degli orari accademici e da periodi di indisponibilità alternata dei membri: \textbf{Enrico Sartori} ha avuto una ridotta capacità operativa nella prima parte del semestre per esigenze personali, mentre \textbf{Stefano Pezzetta} ha dovuto limitare il contributo durante l'avvio della sessione invernale d'esame.
-Questi problemi sono stati superati grazie all'adozione di una metodologia di comunicazione ben strutturata per via telematica, inoltre, durante i periodi di "fermo" di un membro, l'altro poteva portare avanti attività indipendenti, scongiurando colli di bottiglia e permettendo il riallinamento successivamente.
+Nel corso dello sviluppo del progetto Rinova, il gruppo ha dovuto affrontare e superare diverse criticità di natura organizzativa, contestuale e tecnica.
 
-L'analisi del contesto normativo riguardante le Comunità Energetiche Rinnovabili (CER) si è rivelata più onerosa del previsto, la burocrazia confusa e la gestione complessa dei rapporti fra produttori e fornitori di servizi ha contribuito a rallentare notevolmente la fase di studio di fattibilità del progetto.
+\textbf{Criticità Organizzative}
 
-Dal punto di vista implementativo, la difficoltà maggiore ha riguardato il reperimento e la normalizzazione dei dati provenienti dagli strumenti di misurazione.
+La prima problematica significativa è stata la variazione imprevista dell'organico del gruppo. Nella fase iniziale, immediatamente successiva alla definizione degli obiettivi e dei macro-requisiti, il terzo componente ha dovuto abbandonare il progetto per un cambio di percorso di studi. Questo evento ha portato ad un necessario ridimensionamento degli obbiettivi e del perimetro del progetto al fine di adattarne il carico di lavoro al gruppo ridotto. Carico che è risultato inevitabilmente più oneroso per i due membri rimanenti, cosa che ha portato ad un dilatamento dei tempi di sviluppo rispetto alle stime iniziali.
+A ciò si è aggiunta una marcata incompatibilità degli orari accademici dei membri. Ostacolo superato adottando una metodologia di comunicazione strutturata per via telematica e organizzando il lavoro in modo asincrono, così da scongiurare colli di bottiglia durante lo sviluppo del progetto.
 
-chiedi quali sono state le difficoltà tecniche!
+\textbf{Analisi del Contesto e Normative}
+
+L'analisi del contesto normativo riguardante le Comunità Energetiche Rinnovabili (CER) si è rivelata estremamente complessa. Oltre alla burocrazia intrinsecamente confusa che regola i rapporti tra produttori e fornitori, il gruppo ha riscontrato una grave carenza di documentazione tecnica pubblica da parte del GSE (Gestore dei Servizi Energetici).
+Inoltre, nonostante i tentativi di instaurare un dialogo con amministratori di CER reali per comprendere i flussi burocratici operativi, non è stato ricevuto alcun riscontro. Di conseguenza, l'obiettivo iniziale di "automatizzare e limare la burocrazia" è stato ridimensionato, non essendo stato possibile mappare con certezza i processi reali al di fuori della teoria normativa.
+
+\textbf{Criticità Tecniche}
+Dal punto di vista implementativo, le difficoltà maggiori hanno riguardato il mantenimento di un Gitflow ordinato, reso complesso dalla necessità di parallelizzare lo sviluppo di funzionalità interdipendenti in tempi ristretti e con risorse umane limitate.
+
+\textbf{Conclusioni}
+Le criticità esposte, unite alla complessità tecnica intrinseca dell'area energetica hanno portato ad un inevitabile ritardo, causa della mancanza di alcune funzionalità definite nei requisiti funzionali del progetto. Requisiti deliberatamente mantenuti nella documentazione di progetto per preservare la coerenza logica dell'architettura e offrire una visione completa del sistema ideale.
+Nello specifico, le componenti progettate ma non ancora integrate sono: 
+\begin{itemize}
+    \item Il sistema di messaggistica istantanea (Chat) tra utenti e amministratori;
+    \item La logica avanzata di ricerca ed adesione alle CER;
+    \item L'aggregazione statistica dei dati energetici a livello di intera Comunità (CER) consultabile dall'amministratore.
+\end{itemize}
+Nonostante queste assenze nel prototipo presentato l'architettura adottata lo rende predisposto alla scalabilità ed estensibilità. Il sistema è quindi pronto all'integrazione delle funzionalità mancanti senza richiedere modifiche strutturali al nucleo già sviluppato.
