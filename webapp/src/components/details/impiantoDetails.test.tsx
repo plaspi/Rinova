@@ -3,15 +3,16 @@ import { describe, it, expect, vi } from 'vitest';
 import { ImpiantoDetails } from './impiantoDetails';
 
 describe('ImpiantoDetails', () => {
+  // FIX: Updated mock properties to match what the component expects
   const mockImpianto = {
     id: '123',
     nome: 'Impianto Test',
     tipo: 'Fotovoltaico',
-    potenza: 6.5,
+    pot_nominale: 6.5, 
     produttore: 'SunPower',
     data_attivazione: '2023-01-01',
     stato: 'Attivo',
-    pod: 'IT001E123456789'
+    pod_code: 'IT001E123456789' 
   };
 
   const mockOnClose = vi.fn();
@@ -28,15 +29,12 @@ describe('ImpiantoDetails', () => {
     expect(screen.getByText('6.5 kW')).toBeInTheDocument();
     expect(screen.getByText('SunPower')).toBeInTheDocument();
     expect(screen.getByText('IT001E123456789')).toBeInTheDocument();
-    // Check status badge
     expect(screen.getByText('Attivo')).toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
     render(<ImpiantoDetails impianto={mockImpianto} onClose={mockOnClose} />);
     
-    // There are two close buttons usually (X icon and "Chiudi" button)
-    // We can target the text "Chiudi"
     const closeBtn = screen.getByText('Chiudi');
     fireEvent.click(closeBtn);
 

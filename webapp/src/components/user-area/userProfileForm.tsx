@@ -174,7 +174,7 @@ export function UserProfileForm() {
                     </div>
 
                     <div className="flex justify-end pt-4 border-t">
-                        <Button type="submit" className="bg-yellow-500!" disabled={isLoading}>
+                        <Button type="submit" className="border-yellow-500! border-2! bg-background! text-foreground!" disabled={isLoading}>
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             <Save className="mr-2 h-4 w-4" /> Salva Anagrafica
                         </Button>

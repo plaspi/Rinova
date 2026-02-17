@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { MemberDetails } from './memberDetails';
 
 describe('MemberDetails', () => {
+  // FIX: Updated mock properties
   const mockMember = {
     id: 'user_1',
     nome: 'Luigi',
@@ -10,9 +11,9 @@ describe('MemberDetails', () => {
     email: 'luigi@test.com',
     ruolo: 'Member',
     stato: 'attivo',
-    pod: 'IT001E999',
+    impianto: 'IT001E999', 
     avatar_url: null,
-    codiceFiscale: 'VRDLGU80A01H501U'
+    ssn: 'VRDLGU80A01H501U' 
   };
 
   const mockOnClose = vi.fn();
@@ -28,9 +29,8 @@ describe('MemberDetails', () => {
 
   it('renders status badge correctly', () => {
     render(<MemberDetails member={mockMember} onClose={mockOnClose} />);
-    expect(screen.getByText('attivo')).toHaveClass('text-green-600'); 
-    // We check class loosely or just presence. 
-    // Usually checking text presence is enough for integration tests.
+    // FIX: Look for capitalized "Attivo"
+    expect(screen.getByText('Attivo')).toHaveClass('text-green-600'); 
   });
 
   it('calls onClose when close button is clicked', () => {

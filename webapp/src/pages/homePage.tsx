@@ -132,7 +132,7 @@ export default function HomePage() {
                 <Button 
                         variant={isPro ? "outline" : "secondary"}
                         onClick={handleEditWidgets}
-                        className="gap-2 shadow-sm bg-card!"
+                        className="gap-2 shadow-sm bg-card! border-2! hover:border-primary! hover:text-primary!"
                     >
                         {!isPro ? <Lock className="h-4 w-4 text-amber-600 opacity-80" /> : <Pencil className="h-4 w-4" />}
                         Modifica Widget

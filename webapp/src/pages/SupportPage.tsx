@@ -223,7 +223,7 @@ export default function SupportPage() {
             {/* --- CONTENT --- */}
             <div className="flex-1 p-6 md:p-8 overflow-y-auto">
                 
-                <div className="max-w-6xl mx-auto space-y-8">
+                <div className="space-y-8">
                     <div className="flex flex-col gap-1">
                         <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-3 text-foreground">
                             <LifeBuoy className="h-8 w-8 text-primary" /> Centro Assistenza
@@ -323,7 +323,7 @@ export default function SupportPage() {
                                                             <button 
                                                                 type="button"
                                                                 onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                                                                className="text-muted-foreground hover:text-destructive p-1"
+                                                                className="bg-card! text-foreground! border-0! hover:text-red-500! p-1"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </button>
@@ -334,7 +334,7 @@ export default function SupportPage() {
                                         </div>
 
                                         <div className="flex justify-end pt-4">
-                                            <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto gap-2 shadow-md bg-primary!">
+                                            <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto gap-2 shadow-md hover:border-primary! bg-primary!">
                                                 {isSubmitting ? (
                                                     <>
                                                         <Loader2 className="h-4 w-4 animate-spin" /> Invio...

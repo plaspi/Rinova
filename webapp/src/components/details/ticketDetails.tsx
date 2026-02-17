@@ -35,10 +35,10 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
   // --- CONFIGURATIONS ---
   const getStatusConfig = (status: string) => {
       switch (status) {
-          case 'open': return { label: 'Aperto', color: 'bg-blue-500/10 text-blue-600 border-blue-200', icon: AlertCircle };
-          case 'in_progress': return { label: 'In Lavorazione', color: 'bg-amber-500/10 text-amber-600 border-amber-200', icon: Clock };
-          case 'resolved': return { label: 'Risolto', color: 'bg-green-500/10 text-green-600 border-green-200', icon: CheckCircle2 };
-          case 'closed': return { label: 'Chiuso', color: 'bg-gray-100 text-gray-500 border-gray-200', icon: XCircle };
+          case 'open': return { label: 'Aperto', color: 'bg-blue-500/10 text-blue-600 border-blue-600', icon: AlertCircle };
+          case 'in_progress': return { label: 'In Lavorazione', color: 'bg-amber-500/10 text-amber-600 border-amber-600', icon: Clock };
+          case 'resolved': return { label: 'Risolto', color: 'bg-green-500/10 text-green-600 border-green-600', icon: CheckCircle2 };
+          case 'closed': return { label: 'Chiuso', color: 'bg-gray-100 text-gray-500 border-gray-600', icon: XCircle };
           default: return { label: status, color: 'bg-gray-100 text-gray-500', icon: AlertCircle };
       }
   };
@@ -113,7 +113,7 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
             <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full h-9 w-9 bg-muted-foreground/65! transition-colors shrink-0 hover:text-accent-foreground"
+                className="rounded-full h-9 w-9 bg-card! border-0! transition-colors hover:text-red-500! shrink-0"
                 onClick={onClose}
             >
                 <X className="h-5 w-5" />
@@ -213,11 +213,11 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
                 Ultimo aggiornamento: {format(new Date(ticket.created_at), "dd MMM yyyy")}
             </span>
             <div className="flex gap-2 w-full sm:w-auto">
-                <Button variant="ghost" onClick={onClose} className="flex-1 sm:flex-none bg-muted-foreground/65! hover:text-accent-foreground">
+                <Button variant="ghost" onClick={onClose} className="flex-1 sm:flex-none shadow-md hover:border-black! bg-card! border-2!  dark:hover:border-primary! text-foreground! hover:text-accent-foreground">
                     Chiudi
                 </Button>
                 {ticket.status !== 'closed' && (
-                    <Button className="gap-2 flex-1 sm:flex-none shadow-md bg-primary!" onClick={() => toast.info("Chat in arrivo...")}>
+                    <Button className="gap-2 flex-1 sm:flex-none shadow-md dark:hover:border-primary! hover:border-black! border-2! text-foreground! bg-card!" onClick={() => toast.info("Chat in arrivo...")}>
                         <MessageSquare className="h-4 w-4" /> Aggiungi risposta
                     </Button>
                 )}

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { SplashScreen } from "@/components/splashScreen";
 import { supabase } from "@/services/supabase_client";
@@ -16,6 +16,7 @@ export type UserSettings = {
         marketing: boolean;
     };
 };
+
 // Default settings
 const DEFAULT_SETTINGS: UserSettings = {
     theme: 'system',
@@ -60,6 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // FIX: Ref to track the current user ID and prevent stale closures
+  const currentUserId = useRef<string | null>(null);
+
   const isPro = profile?.subscription_plan === 'pro' || profile?.is_super_admin || false;
   const [settings, setSettings] = useState<UserSettings>({
         theme: 'system',
@@ -69,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Helper fetch profile
   const fetchProfile = async (userId: string) => {
-    console.log(`[AuthContext] Fetching profile for ${userId}...`);
+    console.log(`[AuthContext] Fetching profile`);
     try {
       const { data, error } = await supabase
         .from('users')
@@ -78,9 +83,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
-        console.error("[AuthContext] Error fetching profile:", error);
+        console.error("[AuthContext] Error fetching profile");
       } else if (data) {
-        setProfile(data as UserProfile);
+        const { data: memberData } = await supabase
+          .from('cer_members')
+          .select('role')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        const finalProfile = {
+          ...data,
+          role: memberData?.role?.trim().toLowerCase() || 'member' 
+        };
+        
+        setProfile(finalProfile as UserProfile);
+
         if(data.settings) {
           setSettings({...DEFAULT_SETTINGS, ...data.settings});
         }
@@ -88,11 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn("[AuthContext] Profile missing");
       }
     } catch (err) {
-      console.error("[AuthContext] Critical Error:", err);
+      console.error("[AuthContext] Critical Error fetching profile");
     }
   };
 
-  //update user preferences and settings(first local state then db)
+  // update user preferences and settings (first local state then db)
   const updateSettings = async (partialSettings: Partial<UserSettings>) => {
     if (!user) return;
 
@@ -107,36 +124,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (error) throw error;
     } catch (err) {
-        console.error("Errore salvataggio settings:", err);
+        console.error("Errore salvataggio settings");
     }
   };
 
-  // 1. GESTIONE SESSIONE (Init + Listener)
+  // 1. GESTIONE SESSIONE E PROFILO (Init + Listener Unificato)
   useEffect(() => {
     let mounted = true;
+    let hasInitialized = false;
 
-    const initSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
+    // Helper that strictly awaits profile fetching BEFORE dropping the loading screen
+    const loadAuthAndProfile = async (currentSession: Session | null, isInitialLoad: boolean) => {
+      if (!mounted) return;
+
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      
+      // FIX: Update our ref so we always know exactly who is logged in
+      currentUserId.current = currentSession?.user?.id ?? null;
+
+      if (currentSession?.user) {
+        await fetchProfile(currentSession.user.id);
+      } else {
+        setProfile(null);
+      }
+
+      if (mounted) {
+        setIsLoading(false);
+        if (isInitialLoad) hasInitialized = true;
+      }
+    };
+
+    // A. Initial Load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!hasInitialized) {
+        loadAuthAndProfile(session, true);
+      }
+    });
+
+    // B. Listener for subsequent changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') return; 
+
+      if (hasInitialized && event === 'SIGNED_IN') {
+        // FIX: If the user is already logged in, Supabase is just re-syncing the tab focus. Do nothing!
+        if (session?.user?.id === currentUserId.current) {
+            setSession(session); // Silently update the token just in case
+            return;
+        }
+
+        // Only show splash screen if it's actually a brand new user logging in
+        setIsLoading(true); 
+        loadAuthAndProfile(session, false);
+      } 
+      else if (hasInitialized && event === 'SIGNED_OUT') {
+        setIsLoading(true);
+        loadAuthAndProfile(null, false);
+      } 
+      else if (event === 'TOKEN_REFRESHED') {
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
         }
-      } catch (error) {
-        console.error("Init session error:", error);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    };
-
-    initSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log(`[AuthContext] Auth State Change: ${_event}`);
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false); 
       }
     });
 
@@ -145,14 +194,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchProfile(user.id);
-    } else {
-      setProfile(null);
-    }
-  }, [user]);
 
   const signOut = async () => {
     try{
@@ -165,8 +206,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       setUser(null);
       setProfile(null);
+      currentUserId.current = null; // Clear the ref on logout
     } catch (error) {
-      console.error("Logout error: ", error);
+      console.error("Logout error");
     } finally {
       setIsLoggingOut(false);
     }
@@ -198,7 +240,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Se il caricamento è finito e non c'è l'utente, vai al login
     if (!isLoading && !user) {
       navigate("/login");
     }

@@ -47,10 +47,16 @@ type ImpiantoUI = {
     id: string;
     nome: string;
     tipo: string;
-    potenza: number;
+    pot_nominale: number;
     stato: string; 
     data_attivazione: string;
     produttore: string;
+    pod_code: string;
+    seriale_inverter: string;
+    tensione: number;
+    convenzione: string;
+    latitudine: number | null;
+    longitudine: number | null;
 };
 
 export default function PlantsPage() {
@@ -61,7 +67,7 @@ export default function PlantsPage() {
     const [formData, setFormData] = useState({
         nome: "",
         tipo: "fotovoltaico",
-        potenza: "",
+        pot_nominale: "",
         produttore: "",
         data_attivazione: "",
         codice_pod: "",
@@ -95,12 +101,12 @@ export default function PlantsPage() {
                 user_id: user?.id,
                 nome: newPlant.nome,
                 tipo: newPlant.tipo,
-                potenza: parseFloat(newPlant.potenza),
+                pot_nominale: parseFloat(newPlant.pot_nominale).toFixed(1),
                 produttore: newPlant.produttore,
                 data_attivazione: newPlant.data_attivazione,
                 status: 'attivo',
-                codice_pod: newPlant.codice_pod,
-                serial_inverter: newPlant.serial_inverter,
+                pod_code: newPlant.codice_pod,
+                seriale_inverter: newPlant.serial_inverter,
                 tensione: newPlant.tensione,
                 convenzione: newPlant.convenzione,
                 latitudine: newPlant.latitudine ? parseFloat(newPlant.latitudine) : null,
@@ -115,7 +121,7 @@ export default function PlantsPage() {
             toast.success("Impianto creato", { description: "Il dispositivo è stato aggiunto correttamente." });
             setIsAddOpen(false);
             setFormData({
-                nome: "", tipo: "fotovoltaico", potenza: "", produttore: "", data_attivazione: "",
+                nome: "", tipo: "fotovoltaico", pot_nominale: "", produttore: "", data_attivazione: "",
                 codice_pod: "", serial_inverter: "", tensione: "230", convenzione: "SSP",
                 latitudine: "", longitudine: ""
             });
@@ -127,7 +133,7 @@ export default function PlantsPage() {
     });
 
     const handleNewImpianto = () => {
-        if (!formData.nome || !formData.potenza || !formData.codice_pod) {
+        if (!formData.nome || !formData.pot_nominale || !formData.codice_pod) {
             toast.warning("Dati mancanti", { description: "Inserisci almeno Nome, Potenza e POD." });
             return;
         }
@@ -139,7 +145,7 @@ export default function PlantsPage() {
     };
 
     const kpi = {
-        potenzaTotale: impianti.reduce((acc, curr) => acc + (curr.potenza || 0), 0).toFixed(2),
+        potenzaTotale: impianti.reduce((acc, curr) => acc + (curr.pot_nominale || 0), 0).toFixed(2),
         attivi: impianti.filter(i => i.stato === 'attivo').length,
         batteriaTotale: 0 
     };
@@ -218,7 +224,7 @@ export default function PlantsPage() {
                          <h3 className="text-lg font-semibold">Lista Dispositivi</h3>
                          
                          {/* BOTTONE UNICO PER NUOVO IMPIANTO */}
-                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9hover:border-yellow-500! text-foreground! bg-card!">
+                         <Button onClick={() => setIsAddOpen(true)} className="gap-2 shadow-sm h-9hover:border-yellow-500! text-foreground! hover:border-primary! bg-card!">
                             <Plus className="h-4 w-4" /> Nuovo Impianto
                          </Button>
                     </div>
@@ -295,7 +301,7 @@ export default function PlantsPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="potenza">Potenza Nominale (kW) *</Label>
-                                    <Input id="potenza" type="number" placeholder="Es. 6.0" value={formData.potenza} onChange={e => setFormData({...formData, potenza: e.target.value})} />
+                                    <Input id="potenza" type="number" placeholder="Es. 6.0" value={formData.pot_nominale} onChange={e => setFormData({...formData, pot_nominale: e.target.value})} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="serial">Seriale Inverter</Label>

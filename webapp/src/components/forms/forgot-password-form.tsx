@@ -136,7 +136,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         {/* LOGO INTERNO ALLA CARD (Top Left) */}
         <div className="p-6 pb-0 flex items-center gap-2">
           <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-            <RinovaLogo className="text-black w-8 h-8" />
+            <RinovaLogo className="text-background w-8 h-8" />
           </div>
           <span className="text-2xl font-bold text-primary tracking-tight">Rinova</span>
         </div>

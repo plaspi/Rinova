@@ -30,7 +30,18 @@ function LegalModalLayout({ children, title, lastUpdate, content }: LegalModalLa
         "fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]",
         "data-[state=open]:animate-slide-up-fade",
         "data-[state=open]:slide-in-from-left-0 data-[state=open]:zoom-in-0 fade-in-0",
-        "duration-200"
+        "duration-200",
+        "[&>button]:bg-background!",
+        "[&>button]:hover:border-transparent!",
+        "[&>button]:text-frontground!",
+        "[&>button]:hover:outline-none!",
+        "[&>button]:transition-none!",
+        "[&>button]:active:border-transparent!",
+        "[&>button]:border-none!",
+        "[&>button]:focus:ring-0!",
+        "[&>button]:focus:ring-offset-0!", 
+        "[&>button]:focus:outline-none! ",
+        "[&>button]:focus-visible:ring-0!"
       )}>
         <DialogHeader className="p-6 pb-4 border-b shrink-0 bg-muted/10">
           <DialogTitle className="text-2xl font-bold text-foreground">{title}</DialogTitle>

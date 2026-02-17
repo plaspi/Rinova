@@ -16,6 +16,7 @@ import {
     Bell, Users, PlusCircle, Leaf, Crown, 
     Mail, Pin, Search, CalendarRange,
     ChevronLeft, ChevronRight, X, Trash2,
+    MoreVertical, LogOut,
 } from "lucide-react"
 import {
   Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -25,6 +26,24 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 // --- TYPES ---
 type Annuncio = {
@@ -46,14 +65,16 @@ export type MemberData = {
     id: string;
     nome: string;
     cognome: string;
+    ssn: string;
     email: string;
     ruolo: string;
     stato: 'attivo' | 'sospeso' | 'in_attesa';
     avatar_url: string | null;
-    pod?: string | null;
+    joined_at: string;
 }
 
 // --- SUB-COMPONENTS ---
+
 
 function AnnouncementItem({ item, onClick }: { item: Annuncio, onClick: () => void }) {
     const formatDate = (dateString: string) => {
@@ -148,7 +169,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                 
                 <div className="flex items-center gap-2">
                     <Select value={filterTime} onValueChange={(val) => { setFilterTime(val); setPage(0); }}>
-                        <SelectTrigger className="h-8 w-32.5 text-xs bg-background px-2.5 flex items-center justify-between">
+                        <SelectTrigger className="h-8 w-32.5 text-xs bg-card! px-2.5 outline-0! focus:border-primary! border-2! hover:border-primary! flex items-center justify-between">
                             <div className="flex items-center gap-2 truncate">
                                 <CalendarRange className="h-3.5 w-3.5 opacity-70 shrink-0" />
                                 <span>{filterLabels[filterTime]}</span>
@@ -162,7 +183,7 @@ function BachecaPaginata({ annunci, canManage, onCreate, onSelect }: { annunci: 
                     </Select>
 
                     {(canManage) && (
-                        <Button size="icon" variant="ghost" className="h-8 w-8 bg-card! text-foreground!" onClick={onCreate}>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 bg-card! hover:border-primary!" onClick={onCreate}>
                             <PlusCircle className="h-4 w-4 text-primary" />
                         </Button>
                     )}
@@ -247,7 +268,7 @@ function AnnouncementDetail({ announcement, currentUserId, onClose, onDelete }: 
                         </div>
                         <h2 className="text-xl font-bold leading-tight">{announcement.titolo}</h2>
                     </div>
-                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors p-1 hover:bg-muted rounded-full">
+                    <button onClick={onClose} className="text-muted-foreground bg-card! hover:text-red-600! border-0! transition-colors p-1 hover:bg-muted rounded-full">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -279,14 +300,14 @@ function AnnouncementDetail({ announcement, currentUserId, onClose, onDelete }: 
                             <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-2"
+                                className="text-red-600 bg-card! hover:border-red-600! hover:text-red-700 hover:bg-red-50 gap-2"
                                 onClick={() => onDelete(announcement.id)}
                             >
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only sm:not-sr-only">Elimina</span>
                             </Button>
                         )}
-                        <Button onClick={onClose} variant="outline" size="sm">Chiudi</Button>
+                        <Button onClick={onClose} variant="outline" size="sm" className="hover:border-primary!">Chiudi</Button>
                     </div>
                 </div>
             </div>
@@ -303,6 +324,7 @@ export default function CerPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Annuncio | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
     
     // Form States
     const [newAnnuncio, setNewAnnuncio] = useState({
@@ -361,26 +383,27 @@ export default function CerPage() {
             const { data } = await supabase
                 .from('cer_members')
                 .select(`
-                    user_id, role, status,
-                    users:user_id (name, surname, email, avatar_url)
+                    user_id, role, status, joined_at,
+                    users:user_id (name, surname, ssn, email, avatar_url)
                 `)
                 .eq('cer_id', myCerId);
             
             if (!data) return [];
-
             return data.map((row: any) => ({
                 id: row.user_id,
                 nome: row.users?.name || "Utente",
                 cognome: row.users?.surname || "",
+                ssn: row.users?.ssn || "",
                 email: row.users?.email || "N/A",
                 avatar_url: row.users?.avatar_url || null,
                 ruolo: row.role === 'admin' ? 'Amministratore' : row.role === 'representative' ? 'Referente' : 'Membro',
                 stato: row.status || 'attivo',
-                pod: null 
+                joined_at: row.joined_at || "" 
             })) as MemberData[];
         },
         enabled: !!myCerId,
     });
+    
 
     // --- MUTATION CREAZIONE ANNUNCIO ---
     const createMutation = useMutation({
@@ -421,6 +444,25 @@ export default function CerPage() {
         },
         onError: (e: any) => toast.error("Errore eliminazione", { description: e.message })
     });
+    // --- MUTATION PER ABBANDONARE LA CER ---
+        const leaveCerMutation = useMutation({
+            mutationFn: async () => {
+                // --- MODALITÀ TEST (Simulazione) ---
+                // Simula un'attesa di 1 secondo e poi successo, senza cancellare nulla dal DB.
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                console.log("Simulazione: Utente  ha abbandonato la CER ");
+            },
+            onSuccess: () => {
+                toast.success("Hai abbandonato la CER")
+            },
+            onError: (error: any) => {
+                toast.error("Errore durante l'operazione", { description: error.message });
+            }
+        });
+        
+        const handleLeaveCer = () => {
+            leaveCerMutation.mutate();
+        };
 
     const handleCreateAnnouncement = () => {
         if (!newAnnuncio.titolo || !newAnnuncio.messaggio) {
@@ -478,11 +520,14 @@ export default function CerPage() {
                                         <Users className="h-10 w-10 text-primary" />
                                     </div>
                                     <CardTitle className="text-2xl">Non fai ancora parte di una CER</CardTitle>
+                                    <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
+                                        Unisciti a una Comunità Energetica per condividere energia pulita, risparmiare in bolletta e accedere agli incentivi statali.
+                                    </p>
                                 </CardHeader>
-                                <CardContent className="grid md:grid-cols-2 gap-6 p-8 pt-2">
+                                <CardContent className="flex md:grid-cols-2 gap-6 p-8 pt-2">
                                      <Button className="w-full h-auto py-4 flex flex-col gap-2 bg-brand-gradient! text-background! hover:brightness-110 hover:-translate-y-1 hover:border-transparent!" variant="outline" onClick={() => toast.info("Prossimamente!")}>
                                         <Search className="h-6 w-6" />
-                                        <span>Trova CER</span>
+                                        <span>Trova la tua Comunità</span>
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -522,7 +567,59 @@ export default function CerPage() {
                                             </span>
                                         </div>
                                     </div>
+                                    <div className="ml-auto">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground bg-background! hover:border-primary! focus:outline-0! ">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                    <span className="sr-only">Opzioni</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Gestione Iscrizione</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem 
+                                                    className="text-red-600 focus:text-red-600 cursor-pointer gap-2"
+                                                    onClick={() => setIsLeaveDialogOpen(true)}
+                                                >
+                                                    <LogOut className="h-4 w-4" />
+                                                    Abbandona CER
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 </div>
+
+                                {/* MODAL CONFERMA ABBANDONO CER */}
+                                <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Sei assolutamente sicuro?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Stai per abbandonare questa Comunità Energetica. 
+                                                Per rientrare dovrai ricevere un nuovo invito o fare una nuova richiesta.
+                                                Non avrai più accesso ai dati storici di questa CER.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel className="bg-muted hover:border-primary! outline-0! focus:border-0! border-2! hover:bg-muted/80">Annulla</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={(e) => {
+                                                    e.preventDefault(); // Previene la chiusura automatica immediata
+                                                    handleLeaveCer();
+                                                }}
+                                                className="bg-red-500! dark:bg-red-600! hover:border-red-700! hover:bg-red-600! focus:outline-0 dark:hover:bg-red-700! text-white!"
+                                                disabled={leaveCerMutation.isPending}
+                                            >
+                                                {leaveCerMutation.isPending ? (
+                                                    <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Uscita in corso...</>
+                                                ) : (
+                                                    "Procedi e Abbandona"
+                                                )}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
 
                                 {/* TABELLA MEMBRI */}
                                 <Card className="border-border/60 shadow-sm overflow-hidden h-fit">
@@ -564,7 +661,7 @@ export default function CerPage() {
                                                     <p className="text-sm font-medium truncate">{admin.nome} {admin.cognome}</p>
                                                     <p className="text-[10px] text-muted-foreground capitalize">{admin.ruolo}</p>
                                                 </div>
-                                                <Button size="icon" variant="ghost" className="h-7 w-7 bg-card! text-foreground!" onClick={() => toast.info("Chat in arrivo...")}>
+                                                <Button size="icon" variant="ghost" className="h-7 w-7 bg-card! hover:border-primary!" onClick={() => toast.info("Chat in arrivo...")}>
                                                     <Mail className="h-3.5 w-3.5 text-muted-foreground" />
                                                 </Button>
                                             </div>
@@ -706,13 +803,12 @@ export default function CerPage() {
                             </div>
                         </div>
                         
-                        <div className="flex items-center justify-end gap-3 p-4 bg-muted/30 border-t border-border">
+                        <div className="flex items-center justify-end gap-3 p-4 border-t border-border">
                             <Button 
-                                variant="ghost" 
                                 size="sm"
                                 onClick={() => setDeleteId(null)}
                                 disabled={deleteMutation.isPending}
-                                className="h-9 px-4"
+                                className="h-9 px-4 bg-card! hover:border-primary! focus:border-primary! focus:outline-0! text-foreground! border-2!"
                             >
                                 Annulla
                             </Button>
@@ -721,7 +817,7 @@ export default function CerPage() {
                                 size="sm"
                                 onClick={executeDelete}
                                 disabled={deleteMutation.isPending}
-                                className="h-9 px-6 bg-red-500! hover:bg-red-700! text-white! font-medium shadow-sm gap-2"
+                                className="h-9 px-6 bg-red-500! hover:bg-red-700! text-white! hover:border-red-700! font-medium shadow-sm gap-2"
                             >
                                 {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Elimina"}
                             </Button>

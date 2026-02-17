@@ -16,6 +16,7 @@ interface PlantContextType {
   selectPlant: (id: string) => void;
   refreshPlants: () => Promise<void>;
   getPlantStatus: (id: string) => string; // Helper to get status easily
+  updatePlantStatus: (id: string, status: 'attivo' | 'offline' | 'manutenzione') => Promise<void>; // New function to update status
 }
 
 const PlantContext = createContext<PlantContextType | undefined>(undefined);
@@ -86,8 +87,22 @@ export function PlantProvider({ children }: { children: React.ReactNode }) {
     setSelectedPlant(id);
   };
 
+  const updatePlantStatus = async (id: string, status: 'attivo' | 'offline' | 'manutenzione') => {
+    try {
+      const { error } = await supabase
+        .from('impianti')
+        .update({ status })
+        .eq('id', id);
+      if (error) throw error;
+      // Refresh the plants list after updating status
+      fetchPlants();
+    } catch (error) {
+      console.error("Error updating plant status");
+    }
+  };
+
   return (
-    <PlantContext.Provider value={{ plants, selectedPlant, isLoading, selectPlant, refreshPlants: fetchPlants, getPlantStatus }}>
+    <PlantContext.Provider value={{ plants, selectedPlant, isLoading, selectPlant, refreshPlants: fetchPlants, getPlantStatus, updatePlantStatus }}>
       {children}
     </PlantContext.Provider>
   );

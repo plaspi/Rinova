@@ -37,8 +37,7 @@ const ROLE_STYLES: Record<string, { label: string, color: string }> = {
   super_admin: { label: "Dev Admin", color: "bg-purple-500/10 text-purple-600 border-purple-200" },
   representative: { label: "Comune", color: "bg-blue-500/10 text-blue-600 border-blue-200" },
   member: { label: "Prosumer", color: "bg-green-500/10 text-green-600 border-green-200" },
-  // Fallback
-  default: { label: "Utente", color: "bg-muted text-muted-foreground border-border" }
+  default: { label: "Utente", color: "bg-gray-500/10 text-gray-600 border-gray-200" }
 };
 
 // Tipo per i dati processati pronti per la UI
@@ -75,6 +74,14 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, profile, signOut, isLoggingOut } = useAuth();
 
+  let currentRoleStyle = ROLE_STYLES.default;
+
+  if(profile?.is_super_admin) {
+    currentRoleStyle = ROLE_STYLES.super_admin;
+  } else if(profile?.role && ROLE_STYLES[profile.role]) {
+    currentRoleStyle = ROLE_STYLES[profile.role];
+  }
+
   //dati dal profilo per la sidebar
   const sidebarUser: SidebarUserUI = {
     fullName: profile?.name && profile?.surname 
@@ -89,9 +96,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       ? (profile.name[0] + profile.surname[0]).toUpperCase() 
       : "R",
 
-    roleStyle: profile?.role 
-      ? (ROLE_STYLES[profile.role] || ROLE_STYLES.default) 
-      : ROLE_STYLES.default
+    roleStyle: currentRoleStyle
   };
 
   useEffect(() => {
@@ -222,6 +227,9 @@ function SidebarContent() {
                     "w-full h-20 border-0 focus-visible:ring-0 rounded-none transition-all",
                     "p-0 hover:bg-muted/10 data-[state=open]:bg-muted/10",
                     "justify-start",
+                    "border-0!",
+                    "focus:outline-none!",
+                    "focus:ring-0!"
                 )}
             >
                 {/* Avatar Container */}
