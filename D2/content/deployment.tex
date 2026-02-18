@@ -1,6 +1,47 @@
 \setcounter{section}{4}
-\setlength{\parindent}{0pt}  % nessun rientro
-\setlength{\parskip}{6pt}    % spazio tra paragrafi
+\setlength{\parindent}{0pt}  
+\setlength{\parskip}{6pt}    
 
 \section{Deployment}
+
+L'applicazione Rinova adotta una strategia di deployment distribuita, separando fisicamente l'hosting del frontend da quello del backend per ottimizzare le risorse e aggirare le limitazioni delle piattaforme cloud gratuite. 
+
+Nello specifico, il sistema è ospitato sui seguenti provider:
+\begin{itemize}
+    \item \textbf{FrontEnd (PWA):} Ospitato su \textbf{Vercel}. 
+    \url{https://rinovaenergy.vercel.app/}
+    \item \textbf{BackEnd (FastAPI):} Ospitato su \textbf{Render}. 
+    \url{https://rinova-energy-api.onrender.com}
+    \item \textbf{Database \& Auth:} Gestiti tramite l'infrastruttura cloud di \textbf{Supabase}.
+\end{itemize}
+
+\textbf{Motivazioni Architetturali del Deployment Separato:}
+La scelta di mantenere i due layer su piattaforme diverse è dettata dalle severe limitazioni degli ambienti \textit{Serverless} per Python offerti da provider come Vercel. L'elaborazione analitica dei dati energetici e la generazione procedurale dei report PDF avrebbero saturato rapidamente i limiti di computazione (timeout delle funzioni e limiti di memoria) previsti dai piani gratuiti. Mantenendo il backend su un'istanza dedicata (Render), il server ha accesso continuo alle risorse necessarie per completare i task più onerosi.
+
+\textbf{Gestione dello Standby (Render):}
+L'istanza backend su Render (tier gratuito) entra in stato di \textit{sleep} dopo 15 minuti di inattività, comportando un avvio ritardato (\textit{cold start}) alla prima richiesta successiva. Tuttavia, grazie a un semplice script di \textit{keep-alive} (es. un cron job esterno che effettua il ping periodico dell'endpoint di health check \texttt{/}), è possibile mantenere l'istanza attiva coprendo l'intero mese senza superare il tetto massimo di ore di calcolo fornite dalla piattaforma.
+
+\subsection{Accesso all'Applicativo}
+Il sistema è configurato tramite \textit{Continuous Deployment (CD)}: ogni operazione di push sul branch principale \texttt{main} innesca automaticamente la fase di building e il rilascio in produzione sui rispettivi provider.
+
+Per testare le funzionalità dell'applicazione e valutare la logica di \textit{Role-Based Access Control} (RBAC) in sede d'esame, sono stati predisposti i seguenti account di test:
+
+\textbf{Utente Membro Standard} (Accesso alla dashboard e ai propri impianti)
+\begin{itemize}
+    \item Username: \texttt{test\_utente@rinova.app}
+    \item Password: \texttt{7es7U7entee!R}
+\end{itemize}
+
+\textbf{Utente Amministratore CER} (Accesso alle funzionalità di gestione comunità)
+\begin{itemize}
+    \item Username: \texttt{test\_admin@rinova.app}
+    \item Password: \texttt{7es7Adm!nn!Rin}
+\end{itemize}
+
+\subsection{Contatti Assistenza}
+Per eventuali problematiche riscontrate durante il testing dell'applicazione o l'accesso al deployment, è possibile contattare i referenti di progetto:
+\begin{itemize}
+    \item \texttt{enrisarto2005@gmail.com} (Sviluppatore Full-Stack / Amministratore)
+    \item \texttt{stedanopezzetta05@gmail.com} (Project Manager / Documentazione)
+\end{itemize}
 

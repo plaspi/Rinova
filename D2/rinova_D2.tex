@@ -10,4 +10,70 @@
 \newpage\input{content/implementation.tex}
 \newpage\input{content/frontend.tex}
 \newpage\input{content/deployment.tex}
-\end{document}  
+\newpage
+\appendix
+\section*{Galleria Interfacce Secondarie}
+Di seguito si riportano ulteriori viste che compongono l'applicativo, a dimostrazione della coerenza visiva, dell'estensione del lavoro svolto sulla User Interface e della cura riposta nei flussi di interazione secondari.
+
+% Esempio: Autenticazione (Login o Registrazione)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/registration_desktop_dark.png}
+    \vspace{0.5cm}
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/login_desktop_dark.png}
+    \caption{Flusso di Autenticazione: Il layout pubblico garantisce un onboarding fluido e sicuro, rispettando i criteri di accessibilità.}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/impianto_desktop_details_light.png}
+    
+    \vspace{0.5cm}
+    
+    \includegraphics[width=0.35\textwidth]{images/frontend/mobile/impianto_mobile_details_dark.jpeg}
+    
+    \caption{Dettaglio Impianto: Vista Desktop (sopra) e Vista Mobile (sotto). Integrazione mappa Leaflet e funzionalità di segnalazione guasti in layout Desktop e Mobile.}
+\end{figure}
+% Esempio: Area Personale
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/userarea_desktop_dark.png}
+    \vspace{0.5cm}
+    \includegraphics[width=0.35\textwidth]{images/frontend/mobile/userarea_mobile_avatar_light.jpeg}
+    \includegraphics[width=0.35\textwidth]{images/frontend/mobile/userarea_mobile_info_light.jpeg}
+    \caption{Area Personale: Gestione del profilo utente e aggiornamento in sicurezza delle credenziali tramite componenti form validati con Zod.}
+\end{figure}
+
+% Esempio: Sistema Ticket
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/support_desktop_faq_dark.png}
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/support_desktop_ticket_dark.png}
+    \caption{Supporto Tecnico: Interfaccia per la visualizzazione e l'apertura di nuovi ticket di assistenza integrata all'interno della dashboard. Le Frequently Asked Questions sono disposte in una colonna a sinistra, oltre agli orari per il contatto diretto via email.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{images/frontend/mobile/ticket_mobile_details_light.jpeg}
+    \caption{Dettaglio Ticket: Interfaccia per visualizzare i ticket creati dall'utente, il loro stato e le risposte degli operatori}
+\end{figure}
+
+% Pagina piani
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/plans_desktop_dark.png}
+    \includegraphics[width=0.35\textwidth]{images/frontend/mobile/plans_mobile_light.jpeg}
+    \caption{Piani Base e Pro: Interfaccia per la selezione del piano di abbonamento all'applicazione, la funzionalità di Pagamento non è ancora stata implementata e sarà disponibile solo in versioni successive dell'applicazione, le funzionalità del piano Pro rimangono accessibili ai soli tester e developers.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/frontend/desktop/settings_desktop_aspetto_dark.png}
+    \includegraphics[width=0.35\textwidth]{images/frontend/mobile/settings_mobile_light.jpeg}
+    \caption{Impostazioni: Interfaccia per la personalizzazione dell'aspetto e delle preferenze all'interno dell'applicazione. Nella tab "Legale" sono consultabili anche i \textbf{ToS(Terms of Service)} e la \textbf{Privacy Policy}.}
+\end{figure}
+
+
+
+\end{document}

@@ -1,16 +1,158 @@
 \setcounter{section}{2}
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}
-\section{Implementazione}
-%DA DESCRIVERE LO STACK TECNOLOGIACO E LE MOTIVAZIONI
+\section{Implementation}
+L'applicazione Rinova è stata sviluppata discostandosi dallo stack tecnologico proposto dal corso in favore di un'architettura più moderna, distribuita e orientata all'analisi dei dati. Lo stack si articola in tre componenti principali:
+\begin{itemize}
+    \item \textbf{Frontend (Client):} Vite + React + TypeScript per i grafici, le tabelle e la UI base della Progressive WebApp.
+    \item \textbf{Middleware Computazionale / Data Analysis:} Python FastAPI, che agisce come microservizio specializzato per le elaborazioni complesse (calcolo KPI, manipolazione serie storiche e generazione report PDF), interconnettendo il database con le viste analitiche del frontend.
+    \item \textbf{BaaS (Backend-as-a-Service):} Supabase (PostgreSQL), che funge da core per la persistenza dei dati, l'autenticazione (Auth) e le logiche di sicurezza (RLS).
+\end{itemize}
+
+\subsection{Motivazioni dello Stack Tecnologico}
+Questa scelta architetturale è stata motivata da conoscenze pregresse del team e, soprattutto, da esigenze specifiche del dominio applicativo (dashboard energetiche) che richiedevano strumenti più robusti rispetto allo stack di base.
+
+\subsubsection*{Perché Supabase (PostgreSQL) e non MongoDB?}
+La differenza fondamentale risiede nella natura relazionale dei dati trattati. Il dominio delle Comunità Energetiche (Utenti, Impianti, CER, dati di produzione) è fortemente interconnesso. PostgreSQL gestisce queste relazioni rigorose in modo nativo e robusto, laddove un database NoSQL a document-based come MongoDB risulterebbe meno efficiente e più prono a inconsistenze per aggregazioni complesse. Inoltre, l'ecosistema Supabase ci ha permesso di centralizzare e semplificare enormemente lo sviluppo grazie alle seguenti feature integrate:
+\begin{itemize}
+    \item \textbf{Gestione dell'Autenticazione (Auth):} Supabase gestisce tutto "il lavoro sporco" relativo a sessioni, generazione, aggiornamento e validazione dei JWT. Si integra inoltre perfettamente con provider OAuth esterni (come Google e Azure Auth, utilizzati nella WebApp) fornendo una soluzione sicura e pronta all'uso.
+    \item \textbf{Row Level Security (RLS):} Le policy di sicurezza a livello di riga sono native di PostgreSQL e gestite in modo molto intuitivo tramite l'interfaccia di Supabase. Questo ci ha permesso di blindare l'accesso ai dati alla radice (es. un utente può leggere solo i log dei propri impianti), senza dover implementare complessi controlli dal lato codice.
+    \item \textbf{Intelligenza Artificiale (Supabase AI):} L'assistente AI integrato in Supabase è uno strumento prezioso per la manutenzione del database. Non legge i dati privati, ma assiste nella stesura delle policy RLS, suggerisce la creazione di indici per ottimizzare le performance delle query e analizza la struttura del database per segnalare eventuali vulnerabilità o difetti progettuali.
+    \item \textbf{Ecosistema completo (Storage, Edge Functions, Cron, Realtime):} Oltre al database, Supabase fornisce un sistema di Storage per file/documenti facilmente implementabile, un'interfaccia API REST generata in automatico e un sistema di log integrato. Supporta inoltre funzionalità avanzate come \textit{Edge Functions}, esecuzione di \textit{Cron Jobs} per task pianificati e le sottoscrizioni in \textit{Realtime} ai cambiamenti del database.
+\end{itemize}
+
+\subsubsection*{Perché Python FastAPI e React+TypeScript?}
+\begin{itemize}
+    \item \textbf{Elaborazione Analitica (FastAPI vs Node.js):} Python è lo standard industriale per l'analisi dei dati. FastAPI ci ha permesso di gestire calcoli matematici complessi (es. KPI energetici sulle serie storiche) e la generazione di report PDF personalizzati con prestazioni e librerie che un ambiente Node.js puro avrebbe reso molto più ostici da implementare.
+    \item \textbf{Robustezza del Frontend (Vite+React+TS vs JS Vanilla):} TypeScript garantisce la \textit{type-safety}, riducendo drasticamente i bug a runtime e agevolando lo sviluppo. React, unito alla velocità di build di Vite, è ideale per gestire in modo reattivo e dichiarativo lo stato complesso di una dashboard ricca di grafici, filtri e dati in tempo reale.
+\end{itemize}
+
+
 \subsection{Organizzazione repository}
-Il codice del progetto (https://github.com/plaspi/Rinova) è organizzato secondo la
-seguente scrittura:
-\subsection{Strategia di Branching e Organizzazione del lavoro}
-%DA DESCRIVERE LA DIVISIONE DEL LAVORO
-\subsection{Dipendenze}
-%DESCRIVERE LE DIPENDENZE ED IL PERCHè
+Il codice del progetto (https://github.com/plaspi/Rinova) è organizzato secondo la seguente struttura:
+
+\begin{verbatim}
+.github/workflows         # Configurazione CI e test applicazione
+
+/webapp                   # Root directory dell'applicazione
+  index.html              # File HTML base
+  vite.config.ts          # Configurazione PWA (Manifest, Service Worker)
+  .env.example            # File esempio configurazione variabili d'ambiente
+  .gitignore              # Configurazione Repository git
+  
+  /src                    # Cartella file sorgenti FrontEnd (React + TypeScript)
+    /components           # Componenti UI (es. forms/, tables/, ui/, sidebar/)
+    /context              # React Context per la gestione di stato (Auth, Plants)
+    /hooks                # Custom hooks (es. gestione mobile)
+    /lib                  # Helper CSS
+    /pages                # Viste Pagine principali principali (homePage, CerPage, PlantsPage...)
+    /services             # Configurazione API e client Supabase
+    /tests                # Configurazione Vitest
+    
+  /backend                # Codice sorgente BackEnd (Python FastAPI)
+    /routers              # Definizione degli endpoint (analytics, dashboard...)
+    /services             # Logica di autenticazione e interazione con Supabase
+    /tests                # Suite di test Python (es. test_dashboard.py)
+    main.py               # Entry point dell'applicazione ASGI FastAPI
+    schemas.py            # Modelli Pydantic per validazione schemi e I/O
+    exceptions.py         # Gestione personalizzata degli errori
+    requirements.txt      # Dipendenze pip del backend
+    
+/D1                       # Cartella contenente la documentazione (Deliverable 1)
+/D2                       # Cartella contenente la documentazione (Deliverable 2)
+/D3                       # Cartella contenente la documentazione (Deliverable 3)
+/D4                       # Cartella contenente la documentazione (Deliverable 4)
+\end{verbatim}
+
+\subsection{Branching Strategy e Organizzazione del lavoro}
+Lo sviluppo del progetto ha richiesto una pianificazione attenta e flessibile, specialmente a seguito di una variazione nella composizione iniziale del team (passato da tre a due membri in corso d'opera). Questo cambiamento ha richiesto una rapida redistribuzione dei carichi di lavoro. In totale, sul repository sono stati eseguiti oltre \textbf{70 commit}. 
+
+La collaborazione è stata gestita tramite incontri di allineamento settimanali, fondamentali per fare il punto della situazione, assegnare i task e coordinare le naturali fasi di stallo fisiologico dovute alla preparazione di altri esami universitari.
+
+Per ottimizzare i tempi, la divisione dei compiti è stata nettamente specializzata in base alle attitudini dei membri:
+\begin{itemize}
+    \item \textbf{Sviluppo Full-Stack (Enrico):} Si è fatto carico della quasi totalità dell'implementazione tecnica, curando l'architettura di base, il backend in FastAPI, lo sviluppo dell'interfaccia React e l'integrazione con Supabase.
+    \item \textbf{Project Management e Documentazione (Stefano):} Ha assunto un ruolo di coordinamento e stesura documentale, curando in modo approfondito la redazione dei documenti Deliverables e contribuendo alla rifinitura di specifici componenti e dettagli della UI.
+\end{itemize}
+
+A livello di repository, data la flessibilità richiesta dalla riorganizzazione del team e la necessità di uno sviluppo rapido, abbiamo optato per una strategia di branching pragmatica e orientata agli obiettivi didattici, allontanandoci da un rigido GitFlow in favore di un approccio più snello (simile al Trunk-Based Development). 
+
+Il flusso di lavoro si è basato su un branch di integrazione principale (es. \texttt{dev} o \texttt{main}), sul quale venivano integrati frequentemente i progressi. I branch aggiuntivi sono stati creati seguendo due direttrici principali:
+\begin{itemize}
+    \item \textbf{Branch di Feature:} Creati all'occorrenza per sviluppare funzionalità specifiche o complessi refactoring (es. \texttt{backAPI} o fix particolari) senza rompere l'ambiente di sviluppo principale.
+    \item \textbf{Branch di Documentazione / Deliverable:} Utilizzati per isolare la stesura dei documenti di progetto rispetto al codice sorgente. Questo ci ha permesso di lavorare in parallelo sulla corposa reportistica senza "sporcare" la cronologia del branch di sviluppo principale, in vista dell'unica consegna cumulativa finale del progetto.
+\end{itemize}
+
+\subsection{Dependencies}
+Il progetto si basa su un ecosistema di librerie moderne e performanti. Di seguito le dipendenze principali utilizzate:
+
+\textbf{Frontend (npm):}
+\begin{itemize}
+    \item \textbf{Core e Stato:} \texttt{react} e \texttt{react-dom} per l'interfaccia, \texttt{react-router-dom} per la navigazione e \texttt{jotai} per il global state management (leggero e basato su atomi).
+    \item \textbf{Forms e Validazione:} \texttt{react-hook-form} combinato con \texttt{zod} per la gestione performante dei moduli e la validazione rigorosa dei dati lato client.
+    \item \textbf{Stile e UI Components:} \texttt{tailwindcss} per lo styling utility-first, combinato con i componenti accessibili di \texttt{Shadcn UI}. Per i feedback visivi (toast) si è optato per \texttt{sonner}, mentre per le icone \texttt{lucide-react}.
+    \item \textbf{Visualizzazione Dati:} \texttt{recharts} per il rendering reattivo dei grafici energetici e \texttt{leaflet} (con \texttt{react-leaflet}) per la geolocalizzazione e visualizzazione degli impianti su mappa.
+    \item \textbf{BaaS e Tooling:} \texttt{@supabase/supabase-js} per l'interazione con il database. Il bundling e la configurazione della PWA (Manifest, Service Workers) sono gestiti tramite \texttt{vite} e \texttt{vite-plugin-pwa}.
+\end{itemize}
+
+\textbf{Backend (pip):}
+\begin{itemize}
+    \item \textbf{Core API e Validazione:} \texttt{fastapi} per la stesura degli endpoint REST, serviti tramite \texttt{uvicorn}. L'I/O e la serializzazione sono tipizzati rigorosamente tramite \texttt{pydantic}.
+    \item \textbf{Elaborazione Analitica:} \texttt{pandas} per l'aggregazione avanzata delle serie storiche di produzione/consumo energetico.
+    \item \textbf{Reportistica:} \texttt{matplotlib} per la generazione statica di grafici backend e \texttt{fpdf} per la compilazione procedurale dei report PDF scaricabili dall'utente.
+    \item \textbf{Auth e BaaS:} \texttt{supabase} per le interazioni privilegiate con il DB e \texttt{PyJWT} per la validazione/decodifica sicura dei token di sessione.
+\end{itemize}
+
 \subsection{Database}
-%DESCRIZIONE DATABASE
+Il modello dati è ospitato su PostgreSQL (tramite Supabase) ed è stato rigorosamente normalizzato per garantire l'integrità referenziale del dominio energetico. La sicurezza è garantita a livello di database tramite policy \textbf{RLS (Row Level Security)}, che assicurano l'accesso ai soli dati di propria competenza.
+
+Oltre alle normali tabelle relazionali, l'architettura sfrutta appieno l'ecosistema Supabase integrando funzioni PostgreSQL, Storage per i file multimediali (es. avatar e allegati dei ticket), Trigger Functions automatiche (es. creazione automatica del profilo in \texttt{public.users} al momento della registrazione su \texttt{auth.users}) e Viste per i dati di produzione aggregati.
+
+Le entità relazionali principali includono:
+\begin{itemize}
+    \item \textbf{users:} Estende l'entità di autenticazione di Supabase aggiungendo anagrafica completa (Nome, CF, Indirizzo), gestione del piano di abbonamento (\texttt{subscription\_plan}) e flag di amministrazione globale (\texttt{is\_super\_admin}).
+    \item \textbf{cer \& cer\_members:} Gestiscono le Comunità Energetiche e le relative iscrizioni. La tabella di giunzione traccia il ruolo dell'utente (\texttt{admin}, \texttt{member}) e lo stato di approvazione dell'iscrizione.
+    \item \textbf{impianti:} Associa gli asset fisici di produzione fotovoltaica agli utenti, definendone coordinate geografiche, potenza nominale e stato operativo.
+    \item \textbf{annunci \& support\_tickets:} Moduli per la comunicazione interna alla CER (bacheca annunci) e per il tracciamento dell'assistenza tecnica, con supporto per allegati organizzati nello Storage.
+\end{itemize}
+
+\textbf{Gestione Avanzata delle Serie Storiche (Time-Series):}
+La mole di dati generata dalla telemetria degli impianti (Gli impianti utilizzati per i test aggiornavano le misurazioni ogni 5 miunti) ha richiesto una strategia di \textit{Table Partitioning}. È stata definita una tabella master, \textbf{\texttt{misurazioni}}, che raccoglie strutturalmente le letture energetiche (produzione, consumo, stato batteria). Tuttavia, i record vengono fisicamente reindirizzati e salvati in tabelle figlie partizionate per mese (es. \texttt{misurazioni\_y2025m02}). 
+Per garantire la scalabilità e la continuità del servizio senza intervento manuale, è stato implementato un \textbf{Cron Job} a livello di database che genera automaticamente la tabella per il mese successivo con un mese di anticipo. Questo approccio garantisce query estremamente rapide sui dati correnti e facilita l'archiviazione a lungo termine.
+Inoltre, per ottimizzare le performance delle query e alleggerire il carico computazionale per l'elaborazione dei dati per le dashboard e grafici, sono state definite specifiche \textbf{Viste}. Queste elaborano e pre-aggregano i dati grezzi direttamente alla fonte (es. totali di produzione giornaliera o mensile), restituendo risultati pronti per essere consumati dalle dashboard.
+
+
 \subsection{Testing}
-%CASI DI TEST
+L'approccio al collaudo del software ha adottato una \textbf{metodologia iterativa e pragmatica}, allineata alle moderne pratiche di sviluppo Agile. I casi di test sono stati implementati parallelamente allo sviluppo dei componenti, con l'obiettivo di validare il codice reale e i flussi critici dell'applicazione in scenari concreti.
+
+Il sistema si avvale di una pipeline di \textbf{Continuous Integration (CI)} automatizzata tramite GitHub Actions. La suite di collaudo conta complessivamente \textbf{oltre 50 file di test e più di 80 test individuali}, suddivisi tra i due macro-ambienti:
+\begin{itemize}
+    \item \textbf{Frontend:} I componenti React (pagine, form, tabelle) e le logiche di routing sono ampiamente testati tramite \textbf{Vitest} e \textit{Testing Library}, garantendo che la UI reagisca correttamente ai cambi di stato e agli input dell'utente.
+    \item \textbf{Backend:} Gli endpoint FastAPI, i calcoli analitici e le interazioni con il database sono validati tramite \textbf{Pytest}, verificando in modo rigoroso le aggregazioni sui dati (es. tramite Pandas) e la sicurezza delle rotte.
+\end{itemize}
+
+Data la vastità della test suite implementata(80+ test implementati tra Vitest e Pytest), la seguente tabella riassume per \textbf{macro-categorie} i principali flussi di validazione eseguiti automaticamente dal sistema ad ogni aggiornamento della repository:
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|p{3.5cm}|p{2cm}|p{2.5cm}|c|p{3.5cm}|c|c|}
+\hline
+\textbf{N.} & \textbf{Macro Caso di Test} & \textbf{Test Data} & \textbf{Precondizioni} & \textbf{Dipendenze} & \textbf{Risultato Atteso} & \textbf{Esito} & \textbf{Note / File} \\ \hline
+\multicolumn{8}{|c|}{\textbf{Frontend (UI \& Stato Integrato) - Vitest}} \\ \hline
+1 & \textbf{Flussi di Autenticazione:} Login, Registrazione e OTP & Credenziali mock valide e invalide & Nessuna & Hook Form & I form mostrano errori (Zod) o completano il submit con successo. & OK & \texttt{login-form.test.tsx}, \texttt{otp-form.test.tsx} \\ \hline
+2 & \textbf{Dashboard:} Rendering widget e grafici & Mock dati energetici & Utente autenticato & Recharts & La \texttt{homePage} carica i widget e mostra i grafici senza crash. & OK & \texttt{homePage.test.tsx} \\ \hline
+3 & \textbf{Gestione Impianti:} Rendering asset fisici & Mock dati impianti & Utente con impianti & React Table & Popolamento corretto della \texttt{plants-table} e apertura dettagli. & OK & \texttt{PlantsPage.test.tsx} \\ \hline
+4 & \textbf{Gestione CER:} Tabelle membri e dettagli & Mock lista membri & Ruolo = \texttt{Admin/Member} & React Table & Rendering della \texttt{members-table} e dei dettagli utente. & OK & \texttt{CerPage.test.tsx} \\ \hline
+5 & \textbf{Area Personale:} Aggiornamento Profilo & Nuovi dati anagrafici & Utente loggato & Context API & I form di profilo e password gestiscono correttamente lo stato. & OK & \texttt{userProfileForm.test.tsx} \\ \hline
+6 & \textbf{Supporto e Ticket:} Visualizzazione e creazione & Mock dati ticket & Utente loggato & Shadcn UI & Rendering della \texttt{ticket-table} e gestione stato di apertura ticket. & OK & \texttt{SupportPage.test.tsx} \\ \hline
+\multicolumn{8}{|c|}{\textbf{Backend (API \& Analisi Dati) - Pytest}} \\ \hline
+7 & \textbf{Protezione Rotte:} Verifica middleware Auth & GET/POST a \texttt{/api/*} & Token JWT assente & FastAPI & L'accesso viene negato con codice HTTP \texttt{401 Unauthorized}. & OK & \texttt{test\_smoke.py} \\ \hline
+8 & \textbf{Analytics:} Calcolo KPI e trend di produzione & Dati storici mock & Misurazioni nel DB & Pandas & Calcolo accurato di consumi, produzione e delta percentuale. & OK & \texttt{test\_analytics.py} \\ \hline
+9 & \textbf{Reportistica:} Generazione export PDF & \texttt{period = month} & Storico disponibile & FPDF & L'endpoint restituisce il file binario formattato correttamente. & OK & \texttt{test\_reports.py} \\ \hline
+\multicolumn{8}{|c|}{\textbf{Infrastruttura (CI/CD)}} \\ \hline
+10 & \textbf{Continuous Deployment} & Push su \texttt{main} & Superamento CI & Render/Vercel & Compilazione (TSC/Vite) e deploy degli ambienti completati. & OK & Log Cloud Provider \\ \hline
+\end{tabular}%
+}
+\caption{Riassunto per macro-categorie della suite di test, divisa per layer architetturale.}
+\end{table}

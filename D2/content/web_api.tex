@@ -2,18 +2,108 @@
 \setlength{\parindent}{0pt}  % niente rientro
 \setlength{\parskip}{6pt}  
 \section{Web APIs}
-Le API sono state documentate secondo le specifiche OpenAPI 3.0.
+\subsection{Scelte di design delle API}
+Per lo sviluppo delle API abbiamo optato per l'utilizzo di \textbf{Python FastAPI}. Questa scelta è stata motivata dalla necessità di elaborare in modo efficiente i dati energetici e le serie storiche per la reportistica e la dashboard. Le API seguono i principi dell'architettura \textbf{RESTful}:
+\begin{itemize}
+    \item Utilizzo standard dei metodi HTTP (es. \texttt{GET} per il recupero dei dati storici e live).
+    \item Formato di scambio dati in \texttt{JSON}, facilitato dalla validazione automatica offerta da \textit{Pydantic}.
+    \item Gestione degli errori standardizzata tramite \texttt{HTTPException} (es. 422 per Validation Error, 500 per Internal Server Error).
+    \item Autenticazione gestita tramite header \texttt{Authorization} (con token JWT forniti da Supabase).
+\end{itemize}
 
 \subsection{Documentazione}
-La documentazione è consultabile seguente indirizzo:\\
-\url{}
-
-%DA INSERIRE NOTE SULLE SCELTE DI DESIGN DELLE API
-
-Inoltre, la specifica completa delle API è disponibile nel repository GitHub al link:\\
-\url{https://github.com/plaspi/Rinova/tree/backAPI}
+Le API sono state documentate secondo le specifiche OpenAPI 3.1. La documentazione interattiva è consultabile pubblicamente tramite Swagger UI al seguendte indirizzo: \\
+\url{https://rinova-energy-api.onrender.com/docs} \\
+o altrimenti tramite \textbf{Redocly} al seguente indirizzo: \\
+\url{https://rinova-energy-api.onrender.com/redoc}
 
 \subsection{Specifica OpenAPI}
-Il contenuto del file di specifica \texttt{.yaml} è riportato qui di seguito per esteso:
+La specifica completa delle API è disponibile nel repository Githbu del progetto. Il contenuto del file di specifica (convertito in formato \texttt{.yaml} per maggiore leggibilità) è qui riportato per esteso:
 
-% Qui inizia il blocco di codice YAML copiato dal tuo documento originale
+\begin{verbatim}
+openapi: 3.1.0
+info:
+  title: Rinova Energy API
+  description: API Backend per la gestione e il monitoraggio impianti fotovoltaici.
+  version: 1.1.0
+  license:
+    name: MIT
+servers:
+  - url: https://rinova-api.onrender.com
+    description: Production Server
+  - url: http://localhost:8000
+    description: Local Development Server
+paths:
+  /:
+    get:
+      tags: [General]
+      summary: Health Check
+      responses:
+        '200':
+          description: Successful Response
+  /api/dati-privati:
+    get:
+      tags: [General, Utils]
+      summary: Leggi Dati Sensibili
+      responses:
+        '200':
+          description: Successful Response
+  /api/production/live:
+    get:
+      tags: [Dashboard]
+      summary: Dati Live Dashboard
+      responses:
+        '200':
+          description: Successful Response
+  /api/dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: KPI Sommario Home
+      responses:
+        '200':
+          description: Successful Response
+  /api/dashboard/chart:
+    get:
+      tags: [Dashboard]
+      summary: Grafico Home (4 Ore)
+      responses:
+        '200':
+          description: Successful Response
+  /api/dashboard/plants:
+    get:
+      tags: [Dashboard]
+      summary: Lista Widget Impianti
+      responses:
+        '200':
+          description: Successful Response
+  /api/production/history:
+    get:
+      tags: [Analytics]
+      summary: Storico Produzione
+      parameters:
+        - name: period
+          in: query
+          required: true
+          description: 'Periodo: week, month, year, custom'
+        - name: plantId
+          in: query
+          required: true
+      responses:
+        '200':
+          description: Successful Response
+  /api/report/download:
+    get:
+      tags: [Reports]
+      summary: Download Report PDF
+      parameters:
+        - name: period
+          in: query
+          required: true
+        - name: plantId
+          in: query
+          required: true
+      responses:
+        '200':
+          description: Successful Response
+\end{verbatim}
+
