@@ -141,6 +141,7 @@ Questo use case descrive come un utente modifica o elimina (se permesso) i propr
 \begin{itemize}
     \item Se i dati inseriti non superano la validazione (formati errati, duplicati), il sistema mostra errori e non salva.
     \item Alcuni campi obbligatori non possono essere eliminati: il sistema impedisce la rimozione e informa l’utente.
+    \item In caso di cambio della password, la nuova password deve rispettare i criteri di sicurezza, in caso contrario l'operazione viene bloccata informando l'utente. 
 \end{itemize}
 
 % =========================================================
@@ -237,7 +238,7 @@ Questo use case descrive le operazioni di registrazione, visualizzazione dettagl
     \item L’utente accede alla sezione "Impianti".
     \item \textbf{Registrazione:} L'utente seleziona "Aggiungi impianto" e compila il form con i dati obbligatori: codice identificativo, potenza nominale, posizione geografica, tipo di impianto, data di installazione. Il sistema valida i dati e registra il nuovo impianto, ponendo il suo stato in "Attesa".
     \item \textbf{Visualizzazione:} L'utente può visualizzare i dettagli del proprio impianto cliccando l'apposito pulsante "Visualizza dettagli".
-    \item \textbf{Segnalazione:} L'utente seleziona un impianto esistente e ne segnala un guasto attraverso l'apposito pulsante.
+    \item \textbf{Cambio di stato:} L'utente selezionando un impianto esistente può segnalarne un guasto, uno stato di manutenzione o, al contrario cambiarne lo stato in "attivo" attraverso gli appositi pulsanti.
 \end{enumerate}
 
 \subparagraph*{Eccezioni:}
