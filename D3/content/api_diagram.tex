@@ -34,10 +34,10 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
  & modifica\_piano() & PATCH & /rest/v1/users?id=eq.\{id\} & \{piano: "nuovo piano"\} & \textbf{Supabase}: Ritorna utente con nuovo piano. \\ \hline
 
 % FASTAPI (INTEGRAZIONE REALE DATI SWAGGER)
- & visualizza\_produzione\_live() & GET & /api/production/live & - & \textbf{FastAPI}: JSON \texttt{LiveResponse} \{plants, charts, kpi\}. \\ \hline & visualizza\_panoramica() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: JSON \texttt{SimpleKPI} \{prod, cons, co2, trend\}. \\ \hline
- & visualizza\_storico() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: JSON \texttt{HistoryResponse} \{chart:[], kpi:\{...\}\}. \\ \hline
- & get\_produzione\_live() & GET & /api/dashboard/plants & - & \textbf{FastAPI}: JSON \texttt{PlantSimple} \{id, status: 'attivo/offline'\}. \\ \hline
- & scarica\_report() & GET & /api/report/download & ?period=... & \textbf{FastAPI}: Ritorna stream binario (application/pdf). \\ \hline
+ & visualizza\_produzione\_live() & GET & /api/production/live & - & \textbf{FastAPI}: Aggrega dati real-time. Restituisce JSON validato \texttt{LiveDashboardResponse} con KPI e grafici. \\ \hline 
+ & visualizza\_panoramica() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: Calcola metriche e stima CO2 rispetto al giorno precedente. Restituisce JSON \texttt{SimpleKPI}. \\ \hline
+ & visualizza\_storico() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: Elabora storico su parametri dinamici (day/week...). Calcola picchi ed efficienza. JSON \texttt{HistoryResponse}. \\ \hline
+ & scarica\_report() & GET & /api/report/download & ?period=... & \textbf{FastAPI}: Genera dinamicamente report aggregando i dati del periodo richiesto. Restituisce stream binario PDF. \\ \hline
 
  & cerca\_cer() & GET & /rest/v1/cer?codice\_fiscale=eq.\{cod\} & - & \textbf{Supabase}: Ritorna lista CER corrispondenti. \\ \hline
 & cerca\_impianto() & GET & /rest/v1/impianti?nome=ilike.*\{q\}* & - & \textbf{Supabase}: Filtra impianti per nome (case insensitive). \\ \hline& apri\_ticket() & POST & /rest/v1/ticket & \begin{tabular}[c]{@{}l@{}} \{"user\_id": "...", "categoria": "...", \\ "oggetto": "...", "descrizione": "..."\} \end{tabular} & \textbf{Supabase}: Crea il ticket con stato default 'APERTO'. Ritorna oggetto creato. \\ \hline
@@ -86,9 +86,9 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
  & get\_dati\_tecnici() & GET & /rest/v1/impianti?id=eq.\{id\}\&select=pod\_code & - & \textbf{Supabase}: Ritorna JSON parziale (select). \\ \hline
 
 % FASTAPI (Analytics Reali)
- & get\_statistiche() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: JSON \texttt{SimpleKPI} \{prod, cons, batt\%\}. \\ \hline
- & get\_grafico\_andamento() & GET & /api/dashboard/chart & - & \textbf{FastAPI}: Array \texttt{SummaryChartPoint} [\{ora, prod\}]. \\ \hline
- & get\_grafici\_storici() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: JSON \texttt{HistoryResponse} (chart + kpi). \\ \hline
+ & get\_statistiche() & GET & /api/dashboard/summary & - & \textbf{FastAPI}: Calcola metriche aggregate sul singolo impianto (produzione, consumi, stato batteria e stima CO2). Restituisce JSON \texttt{SimpleKPI}. \\ \hline
+ & get\_grafico\_andamento() & GET & /api/dashboard/plants & - & \textbf{FastAPI}: Aggrega i flussi energetici orari per la generazione del grafico principale. Restituisce array JSON \texttt{SummaryChartPoint}. \\ \hline
+ & get\_grafici\_storici() & GET & /api/production/history & ?period=... & \textbf{FastAPI}: Elabora i milioni di log storici in base al periodo richiesto. Calcola KPI avanzati (picchi, efficienza). Restituisce JSON \texttt{HistoryResponse}. \\ \hline
 
 \end{tabular}%
 }
@@ -108,10 +108,9 @@ Di seguito viene riportata la mappatura dettagliata tra i metodi definiti nel Cl
 
  & get\_bacheca() & GET & /rest/v1/annunci?cer\_id=eq.\{id\} & - & \textbf{Supabase}: Ritorna array Annunci (ordinati). \\ \hline
 
-% FASTAPI (Calcoli Complessi - Riuso Schemi)
- & get\_statistiche() & GET & /api/dashboard/summary & ?cer\_id=... & \textbf{FastAPI}: JSON \texttt{SimpleKPI} aggregato CER. \\ \hline
+ & get\_statistiche() & GET & - & - & AP non implementata \\ \hline
 
- & get\_grafici() & GET & /api/dashboard/chart & ?cer\_id=... & \textbf{FastAPI}: JSON \texttt{SummaryChartPoint} aggregato CER. \\ \hline
+ & get\_grafici() & GET & - & - & API non implementata \\ \hline
 
 \end{tabular}%
 }

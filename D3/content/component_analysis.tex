@@ -140,7 +140,7 @@ riceve l'identificativo dell'impianto da ricercare nella lista impianti.
 riceve i dati identificativi, tecnici e di locazione necessari per l'inserimento di un nuovo impianto.
 
 \textbf{Interfaccia richiesta - modifiche effettuate:}
-riceve i dati inerenti alle modifiche effettuate (cambiamenti di stato operativo, rimozione impianti).
+riceve i dati inerenti alle modifiche effettuate (cambiamenti di stato operativo, segnalazioni malfunzionamenti).
 
 \textbf{Interfaccia fornita - visualizzazione impianti:}
 fornisce all'interfaccia la lista degli impianti posseduti dall'utente con relativi dati tecnici, identificativi e di stato.
@@ -237,9 +237,9 @@ riceve i dati identificativi della CER ricercata dall'utente mediante il campo d
 richiede al database i dati energergetici anonimizzati e opportunamente aggregati dei membri
 della CER per effettuare calcoli collettivi.
 
-\textbf{Interfaccia richiesta - lista membri CER (admin):}
-recupera i membri appartenenti alla CER (per fornire agli amministratori di CER la visualizzazione
-dei membri).
+\textbf{Interfaccia richiesta - lista membri CER:}
+recupera i membri appartenenti alla CER (per fornire la visualizzazione
+dei membri e permettere agli amministratori di interagirci).
 
 \textbf{Interfaccia richiesta - lista richieste adesione (admin):}
 riceve la lista delle richieste di adesione alla CER presa in considerazione.
@@ -283,7 +283,7 @@ servizio. Gestisce inoltre lo stato delle notifiche ricevute e si
 interfaccia con i sistemi esterni di invio.
 
 \textbf{Interfaccia richiesta - contenuto annunci:}
-Riceve dagli amministratori (di CER o di sistema) i dati relativi agli annunci da
+Riceve dal CMP7 i dati relativi agli annunci da
 notificare (titolo, data, orario, mittente, destinatari, corpo del messaggio...).
 
 \textbf{Interfaccia richiesta - verifica preferenze:}
@@ -292,9 +292,6 @@ la ricezione di email.
 
 \textbf{Interfaccia fornita - invio email:}
 si interfaccia con i servizi esterni per la spedizione fisica del messaggio alla casella di posta dell'utente.
-
-\textbf{Interfaccia fornita - pubblicazione annunci:}
-offre la possibilità di pubblicare nuovi annunci nella bacheca della comunità.
 
 \textbf{Interfaccia fornita - aggiornamento stato lettura:}
 permette al sistema di marcare lo stato della notifica, così da aggiornare il contatore
