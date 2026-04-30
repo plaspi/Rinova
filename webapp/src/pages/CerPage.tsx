@@ -448,15 +448,15 @@ export default function CerPage() {
         const leaveCerMutation = useMutation({
             mutationFn: async () => {
                 // --- MODALITÀ TEST (Simulazione) ---
-                // Simula un'attesa di 1 secondo e poi successo, senza cancellare nulla dal DB.
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                //await new Promise(resolve => setTimeout(resolve, 1000));
                 console.log("Simulazione: Utente  ha abbandonato la CER ");
             },
             onSuccess: () => {
-                toast.success("Hai abbandonato la CER")
+                toast.success("Simulazione: Impossibile abbandonare la CER", { description: "Per questioni tecniche non è possibile abbandonare la CER al momento." });
             },
             onError: (error: any) => {
-                toast.error("Errore durante l'operazione", { description: error.message });
+                toast.error("Errore durante l'operazione", {description: "Riprova più tardi"} );
+                console.error(error.message);
             }
         });
         

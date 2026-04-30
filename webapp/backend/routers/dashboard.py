@@ -58,6 +58,8 @@ async def get_live_dashboard(user=Depends(get_current_user)):
         df = df.sort_values('timestamp')
         if 'produzione_kw' in df.columns:
             df['produzione_kw'] = df['produzione_kw'].round(2)
+        if 'consumo_kw' in df.columns:
+            df['consumo_kw'] = df['consumo_kw'].round(2)
 
         charts_data = {}
         total_power_sum = 0
@@ -72,7 +74,8 @@ async def get_live_dashboard(user=Depends(get_current_user)):
                 chart_points = plant_df.apply(lambda row: {
                     "timestamp_full": row['timestamp'].isoformat(), 
                     "time": row['timestamp'].strftime('%H:%M'),
-                    "Produzione": row['produzione_kw']
+                    "Produzione": row.get('produzione_kw', 0.0),
+                    "Consumo" : row.get('consumo_kw', 0.0)
                 }, axis=1).tolist()
                 charts_data[str(pid)] = chart_points
                 

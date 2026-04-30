@@ -83,7 +83,7 @@ export function PlantsTable({ data }: PlantsTableProps) {
                 <TableCell className="hidden md:table-cell">
                    <div className="flex items-center gap-1 font-medium">
                      <Zap className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                     {row.potenza} kW
+                     {row.pot_nominale} kW
                    </div>
                 </TableCell>
 

@@ -28,6 +28,13 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
   const navigate = useNavigate();
 
   const updateMemberStatus = async (memberId: string, newStatus: string) => {
+    //check satus is valid before sending request to prevent unauthorized status updates
+    const statiValidi = ["attivo", "in_attesa", "sospeso"];
+    if (!statiValidi.includes(newStatus)) {
+      toast.error("Errore di sicurezza: Stato non valido");
+      return; 
+    }
+    
     try {
       const { error } = await supabase
         .from("cer_members")
@@ -37,7 +44,8 @@ export function MembersTable({ data, currentUserRole }: MembersTableProps) {
       //refresh data after update by invalidating query
       queryClient.invalidateQueries({ queryKey: ['cer-membri'] });
     } catch (error) {
-      console.error("Error updating member status");
+      toast.error("Errore durante l'aggiornamento dello stato", { description: "Riprova più tardi" });
+      console.error(error);
     }
   };
   

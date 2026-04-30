@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SplashScreen } from "@/components/splashScreen";
 import { supabase } from "@/services/supabase_client";
 import type { Session, User } from "@supabase/supabase-js";
@@ -29,6 +29,7 @@ export type UserProfile = {
   name: string | null;
   surname: string | null;
   email: string | null;
+  ssn: string | null;
   street_name: string | null;
   street_number: string | null;
   city: string | null;
@@ -160,6 +161,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!hasInitialized) {
         loadAuthAndProfile(session, true);
       }
+    }).catch((error) => {
+      console.error("[AuthContext] Errore critico in getSession: ", error);
+      if(mounted) {
+        setIsLoading(false); //sblocca l'UI anche se c'e' un errore, per evitare di bloccare l'app in caso di problemi di rete o simili, la ProtectedRoute si occuperà di reindirizzare al login se non c'è una sessione valida
+      }
     });
 
     // B. Listener for subsequent changes
@@ -207,6 +213,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setProfile(null);
       currentUserId.current = null; // Clear the ref on logout
+      
+      window.location.replace("/");
     } catch (error) {
       console.error("Logout error");
     } finally {
@@ -236,14 +244,27 @@ export const useAuth = () => {
 };
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      navigate("/login");
+    if(!isLoading) {
+      //check utente
+      if(!user) {
+        navigate("/login")
+      } else if(profile) {
+        //profilo incompleto, mancano dati importanti per il funzionamento corretto dell'applicazione, causa onboarding automatico con Social Login
+        const isProfileIncomplete = !profile.name || !profile.surname || !profile.city || !profile.province || !profile.street_name || !profile.street_number || !profile.ssn;
+        //forzo il completamento dei parametri e il redirect alla pagina giusta
+        if(isProfileIncomplete && location.pathname !== '/onboarding') {
+          navigate("onboarding", { replace: true });
+        }
+      }
     }
-  }, [user, isLoading, navigate]);
+  }, [user, profile, isLoading, navigate, location]);
 
   if (isLoading) return <SplashScreen />;
 
