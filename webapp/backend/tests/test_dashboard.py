@@ -39,8 +39,8 @@ def test_dashboard_live_with_data(client, fake_db):
         {"id": PLANT_A_ID, "nome": "Impianto A", "status": "attivo", "user_id": "user-1"},
     ]
     async_db.datasets["misurazioni"] = [
-        {"impianto_id": PLANT_A_ID, "timestamp": start.isoformat(), "produzione_kw": 1.2},
-        {"impianto_id": PLANT_A_ID, "timestamp": (start + timedelta(minutes=5)).isoformat(), "produzione_kw": 2.0},
+        {"impianto_id": PLANT_A_ID, "timestamp": start.isoformat(), "produzione_kw": 1.2, "consumo_kw": 0.5},
+        {"impianto_id": PLANT_A_ID, "timestamp": (start + timedelta(minutes=5)).isoformat(), "produzione_kw": 2.0, "consumo_kw": 1.1},
     ]
 
     r = client.get("/api/production/live")

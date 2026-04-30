@@ -352,8 +352,8 @@ export default function HistoryPage() {
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} />
+                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'var(--foreground)', fontSize: 12 }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--foreground)', fontSize: 12 }} />
                                         <Tooltip content={<CustomTooltip period={period} />} cursor={{ fill: 'var(--muted)', opacity: 0.2 }} />
                                         <Bar dataKey="Produzione" fill="url(#barGradient)" radius={[6, 6, 0, 0]} maxBarSize={50} animationDuration={1000} />
                                     </BarChart>

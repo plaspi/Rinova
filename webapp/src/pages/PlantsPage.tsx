@@ -101,7 +101,7 @@ export default function PlantsPage() {
                 user_id: user?.id,
                 nome: newPlant.nome,
                 tipo: newPlant.tipo,
-                pot_nominale: parseFloat(newPlant.pot_nominale).toFixed(1),
+                pot_nominale: parseFloat(newPlant.pot_nominale),
                 produttore: newPlant.produttore,
                 data_attivazione: newPlant.data_attivazione,
                 status: 'attivo',

@@ -265,31 +265,44 @@ export default function ProductionPage() {
                                                     <ResponsiveContainer width="100%" height="100%">
                                                         <AreaChart data={charts[plant.id]}>
                                                             <defs>
-                                                                <linearGradient id={`grad_${plant.id}`} x1="0" y1="0" x2="0" y2="1">
-                                                                    <stop offset="5%" stopColor="#eab308" stopOpacity={0.3}/>
-                                                                    <stop offset="95%" stopColor="#eab308" stopOpacity={0}/>
+                                                                <linearGradient id={`prod_${plant.id}`} x1="0" y1="0" x2="0" y2="1">
+                                                                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                                                                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                                                                </linearGradient>
+                                                                <linearGradient id={`cons_${plant.id}`} x1="0" y1="0" x2="0" y2="1">
+                                                                    <stop offset="5%" stopColor="ef4444" stopOpacity={0.3}/>
+                                                                    <stop offset="95%" stopColor="ef4444" stopOpacity={0}/>
                                                                 </linearGradient>
                                                             </defs>
-                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="#888" />
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="hsl(var(--border))" />
                                                             <XAxis 
-                                                                dataKey="timestamp_full" 
+                                                                dataKey="time" 
                                                                 axisLine={false} 
                                                                 tickLine={false} 
-                                                                tick={{fontSize: 11, fill: '#666'}} 
+                                                                tick={{fontSize: 11, fill: 'hsl(var(--foreground))'}} 
                                                                 minTickGap={40}
                                                                 dy={10}
                                                                 tickFormatter={(value) => new Date(value).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                                             />
-                                                            <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#666'}} width={40} />
-                                                            <Tooltip content={<CustomTooltipLive />} cursor={{ stroke: 'var(--muted-foreground)', strokeWidth: 1 }} />
+                                                            <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fill: 'hsl(var(--foreground))'}} width={40} />
+                                                            <Tooltip content={<CustomTooltipLive />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
                                                             <Area 
                                                                 type="monotone" 
                                                                 dataKey="Produzione" 
-                                                                stroke="#ca8a04" 
+                                                                stroke="#22c55e" 
                                                                 strokeWidth={2.5}
-                                                                fill={`url(#grad_${plant.id})`} 
+                                                                fill={`url(#prod_${plant.id})`} 
                                                                 animationDuration={1500}
-                                                                activeDot={{ r: 6, strokeWidth: 0, fill: '#ca8a04' }}
+                                                                activeDot={{ r: 6, strokeWidth: 0, fill: '#22c55e' }}
+                                                            />
+                                                            <Area
+                                                                type="monotone"
+                                                                dataKey="Consumo"
+                                                                stroke="#ef4444"
+                                                                strokeWidth={2.5}
+                                                                fill={`url(#cons_${plant.id})`}
+                                                                animationDuration={1500}
+                                                                activeDot={{ r:6, strokeWidth: 0, fill: '#ef4444' }}
                                                             />
                                                         </AreaChart>
                                                     </ResponsiveContainer>
@@ -316,7 +329,6 @@ export default function ProductionPage() {
 const CustomTooltipLive = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         const fullDateIso = payload[0].payload.timestamp_full;
-        const value = payload[0].value;
         let dateLabel = label;
         if (fullDateIso) {
             const d = new Date(fullDateIso);
@@ -326,10 +338,14 @@ const CustomTooltipLive = ({ active, payload, label }: any) => {
         return (
             <div className="rounded-lg border border-border bg-card p-3 shadow-xl">
                 <p className="mb-1 text-xs font-semibold text-card-foreground uppercase tracking-wide">{dateLabel}</p>
-                <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
-                    <span className="text-sm font-medium text-muted-foreground">Potenza:</span>
-                    <span className="text-lg font-bold text-foreground">{Number(value).toFixed(2)} <span className="text-xs font-normal text-muted-foreground">kW</span></span>
+                <div className="flex flex-col gap-1.5">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }}/>
+                            <span className="text-sm font-medium text-muted-foreground capitalize">{entry.name}:</span>
+                            <span className="text-sm font-bold text-foreground">{Number(entry.value).toFixed(2)} <span className="text-xs font-normal text-muted-foreground">kW</span></span>
+                        </div>
+                    ))}
                 </div>
             </div>
         );

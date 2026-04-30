@@ -5,6 +5,21 @@ import { Button } from "@/components/ui/button"
 // --- IMPORT PER LA MAPPA (OpenStreetMap) ---
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix icone Leaflet
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Assegna le icone di default
+L.Marker.prototype.options.icon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  shadowAnchor: [10, 41],
+});
+
 
 interface ImpiantoDetailsProps {
   impianto: any
@@ -112,14 +127,14 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                 </h3>
                 <div className="bg-muted/30 rounded-xl p-5 border flex flex-col md:flex-row justify-between gap-6">
                     <div className="space-y-4 flex-1">
-                        <Row label="Coordinate" value={`${impianto.latitudine || 0}° N, ${impianto.longitudine || 0}° E`} mono />
+                        <Row label="Coordinate" value={`${impianto.latitudine ?? 0}° N, ${impianto.longitudine ?? 0}° E`} mono />
                         <Row label="Orientamento" value="Sud (180°)" />
                         <Row label="Inclinazione" value="30°" />
                     </div>
                     {/* Placeholder Mappa */}
                     <div className="w-full md:w-64 h-32 bg-muted rounded-lg border border-dashed flex items-center justify-center text-xs text-muted-foreground shrink-0">
                         <MapContainer 
-                            center={[impianto.latitudine || 45.4642, impianto.longitudine || 9.1900]}
+                            center={[impianto.latitudine ?? 45.4642, impianto.longitudine ?? 9.1900]}
                             zoom={13} 
                             style={{ height: '100%', width: '100%' }}
                         >
@@ -127,7 +142,7 @@ export function ImpiantoDetails({ impianto, onClose }: ImpiantoDetailsProps) {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            <Marker position={[impianto.latitudine || 45.4642, impianto.longitudine || 9.1900]}></Marker>
+                            <Marker position={[impianto.latitudine ?? 45.4642, impianto.longitudine ?? 9.1900]}></Marker>
                         </MapContainer>
                     </div>
                 </div>

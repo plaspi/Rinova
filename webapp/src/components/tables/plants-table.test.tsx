@@ -11,8 +11,8 @@ vi.mock('@tanstack/react-query', () => ({
 }));
 
 const mockData = [
-  { id: '1', nome: 'Solar 1', potenza: 5, stato: 'attivo', tipo: 'fotovoltaico', data_attivazione: '2023-01-01', produttore: 'Prod A' },
-  { id: '2', nome: 'Wind A', potenza: 10, stato: 'offline', tipo: 'eolico', data_attivazione: '2023-02-01', produttore: 'Prod B' }
+  { id: '1', nome: 'Solar 1', pot_nominale: 5, stato: 'attivo', tipo: 'fotovoltaico', data_attivazione: '2023-01-01', produttore: 'Prod A' },
+  { id: '2', nome: 'Wind A', pot_nominale: 10, stato: 'offline', tipo: 'eolico', data_attivazione: '2023-02-01', produttore: 'Prod B' }
 ];
 
 describe('PlantsTable', () => {

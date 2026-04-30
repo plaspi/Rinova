@@ -36,6 +36,7 @@ class LiveChartPoint(BaseModel):
     timestamp_full: str = Field(..., description="Timestamp completo ISO 8601")
     time: str = Field(..., description="Orario formattato per asse X (HH:MM)", json_schema_extra={"example": "14:30"})
     Produzione: float = Field(..., description="Valore di produzione istantanea (kW)")
+    Consumo: float = Field(..., description="Valore di consumo instantaneo (kW)")
 
 class LiveDashboardResponse(BaseModel):
     """Struttura dati completa per la Dashboard Live."""
