@@ -147,7 +147,7 @@ export function RegistrationForm({ className, ...props }: React.ComponentProps<"
       });
       if (error) throw error;
       toast.success("Registrazione completata! Conferma la mail.");
-    } catch (err: any) {
+    } catch (err: Erorr) {
       console.error(err);
       toast.error(err.message || "Errore durante la registrazione.");
     } finally {

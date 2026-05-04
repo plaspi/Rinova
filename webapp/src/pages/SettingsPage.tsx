@@ -147,7 +147,7 @@ export default function SettingsPage() {
                                         key={tab.id}
                                         onClick={() => setTab(tab.id)}
                                         className={cn(
-                                            "flex flex-col bg-card! items-center border-0! justify-center gap-3 p-4 rounded-xl border transition-all duration-200 h-24 sm:h-28",
+                                            "flex flex-col bg-card! items-center border-0! justify-center gap-3 p-4 rounded-xl transition-all duration-200 h-24 sm:h-28",
                                             isActive
                                                 ? "ring-offset-0! focus:outline-none! hover-ring  hover:outline-none! hover:border-transparent! ring-2! ring-black dark:ring-primary!"
                                                 : "border-border bg-card text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-foreground"

@@ -2,6 +2,7 @@ import { render, screen, waitFor, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthProvider, useAuth } from './authContext';
 import { supabase } from '@/services/supabase_client';
+import { BrowserRouter } from 'react-router-dom';
 
 // Mock Supabase Client
 vi.mock('@/services/supabase_client', () => ({
@@ -20,6 +21,16 @@ vi.mock('@/services/supabase_client', () => ({
     })),
   },
 }));
+
+// Mock router
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Test Consumer Component to access Context values
 const TestConsumer = () => {
@@ -48,14 +59,16 @@ describe('AuthContext', () => {
     (supabase.auth.onAuthStateChange as any).mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } });
 
     render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <TestConsumer />
+        </AuthProvider>
+      </BrowserRouter>
     );
 
     // 2. Expect Loading then User
     expect(screen.getByText('Loading...')).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.getByText('User: test@example.com')).toBeInTheDocument();
     });
@@ -68,9 +81,11 @@ describe('AuthContext', () => {
     (supabase.auth.signOut as any).mockResolvedValue({ error: null });
 
     render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <TestConsumer />
+        </AuthProvider>
+      </BrowserRouter>
     );
 
     await waitFor(() => screen.getByText('User: test@example.com'));
@@ -84,14 +99,15 @@ describe('AuthContext', () => {
 
     // 4. Fast-forward the 2500ms delay
     await act(async () => {
-        vi.advanceTimersByTime(2500);
+      vi.advanceTimersByTime(2500);
     });
 
     vi.useRealTimers();
 
     // 5. Verify
     await waitFor(() => {
-        expect(supabase.auth.signOut).toHaveBeenCalled();
+      expect(supabase.auth.signOut).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
     });
   });
 });

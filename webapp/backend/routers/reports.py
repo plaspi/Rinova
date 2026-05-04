@@ -3,10 +3,13 @@ from fastapi.responses import StreamingResponse
 from datetime import datetime, timedelta
 import pandas as pd
 import io
+import os
+import tempfile
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure # <-- NO pyplot!
 from fpdf import FPDF
+
 from backend.services.supabase_client import supabase as sync_db
 from backend.services.auth import get_current_user
 from backend.exceptions import NotFoundException, InternalServerErrorException, ForbiddenException
@@ -18,52 +21,52 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
     try:
         user_id = user.get('sub')
         now = datetime.now()
-
-        #plant ownership validation
+        
+        # Plant ownership validation
         plant_res = sync_db.table("impianti").select("id").eq("user_id", user_id).execute()
-
         if not plant_res.data:
             raise NotFoundException(detail="Nessun impianto associato all'utente.")
-        
+            
         user_plant_ids = [str(p['id']) for p in plant_res.data]
-
         if plantId != 'summary' and plantId not in user_plant_ids:
-            #403 Forbidden: User is authenticated but not authorized for this resource
             raise ForbiddenException(detail="Non hai i permessi per accedere ai dati di questo impianto.")
-        
+            
+        # --- THREAD-SAFE MATPLOTLIB INIT ---
+        fig = Figure(figsize=(10, 5))
+        ax = fig.add_subplot(111)
+
         if period == 'live':
             start_live = now - timedelta(hours=24)
             query = sync_db.table("misurazioni").select("*").gte("timestamp", start_live.isoformat()).lte("timestamp", now.isoformat()).order("timestamp")
             
-            #scope the query to ensure data isolation
             if plantId != 'summary':
                 query = query.eq("impianto_id", plantId)
             else:
-                #only user plants
                 query = query.in_("impianto_id", user_plant_ids)
-            
+                
             res = query.execute()
             
             if not res.data: 
                 raise NotFoundException(detail="Nessun dato per il report")
                 
             df = pd.DataFrame(res.data)
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            # Fix Timezone for Live Report
+            df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+            df['timestamp'] = df['timestamp'].dt.tz_convert('Europe/Rome').dt.tz_localize(None)
             
-            plt.figure(figsize=(10, 5))
-            plt.plot(df['timestamp'], df['produzione_kw'], color='#eab308', linewidth=2)
-            plt.fill_between(df['timestamp'], df['produzione_kw'], color='#eab308', alpha=0.3)
-            plt.title("Produzione Live (Ultime 24h)")
-            plt.ylabel("Potenza (kW)")
-            plt.grid(axis='y', linestyle='--', alpha=0.5)
-            plt.xticks(rotation=45, fontsize=8)
+            ax.plot(df['timestamp'], df['produzione_kw'], color='#eab308', linewidth=2)
+            ax.fill_between(df['timestamp'], df['produzione_kw'], color='#eab308', alpha=0.3)
+            ax.set_title("Produzione Live (Ultime 24h)")
+            ax.set_ylabel("Potenza (kW)")
+            ax.grid(axis='y', linestyle='--', alpha=0.5)
+            ax.tick_params(axis='x', rotation=45, labelsize=8)
             
             kpi = {
                 "totalEnergy": round(df['produzione_kw'].sum() / 12, 2), 
                 "co2": round((df['produzione_kw'].sum() / 12) * 0.225, 2), 
                 "peakValue": round(df['produzione_kw'].max(), 2)
             }
-            
+                
         else:
             if period == 'week':
                 start_date = (now - timedelta(days=6)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -93,22 +96,21 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
 
             query = sync_db.table(table_name).select("*").gte("timestamp", start_date.isoformat()).lte("timestamp", now.isoformat()).order("timestamp")
             
-            #scope the query here as well
             if plantId != 'summary':
                 query = query.eq("impianto_id", plantId)
             else:
-                #only user plants
                 query = query.in_("impianto_id", user_plant_ids)
                 
             res = query.execute()
             
             if not res.data:
                 kpi = {"totalEnergy": 0, "co2": 0, "peakValue": 0}
-                plt.figure(figsize=(10, 5))
-                plt.text(0.5, 0.5, "Nessun dato disponibile", ha='center')
+                ax.text(0.5, 0.5, "Nessun dato disponibile", ha='center', va='center')
             else:
                 df = pd.DataFrame(res.data)
-                df['timestamp'] = pd.to_datetime(df['timestamp'])
+                # Fix Timezone for Historical Report
+                df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+                df['timestamp'] = df['timestamp'].dt.tz_convert('Europe/Rome').dt.tz_localize(None)
                 
                 total_prod = df['produzione'].sum()
                 kpi = {
@@ -117,17 +119,15 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
                     "peakValue": round(df['produzione'].max(), 2)
                 }
                 
-                plt.figure(figsize=(10, 5))
                 width = 20 if table_name == "vista_mensile" else 0.6
-                plt.bar(df['timestamp'], df['produzione'], color='#16a34a', alpha=0.8, width=width)
-                plt.title(f"Andamento Produzione ({period.capitalize()})")
-                plt.ylabel("Energia (kWh)")
-                plt.grid(axis='y', linestyle='--', alpha=0.3)
-                plt.xticks(rotation=45, fontsize=8)
+                ax.bar(df['timestamp'], df['produzione'], color='#16a34a', alpha=0.8, width=width)
+                ax.set_title(f"Andamento Produzione ({period.capitalize()})")
+                ax.set_ylabel("Energia (kWh)")
+                ax.grid(axis='y', linestyle='--', alpha=0.3)
+                ax.tick_params(axis='x', rotation=45, labelsize=8)
 
         img_buffer = io.BytesIO()
-        plt.savefig(img_buffer, format='png', bbox_inches='tight')
-        plt.close()
+        fig.savefig(img_buffer, format='png', bbox_inches='tight')
         img_buffer.seek(0)
 
         pdf = FPDF()
@@ -152,13 +152,17 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
         pdf.cell(45, 10, f"{kpi['peakValue']} kW", 1, 1, 'C')
         pdf.ln(10)
 
-        import tempfile, os
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
-            tmp_file.write(img_buffer.getvalue())
-            tmp_path = tmp_file.name
-            
-        pdf.image(tmp_path, x=10, y=None, w=190)
-        os.unlink(tmp_path)
+        # --- SAFE TEMP FILE HANDLING ---
+        tmp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+                tmp_file.write(img_buffer.getvalue())
+                tmp_path = tmp_file.name
+                
+            pdf.image(tmp_path, x=10, y=None, w=190)
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.unlink(tmp_path)
         
         pdf_buffer = io.BytesIO()
         pdf_bytes = pdf.output(dest='S').encode('latin-1')
@@ -168,6 +172,7 @@ def download_report(period: str, plantId: str, startDate: str = Query(None), end
         return StreamingResponse(pdf_buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=rinova_report_{period}.pdf"})
         
     except Exception as e:
-        if isinstance(e, NotFoundException): raise e
+        if isinstance(e, NotFoundException) or isinstance(e, ForbiddenException): 
+            raise e
         print(f"PDF Error: {e}")
         raise InternalServerErrorException(detail="Errore generazione Report")

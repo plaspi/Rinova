@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Sidebar, SidebarProvider, SidebarTrigger } from './sidebarLayout';
 import { useAuth } from '@/context/authContext';
@@ -38,6 +38,7 @@ describe('Sidebar Component', () => {
   const mockSignOut = vi.fn();
 
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
     (useAuth as any).mockReturnValue({
       user: { email: 'test@rinova.it' },
@@ -69,12 +70,15 @@ describe('Sidebar Component', () => {
     expect(screen.getByText('Gestione CER')).toBeInTheDocument();
   });
 
-  it('handles logout interaction', () => {
+  it('handles logout interaction', async () => {
     renderSidebar();
 
     // Since we mocked the dropdown to be open, we can click immediately
     const logoutItem = screen.getByText(/log out/i);
-    fireEvent.click(logoutItem);
+    await act(async () => {
+        fireEvent.click(logoutItem);
+        vi.advanceTimersByTime(2500);
+    });
 
     expect(mockSignOut).toHaveBeenCalled();
   });

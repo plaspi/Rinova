@@ -37,6 +37,14 @@ vi.mock('@/context/plantsContext', () => ({
 
 vi.mock('@/services/api_config', () => ({ API_BASE_URL: 'http://test' }));
 
+vi.mock('recharts', async () => {
+  const Original = await vi.importActual('recharts');
+  return {
+    ...Original,
+    ResponsiveContainer: ({ children }: any) => <div style={{ width: 500, height: 500 }}>{children}</div>,
+  };
+});
+
 // NEW: Mock Sidebar
 vi.mock('@/components/sidebar/sidebarLayout', () => ({
   SidebarTrigger: () => <button>Sidebar</button>,

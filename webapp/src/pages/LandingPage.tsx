@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/services/supabase_client";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ import {
 const contactSchema = z.object({
   name: z.string().min(2, "Inserisci il tuo nome"),
   company: z.string().optional(), // L'azienda può essere facoltativa
-  email: z.string().email("Inserisci un'email valida"),
+  email: z.email("Inserisci un'email valida"),
   message: z.string().min(10, "Il messaggio deve contenere almeno 10 caratteri"),
 });
 
@@ -35,7 +36,6 @@ export default function LandingPage() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
 
-  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -43,36 +43,47 @@ export default function LandingPage() {
     resolver: zodResolver(contactSchema),
   });
 
-  const onContactSubmit = async (data: ContactFormValues) => {
-    setIsSubmittingContact(true);
-    setContactError(null);
-
-    try{
-      const {error} = await supabase
+  const contactMutation = useMutation({
+    mutationFn: async (data: ContactFormValues) => {
+        const { error } = await supabase
         .from('contact_requests')
-        .insert([
-          {
+        .insert([{
             name: data.name,
             company: data.company || null,
             email: data.email,
             message: data.message,
             created_at: new Date().toISOString(),
-          }
-        ]);
-      if (error) throw error;
-
-      setContactSuccess(true);
-      resetContact(); //clean up form
-      
-      //show success for 3 seconds
-      setTimeout(() => setContactSuccess(false), 3000);
-    } catch (err: any) {
-      console.error("Errore invio contatto: ",err);
-      setContactError("Si è verificato un errore. Riprova più tardi.");
-    } finally {
-      setIsSubmittingContact(false);
+        }]);
+        if (error) throw error;
+    },
+    onSuccess: () => {
+        setContactSuccess(true);
+        resetContact();
+    },
+    onError: (err: Error) => {
+        console.error("Errore invio contatto: ", err);
+        setContactError("Si è verificato un errore. Riprova più tardi.");
     }
+  });
+
+  const onContactSubmit = (data: ContactFormValues) => {
+    setContactError(null);
+    contactMutation.mutate(data);
   };
+
+   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    if (contactSuccess) {
+        timeoutId = setTimeout(() => {
+            setContactSuccess(false);
+        }, 3000);
+    }
+
+    return () => {
+        if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
+  }, [contactSuccess]);
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
@@ -109,7 +120,7 @@ export default function LandingPage() {
                 <Avatar className="h-10 w-10 border-2! border-primary/20! cursor-pointer hover:border-primary! transition-colors shadow-sm">
                   {user ? (
                     <>
-                      <AvatarImage src={profile?.avatar_url || ""} />
+                      <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="bg-primary/10! text-primary!">
                         {profile?.name?.[0] || <User className="h-5 w-5" />}
                       </AvatarFallback>
@@ -368,7 +379,6 @@ export default function LandingPage() {
       </section>
 
       {/* --- 8. CONTATTI --- */}
-      {/* --- 8. CONTATTI --- */}
       <section id="contact" className="w-full py-32 bg-background! scroll-mt-8">
         <div className="max-w-350 mx-auto px-6">
             <div className="bg-muted/30! border! border-border/50! rounded-[3rem] p-8 md:p-16 grid lg:grid-cols-2 gap-16 shadow-inner">
@@ -435,10 +445,10 @@ export default function LandingPage() {
 
                     <Button 
                         type="submit" 
-                        disabled={isSubmittingContact || contactSuccess}
+                        disabled={contactMutation.isPending || contactSuccess}
                         className="w-full h-14 rounded-full! bg-primary! text-primary-foreground! font-bold text-lg hover:bg-primary/90! shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all duration-300"
                     >
-                        {isSubmittingContact ? (
+                        {contactMutation.isPending ? (
                             <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Invio in corso...</>
                         ) : (
                             <>Invia Messaggio <Send className="ml-2 h-5 w-5" /></>

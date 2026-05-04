@@ -45,6 +45,7 @@ describe('PlantContext', () => {
     mockEq.mockResolvedValue({ data: [], error: null });
     const { result } = renderHook(() => usePlants(), { wrapper });
     expect(result.current.isLoading).toBe(true);
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.plants).toEqual([]);
   });
 

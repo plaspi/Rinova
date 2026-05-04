@@ -6,15 +6,20 @@ import { ModeToggle } from "@/components/modeToggle";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, type TooltipContentProps, XAxis, YAxis } from "recharts";
 import { RefreshCcw, Loader2, Zap, Activity, TrendingUp, Lock, Download, Sparkles, WifiOff, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/services/supabase_client";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { API_BASE_URL } from "@/services/api_config";
+import { downloadBlobWithAuth, fetchWithAuth } from "@/services/api_client";
 import { usePlants } from "@/context/plantsContext";
+
+interface LiveDashboardResponse {
+    plants: any[];
+    charts: Record<string, any[]>;
+    kpi: { peak: number; totalEnergy: number; avgPower: number };
+}
 
 export default function ProductionPage() {
     const { isPro } = useAuth();
@@ -30,20 +35,7 @@ export default function ProductionPage() {
     // --- QUERY DATI DASHBOARD ---
     const { data: dashboardData, isLoading: dataLoading } = useQuery({
         queryKey: ['dashboard-live'],
-        queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const token = session?.access_token;
-            
-            const response = await fetch(`${API_BASE_URL}/api/production/live`, {
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) throw new Error("Errore caricamento dati");
-            return response.json();
-        },
+        queryFn: async () => fetchWithAuth<LiveDashboardResponse>('/api/production/live'),
         refetchInterval: 300000, 
     });
 
@@ -78,22 +70,8 @@ export default function ProductionPage() {
 
         setPdfLoading(true);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const token = session?.access_token;
-            const res = await fetch(`${API_BASE_URL}/api/report/download?period=live&plantId=summary`, { 
-                headers: { 'Authorization': `Bearer ${token}` } 
-            });
-            
-            if(res.ok) {
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Report_Live_${new Date().toISOString().split('T')[0]}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            }
+            const filename = `Report_Live_${new Date().toISOString().split('T')[0]}.pdf`;
+            await downloadBlobWithAuth('/api/report/download?period=live&plantId=summary', filename);
         } catch (e) {
             console.error(e);
             toast.error("Errore download report");
@@ -270,8 +248,8 @@ export default function ProductionPage() {
                                                                     <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
                                                                 </linearGradient>
                                                                 <linearGradient id={`cons_${plant.id}`} x1="0" y1="0" x2="0" y2="1">
-                                                                    <stop offset="5%" stopColor="ef4444" stopOpacity={0.3}/>
-                                                                    <stop offset="95%" stopColor="ef4444" stopOpacity={0}/>
+                                                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                                                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                                                                 </linearGradient>
                                                             </defs>
                                                             <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="hsl(var(--border))" />
@@ -282,10 +260,9 @@ export default function ProductionPage() {
                                                                 tick={{fontSize: 11, fill: 'hsl(var(--foreground))'}} 
                                                                 minTickGap={40}
                                                                 dy={10}
-                                                                tickFormatter={(value) => new Date(value).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                                             />
                                                             <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fill: 'hsl(var(--foreground))'}} width={40} />
-                                                            <Tooltip content={<CustomTooltipLive />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
+                                                            <Tooltip content={CustomTooltipLive} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
                                                             <Area 
                                                                 type="monotone" 
                                                                 dataKey="Produzione" 
@@ -326,12 +303,13 @@ export default function ProductionPage() {
 }
 
 // --- TOOLTIP & KPI HELPERS ---
-const CustomTooltipLive = ({ active, payload, label }: any) => {
+const CustomTooltipLive = ({ active, payload, label }: TooltipContentProps<number, string>) => {
     if (active && payload && payload.length) {
-        const fullDateIso = payload[0].payload.timestamp_full;
-        let dateLabel = label;
-        if (fullDateIso) {
-            const d = new Date(fullDateIso);
+        const data = payload[0].payload as { timestamp_full?: string; Produzione?: number; Consumo?: number };
+        
+        let dateLabel = String(label);
+        if (data.timestamp_full) {
+            const d = new Date(data.timestamp_full);
             dateLabel = d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             dateLabel = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
         }

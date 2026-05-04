@@ -62,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const navigate = useNavigate();
   
   // FIX: Ref to track the current user ID and prevent stale closures
   const currentUserId = useRef<string | null>(null);
@@ -137,7 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Helper that strictly awaits profile fetching BEFORE dropping the loading screen
     const loadAuthAndProfile = async (currentSession: Session | null, isInitialLoad: boolean) => {
       if (!mounted) return;
-
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
@@ -214,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       currentUserId.current = null; // Clear the ref on logout
       
-      window.location.replace("/");
+      navigate('/', { replace: true });
     } catch (error) {
       console.error("Logout error");
     } finally {
@@ -260,7 +260,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         const isProfileIncomplete = !profile.name || !profile.surname || !profile.city || !profile.province || !profile.street_name || !profile.street_number || !profile.ssn;
         //forzo il completamento dei parametri e il redirect alla pagina giusta
         if(isProfileIncomplete && location.pathname !== '/onboarding') {
-          navigate("onboarding", { replace: true });
+          navigate("/onboarding", { replace: true });
+        }
+        else if (!isProfileIncomplete && location.pathname == '/onboarding') {
+          navigate("/home", {replace: true});
         }
       }
     }

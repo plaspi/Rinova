@@ -83,12 +83,10 @@ async def get_production_history(
         # --- 4. PROCESS DATA AND AGGREGATE ---
         df = pd.DataFrame(res.data)
         df.rename(columns={col_time: 'timestamp', col_val: 'value'}, inplace=True)
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
         
-        #Remove timezone if present
-        if df['timestamp'].dt.tz is not None:
-            df['timestamp'] = df['timestamp'].dt.tz_localize(None)
-            
+        # Force UTC, convert to Italian time, then make naive for local grouping
+        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+        df['timestamp'] = df['timestamp'].dt.tz_convert('Europe/Rome').dt.tz_localize(None)
         df['timestamp'] = df['timestamp'].dt.normalize()
         
         #Group by timestamp
@@ -140,4 +138,5 @@ async def get_production_history(
     except Exception as e:
         if isinstance(e, (BadRequestException, ServiceUnavailableException)): raise e
         print(f"ERR History: {e}")
-        return {"chart": [], "kpi": {"totalEnergy":0.0, "co2":0.0, "peakValue":0.0, "peakTime":"-", "efficiency":0.0}}
+        #Throw a proper 500 error.
+        raise InternalServerErrorException(detail="Errore durante l'elaborazione dello storico di produzione")

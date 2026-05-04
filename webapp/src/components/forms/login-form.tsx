@@ -51,7 +51,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       toast.success("Bentornato!");
       navigate("/home");
 
-    } catch (err: any) {
+    } catch (err: Erorr) {
       console.error(err);
       toast.error(err.message || "Errore login");
       setIsLoading(false);
@@ -80,7 +80,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       })
 
       if (error) throw error
-    } catch (err: any) {
+    } catch (err: Erorr) {
       console.error(err);
       toast.error(err.message || "Errore durante il login.");
     } finally {

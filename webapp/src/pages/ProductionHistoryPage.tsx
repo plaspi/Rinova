@@ -10,9 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, type TooltipContentProps, XAxis, YAxis } from "recharts";
 import { Loader2, Leaf, Zap, Trophy, Activity, Calendar as CalendarIcon, Download, Sparkles, Lock, RefreshCcw, WifiOff, Wrench, ChartNoAxesCombined } from "lucide-react";
-import { supabase } from "@/services/supabase_client";
 import { cn } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { it } from "date-fns/locale";
@@ -20,7 +19,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/authContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { DateRange } from "react-day-picker";
-import { API_BASE_URL } from "@/services/api_config";
+import { fetchWithAuth, downloadBlobWithAuth } from "@/services/api_client";
 import { usePlants } from "@/context/plantsContext";
 
 const DAYS_FULL_IT: Record<string, string> = {
@@ -33,6 +32,15 @@ const MONTHS_FULL_IT: Record<string, string> = {
     'Mag': 'Maggio', 'Giu': 'Giugno', 'Lug': 'Luglio', 'Ago': 'Agosto',
     'Set': 'Settembre', 'Ott': 'Ottobre', 'Nov': 'Novembre', 'Dic': 'Dicembre'
 };
+
+interface HistoryDataResponse {
+    chart: any[];
+    kpi: { totalEnergy: number; co2: number; peakValue: number; peakTime: string; efficiency: number };
+}
+
+interface CustomTooltipProps extends TooltipContentProps<number, string>{
+    period: string;
+}
 
 export default function HistoryPage() {
     const { plants, selectedPlant, selectPlant, getPlantStatus, refreshPlants, isLoading: plantsLoading } = usePlants();
@@ -80,25 +88,18 @@ export default function HistoryPage() {
     const { data: historyData, isLoading: historyLoading } = useQuery({
         queryKey: ['production-history', selectedPlant, period, dateRange],
         queryFn: async () => {
-            // Doppia sicurezza: se bloccato, non chiamare API
             if (isBlocked) return null;
 
-            const { data: { session } } = await supabase.auth.getSession();
-            const token = session?.access_token;
-
-            let url = `${API_BASE_URL}/api/production/history?plantId=${selectedPlant}&period=${period}`;
+            let endpoint = `/api/production/history?plantId=${selectedPlant}&period=${period}`;
             
             if (period === 'custom' && dateRange?.from && dateRange?.to) {
                 const startStr = format(dateRange.from, 'yyyy-MM-dd');
                 const endStr = format(dateRange.to, 'yyyy-MM-dd');
-                url += `&startDate=${startStr}&endDate=${endStr}`;
+                endpoint += `&startDate=${startStr}&endDate=${endStr}`;
             }
 
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!res.ok) throw new Error("Errore nel caricamento dello storico");
-            return res.json();
+            return fetchWithAuth<HistoryDataResponse>(endpoint);
         },
-        // IMPORTANT: La query è disabilitata se l'impianto è bloccato
         enabled: !!selectedPlant && selectedPlant !== "" && !isBlocked && (period !== 'custom' || (!!dateRange?.from && !!dateRange?.to))
     });
 
@@ -131,28 +132,15 @@ export default function HistoryPage() {
 
         setPdfLoading(true);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const token = session?.access_token;
-            if (!token) throw new Error("No token");
-            
-            let url = `${API_BASE_URL}/api/report/download?plantId=${selectedPlant}&period=${period}`;
+            let endpoint = `/api/report/download?plantId=${selectedPlant}&period=${period}`;
             if (period === 'custom' && dateRange?.from && dateRange?.to) {
                  const startStr = format(dateRange.from, 'yyyy-MM-dd');
                  const endStr = format(dateRange.to, 'yyyy-MM-dd');
-                 url += `&startDate=${startStr}&endDate=${endStr}`;
+                 endpoint += `&startDate=${startStr}&endDate=${endStr}`;
             }
             
-            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-            if(res.ok) {
-                const blob = await res.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = `Report_${period}_${format(new Date(), 'yyyyMMdd')}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            }
+            const filename = `Report_${period}_${format(new Date(), 'yyyyMMdd')}.pdf`;
+            await downloadBlobWithAuth(endpoint, filename);
         } catch (e) {
             toast.error("Errore download PDF");
         } finally {
@@ -352,9 +340,9 @@ export default function HistoryPage() {
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'var(--foreground)', fontSize: 12 }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--foreground)', fontSize: 12 }} />
-                                        <Tooltip content={<CustomTooltip period={period} />} cursor={{ fill: 'var(--muted)', opacity: 0.2 }} />
+                                        <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
+                                        <Tooltip content={(props) => <CustomTooltip {...(props as any)} period={period} />}  cursor={{ fill: 'var(--muted)', opacity: 0.2 }} />
                                         <Bar dataKey="Produzione" fill="url(#barGradient)" radius={[6, 6, 0, 0]} maxBarSize={50} animationDuration={1000} />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -368,15 +356,15 @@ export default function HistoryPage() {
 }
 
 // Helpers (Tooltip, KPI) same as before...
-const CustomTooltip = ({ active, payload, label, period }: any) => {
+const CustomTooltip = ({ active, payload, label, period }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
-        const data = payload[0].payload;
+        const data = payload[0].payload as { full_date: string};
         const value = payload[0].value;
         const fullDateIso = data.full_date;
         let formattedDate = label;
         if (fullDateIso) {
             const dateObj = new Date(fullDateIso);
-            const options: Intl.DateTimeFormatOptions = (period === 'year' || (period === 'custom' && label.length < 4))
+            const options: Intl.DateTimeFormatOptions = (period === 'year' || (period === 'custom' && String(label).length < 4))
                 ? { month: 'long', year: 'numeric' }
                 : { weekday: 'long', day: 'numeric', month: 'long' };
             const rawDate = new Intl.DateTimeFormat('it-IT', options).format(dateObj);

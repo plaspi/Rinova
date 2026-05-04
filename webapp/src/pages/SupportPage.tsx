@@ -14,17 +14,17 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { TicketsTable, type Ticket } from "@/components/tables/ticket-table";
-import { TicketDetail } from "@/components/details/ticketDetails"; 
+import { TicketDetail } from "@/components/details/ticketDetails";
 import { supabase } from "@/services/supabase_client";
-import { 
-    LifeBuoy, 
-    MessageSquarePlus, 
-    UploadCloud, 
-    Send, 
-    Loader2, 
-    Paperclip, 
-    X, 
-    FileText, 
+import {
+    LifeBuoy,
+    MessageSquarePlus,
+    UploadCloud,
+    Send,
+    Loader2,
+    Paperclip,
+    X,
+    FileText,
     HelpCircle,
     Mail,
     Download
@@ -73,7 +73,7 @@ export default function SupportPage() {
                 .select('*')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
-            
+
             if (error) throw error;
             return data as Ticket[];
         },
@@ -88,7 +88,7 @@ export default function SupportPage() {
 
             selectedFiles.forEach(file => {
                 //check size
-                if(file.size > MAX_FILE_SIZE) {
+                if (file.size > MAX_FILE_SIZE) {
                     toast.error("File troppo grande", {
                         description: `${file.name} supera il limite di 5MB.`
                     });
@@ -109,11 +109,11 @@ export default function SupportPage() {
             setFiles(prev => {
                 const combined = [...prev, ...validFiles];
                 //total limit count
-                if (combined.length > 3){
+                if (combined.length > 3) {
                     toast.warning("Limite allegati raggiunto", {
                         description: "Puoi allegare massimo 3 file. I file in eccesso sono stati esclusi."
                     });
-                    return combined.slice(0,3);
+                    return combined.slice(0, 3);
                 }
                 return combined;
             });
@@ -134,17 +134,17 @@ export default function SupportPage() {
             if (!user) throw new Error("User not authenticated");
 
             const { data: ticketData, error: createError } = await supabase
-            .from('support_tickets')
-            .insert({
-                user_id: user.id,
-                category: data.category,
-                subject: data.subject,
-                message: data.message,
-                status: 'open',
-                attachments: [] 
-            })
-            .select()
-            .single();
+                .from('support_tickets')
+                .insert({
+                    user_id: user.id,
+                    category: data.category,
+                    subject: data.subject,
+                    message: data.message,
+                    status: 'open',
+                    attachments: []
+                })
+                .select()
+                .single();
 
             if (createError) throw createError;
             if (!ticketData) throw new Error("Errore creazione ticket");
@@ -152,23 +152,26 @@ export default function SupportPage() {
             const ticketId = ticketData.id;
             const uploadedPaths: string[] = [];
 
-            if(files.length > 0) {
+            if (files.length > 0) {
                 for (const file of files) {
 
-                    //explicitly determine extension from MIME
+                    // explicit extension check
                     let fileExt = "bin";
                     if (file.type === "image/png") fileExt = "png";
                     else if (file.type === "image/jpeg") fileExt = "jpg";
                     else if (file.type === "application/pdf") fileExt = "pdf";
-                    //sanitize filename
-                    const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_');
-                    //final filepath: user_id/ticket_id/cleanName.ext
+
+                    // NEW: Rimuovi l'estensione originale prima di sanificare
+                    const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                    const cleanName = nameWithoutExt.replace(/[^a-zA-Z0-9]/g, '_');
+
+                    // final filepath
                     const filePath = `${user.id}/${ticketId}/${cleanName}.${fileExt}`;
 
                     const { error: uploadError } = await supabase.storage
                         .from('support_attachments')
                         .upload(filePath, file);
-                    
+
                     if (uploadError) {
                         toast.error(`Errore nel caricamento del file: ${file.name}`);
                         continue;
@@ -188,10 +191,10 @@ export default function SupportPage() {
             toast.success("Ticket creato con successo!", {
                 description: "Ti contatteremo al più presto"
             });
-        
+
             reset();
             setFiles([]);
-            queryClient.invalidateQueries({ queryKey: ['support-tickets']})
+            queryClient.invalidateQueries({ queryKey: ['support-tickets'] })
 
         } catch (error) {
             toast.error("Errore durante l'invio", {
@@ -222,7 +225,7 @@ export default function SupportPage() {
 
             {/* --- CONTENT --- */}
             <div className="flex-1 p-6 md:p-8 overflow-y-auto">
-                
+
                 <div className="space-y-8">
                     <div className="flex flex-col gap-1">
                         <h1 className="text-4xl! font-bold tracking-tight flex items-center gap-3 text-foreground">
@@ -234,7 +237,7 @@ export default function SupportPage() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        
+
                         {/* --- LEFT COL: FORM --- */}
                         <div className="lg:col-span-2">
                             <Card className="border-border shadow-md bg-card">
@@ -250,7 +253,7 @@ export default function SupportPage() {
                                             <Label>Categoria*</Label>
                                             <Select onValueChange={(val) => setValue("category", val, { shouldValidate: true })}>
                                                 <SelectTrigger className={cn(
-                                                    "bg-background! text-foreground! border-input", 
+                                                    "bg-background! text-foreground! border-input",
                                                     errors.category && "border-destructive"
                                                 )}>
                                                     <SelectValue placeholder="Seleziona motivo" />
@@ -268,9 +271,9 @@ export default function SupportPage() {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="subject">Oggetto*</Label>
-                                            <Input 
-                                                id="subject" 
-                                                placeholder="Es. Errore caricamento grafico produzione" 
+                                            <Input
+                                                id="subject"
+                                                placeholder="Es. Errore caricamento grafico produzione"
                                                 {...register("subject")}
                                                 className={cn("bg-background text-foreground", errors.subject && "border-destructive")}
                                             />
@@ -279,9 +282,9 @@ export default function SupportPage() {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="message">Messaggio*</Label>
-                                            <Textarea 
-                                                id="message" 
-                                                placeholder="Descrivi dettagliatamente il problema o la tua idea..." 
+                                            <Textarea
+                                                id="message"
+                                                placeholder="Descrivi dettagliatamente il problema o la tua idea..."
                                                 className={cn("min-h-37.5 resize-none bg-background text-foreground", errors.message && "border-destructive")}
                                                 {...register("message")}
                                             />
@@ -290,7 +293,7 @@ export default function SupportPage() {
 
                                         <div className="space-y-2">
                                             <Label>Allegati</Label>
-                                            <div 
+                                            <div
                                                 className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/30 transition-colors cursor-pointer bg-background/50"
                                                 onClick={() => fileInputRef.current?.click()}
                                             >
@@ -301,11 +304,11 @@ export default function SupportPage() {
                                                 <p className="text-xs text-muted-foreground mt-1">
                                                     PNG, JPG o PDF fino a 5MB
                                                 </p>
-                                                <input 
-                                                    type="file" 
-                                                    ref={fileInputRef} 
-                                                    className="hidden" 
-                                                    multiple 
+                                                <input
+                                                    type="file"
+                                                    ref={fileInputRef}
+                                                    className="hidden"
+                                                    multiple
                                                     accept="image/*,application/pdf"
                                                     onChange={handleFileChange}
                                                 />
@@ -320,7 +323,7 @@ export default function SupportPage() {
                                                                 <span className="truncate max-w-50">{file.name}</span>
                                                                 <span className="text-xs text-muted-foreground">({(file.size / 1024).toFixed(0)} KB)</span>
                                                             </div>
-                                                            <button 
+                                                            <button
                                                                 type="button"
                                                                 onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
                                                                 className="bg-card! text-foreground! border-0! hover:text-red-500! p-1"
@@ -408,9 +411,9 @@ export default function SupportPage() {
                                             <p className="text-muted-foreground text-xs">Manuale utente v0.1</p>
                                         </div>
                                     </div>
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
                                         className="w-full gap-2 bg-background hover:bg-primary/10 border-primary/20 text-primary"
                                         onClick={() => toast.info("Guida Utente in arrivo!", { description: "Il manuale utente PDF è ancora in fase di sviluppo" })}
                                     >
@@ -436,9 +439,9 @@ export default function SupportPage() {
                                 <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
                             </div>
                         ) : (
-                            <TicketsTable 
-                                tickets={tickets} 
-                                onTicketSelect={(ticket) => setSelectedTicket(ticket)} 
+                            <TicketsTable
+                                tickets={tickets}
+                                onTicketSelect={(ticket) => setSelectedTicket(ticket)}
                             />
                         )}
                     </div>
@@ -446,9 +449,9 @@ export default function SupportPage() {
             </div>
 
             {/* --- DETAIL DRAWER (RENDERED HERE TO FIX Z-INDEX WAR) --- */}
-            <TicketDetail 
-                ticket={selectedTicket} 
-                onClose={() => setSelectedTicket(null)} 
+            <TicketDetail
+                ticket={selectedTicket}
+                onClose={() => setSelectedTicket(null)}
             />
         </main>
     );
