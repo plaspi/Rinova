@@ -84,7 +84,7 @@ export default function OnBoardingPage() {
       // Svuota la RAM e riparte da Home!
       window.location.replace("/home");
 
-    } catch (err: Erorr) {
+    } catch (err: Error) {
       console.error("Errore salvataggio:", err);
       setGlobalError(err.message || "Si è verificato un errore durante il salvataggio dei dati.");
     } finally {

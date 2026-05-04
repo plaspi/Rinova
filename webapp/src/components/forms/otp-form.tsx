@@ -132,7 +132,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
       
       if(error) throw error;
       toast.success("Nuovo codice inviato");
-    } catch (err: Erorr){
+    } catch (err: Error){
       console.error(err);
       toast.error("Errore, nell'invio del codice. Riprovare più tardi.");
       setCanResend(true); //se fallisce riattivo il bottone
@@ -162,7 +162,7 @@ export function OTPForm({ className, ...props }: React.ComponentProps<"div">) {
       toast.success("Account verificato con successo!");
       navigate("/home"); 
 
-    } catch (err: Erorr) {
+    } catch (err: Error) {
       console.error(err);
       toast.error(err.message || "Codice non valido o scaduto.");
     } finally {
