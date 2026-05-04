@@ -25,13 +25,12 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+let CustomMarkerIcon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
     iconSize: [25, 41],
     iconAnchor: [12, 41]
 });
-L.Marker.prototype.options.icon = DefaultIcon;
 
 // Componente click mappa
 function LocationMarker({ setPos, pos }: { setPos: (lat: string, lng: string) => void, pos: { lat: number, lng: number } | null }) {
@@ -40,7 +39,7 @@ function LocationMarker({ setPos, pos }: { setPos: (lat: string, lng: string) =>
             setPos(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
         },
     });
-    return pos ? <Marker position={[pos.lat, pos.lng]} /> : null;
+    return pos ? <Marker position={[pos.lat, pos.lng]} icon={CustomMarkerIcon} /> : null;
 }
 
 type ImpiantoUI = {

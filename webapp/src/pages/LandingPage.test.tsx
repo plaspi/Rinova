@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import LandingPage from './LandingPage';
@@ -76,10 +77,19 @@ describe('LandingPage', () => {
             register: vi.fn(),
         } as any);
 
+        const queryClient = new QueryClient({
+            defaultOptions: {
+                queries: { retry: false },
+                mutations: { retry: false },
+            },
+        });
+
         return render(
-            <BrowserRouter>
-                <LandingPage />
-            </BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <LandingPage />
+                </BrowserRouter>
+            </QueryClientProvider>
         );
     };
 

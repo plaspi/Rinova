@@ -51,9 +51,9 @@ async def get_live_dashboard(user=Depends(get_current_user)):
         col_mapping = {'bucket': 'timestamp', 'data_ora': 'timestamp'}
         df.rename(columns=col_mapping, inplace=True)
         
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
-        if df['timestamp'].dt.tz is not None:
-             df['timestamp'] = df['timestamp'].dt.tz_localize(None)
+        # Fix Timezone
+        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+        df['timestamp'] = df['timestamp'].dt.tz_convert('Europe/Rome').dt.tz_localize(None)
 
         df = df.sort_values('timestamp')
         if 'produzione_kw' in df.columns:
@@ -65,19 +65,24 @@ async def get_live_dashboard(user=Depends(get_current_user)):
         total_power_sum = 0
         total_count = 0
         global_peak = 0
-
+        
+        # OPTIMIZATION: Group the dataframe once instead of filtering inside the loop
+        grouped = df.groupby('impianto_id')
+        
         for plant in plants:
             pid = plant['id']
-            plant_df = df[df['impianto_id'] == pid].copy()
             
-            if not plant_df.empty:
-                chart_points = plant_df.apply(lambda row: {
-                    "timestamp_full": row['timestamp'].isoformat(), 
-                    "time": row['timestamp'].strftime('%H:%M'),
-                    "Produzione": row.get('produzione_kw', 0.0),
-                    "Consumo" : row.get('consumo_kw', 0.0)
-                }, axis=1).tolist()
-                charts_data[str(pid)] = chart_points
+            if pid in grouped.groups:
+                plant_df = grouped.get_group(pid).copy()
+                
+                # Vectorized column creation (Much faster than .apply)
+                plant_df['timestamp_full'] = plant_df['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%S')
+                plant_df['time'] = plant_df['timestamp'].dt.strftime('%H:%M')
+                plant_df['Produzione'] = plant_df['produzione_kw']
+                plant_df['Consumo'] = plant_df.get('consumo_kw', 0.0)
+                
+                # Natively convert to list of dictionaries
+                charts_data[str(pid)] = plant_df[['timestamp_full', 'time', 'Produzione', 'Consumo']].to_dict('records')
                 
                 local_peak = plant_df['produzione_kw'].max()
                 if local_peak > global_peak: global_peak = local_peak
@@ -145,8 +150,9 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
             "trend_consumo": calc_trend(cons_today, cons_yesterday)
         }
     except Exception as e:
-        return {"produzione": 0, "consumo": 0, "batteria": 0, "risparmio_co2": 0, "trend_produzione": "0%", "trend_consumo": "0%"}
-
+        print(f"ERR Dashboard Summary: {e}")
+        raise InternalServerErrorException(detail="Errore nel calcolo del sommario della dashboard")
+    
 @router.get("/api/dashboard/chart", response_model=list[SummaryChartPoint], summary="Grafico Home (4 Ore)")
 async def get_dashboard_chart(user: dict = Depends(get_current_user)):
     try:
@@ -170,15 +176,19 @@ async def get_dashboard_chart(user: dict = Depends(get_current_user)):
 
         df = pd.DataFrame(data)
         df.rename(columns={'timestamp': 'ora'}, inplace=True)
-        df['ora'] = pd.to_datetime(df['ora'])
+        
+        # Fix Timezone
+        df['ora'] = pd.to_datetime(df['ora'], utc=True)
+        df['ora'] = df['ora'].dt.tz_convert('Europe/Rome').dt.tz_localize(None)
         df_grouped = df.groupby('ora')[['produzione_kw', 'consumo_kw']].sum().reset_index()
         
         result = []
         for _, row in df_grouped.iterrows():
             result.append({"ora": row['ora'].strftime('%H:%M'), "produzione": round(row['produzione_kw'], 2), "consumo": round(row['consumo_kw'], 2)})
         return result
-    except Exception:
-        return []
+    except Exception as e:
+        print(f"ERR Dashboard Chart: {e}")
+        raise InternalServerErrorException(detail="Errore nel caricamento del grafico della dashboard")
 
 @router.get("/api/dashboard/plants", response_model=list[PlantSimple], summary="Lista Widget Impianti")
 async def get_dashboard_plants(user=Depends(get_current_user)):

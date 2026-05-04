@@ -2,18 +2,17 @@ import { useNavigate } from "react-router-dom";
 import { SidebarTrigger } from "@/components/sidebar/sidebarLayout"
 import { NavLayout } from "@/components/nav/navLayout"
 import { ModeToggle } from "@/components/modeToggle"
-import { supabase } from "@/services/supabase_client"; 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Lock, Sparkles, Pencil, Leaf, Zap, Plug, BatteryLow, BatteryMedium, BatteryFull, CheckCircle2, Wrench, XCircle, LayoutDashboard } from "lucide-react"; 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, type TooltipContentProps, ResponsiveContainer, Legend } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { API_BASE_URL } from "@/services/api_config";
+import { fetchWithAuth } from "@/services/api_client";
 
 interface DashboardData {
   produzione: number;
@@ -37,40 +36,19 @@ export default function HomePage() {
     // Query per KPI
     const { data: stats, isLoading: isLoadingStats } = useQuery({
         queryKey: ['dashboard-summary'],
-        queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${API_BASE_URL}/api/dashboard/summary`, {
-                headers: { 'Authorization': `Bearer ${session?.access_token}` }
-            });
-            if (!res.ok) throw new Error("Errore fetch KPI");
-            return res.json() as Promise<DashboardData>;
-        }
+        queryFn: async () => fetchWithAuth<DashboardData>('/api/dashboard/summary')
     });
 
     // Query per Grafico
     const { data: chartData = [], isLoading: isLoadingChart } = useQuery({
         queryKey: ['dashboard-chart'],
-        queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${API_BASE_URL}/api/dashboard/chart`, {
-                headers: { 'Authorization': `Bearer ${session?.access_token}` }
-            });
-            if (!res.ok) throw new Error("Errore fetch Grafico");
-            return res.json();
-        }
+        queryFn: async () => fetchWithAuth<any[]>('/api/dashboard/chart')
     });
 
     // Query lista impianti
     const { data: plantsList = [], isLoading: isLoadingPlants } = useQuery({
         queryKey: ['dashboard-plants'],
-        queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${API_BASE_URL}/api/dashboard/plants`, {
-                headers: { 'Authorization': `Bearer ${session?.access_token}` }
-            });
-            if (!res.ok) throw new Error("Errore fetch Lista Impianti");
-            return res.json() as Promise<PlantSimple[]>;
-        }
+        queryFn: async () => fetchWithAuth<PlantSimple[]>('/api/dashboard/plants')
     });
 
     const handleEditWidgets = () => {
@@ -204,7 +182,7 @@ export default function HomePage() {
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                         <XAxis dataKey="ora" stroke="hsl(var(--foreground))" fontSize={12} tickLine={false} axisLine={false} />
                                         <YAxis stroke="hsl(var(--foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
+                                        <Tooltip content={CustomTooltip} cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }} />
                                         <Legend wrapperStyle={{ paddingTop: '10px' }} />
                                         <Area type="monotone" dataKey="produzione" name="Produzione" stroke="#22c55e" fillOpacity={1} fill="url(#colorProd)" strokeWidth={2} />
                                         <Area type="monotone" dataKey="consumo" name="Consumo" stroke="#ef4444" fillOpacity={1} fill="url(#colorCons)" strokeWidth={2} />
@@ -291,7 +269,7 @@ function PlantListItem({ plant }: { plant: PlantSimple }) {
     )
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipContentProps<number, string>) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-popover border border-border p-3 rounded-lg shadow-xl text-sm">

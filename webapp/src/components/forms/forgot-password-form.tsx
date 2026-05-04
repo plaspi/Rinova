@@ -37,7 +37,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             console.log(email);
             console.log(window.location.origin);
             toast.success("Email di recupero inviata");
-        } catch(err: any) {
+        } catch (err: any) {
             console.error(err);
             toast.error(err.message || "Errore nell'invio. Riprova.");
         }

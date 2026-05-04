@@ -61,6 +61,22 @@ type Annuncio = {
     }
 };
 
+type CerMemberRow = {
+    user_id: string;
+    role: 'admin' | 'representative' | 'member' | null;
+    status: MemberData['stato'] | null;
+    joined_at: string | null;
+    users?: {
+        name: string | null;
+        surname: string | null;
+        ssn: string | null;
+        email: string | null;
+        avatar_url: string | null;
+    } | null;
+};
+
+type NewAnnuncio = Pick<Annuncio, 'titolo' | 'messaggio' | 'tipo' | 'is_pinned'>;
+
 export type MemberData = {
     id: string;
     nome: string;
@@ -327,7 +343,7 @@ export default function CerPage() {
     const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
     
     // Form States
-    const [newAnnuncio, setNewAnnuncio] = useState({
+    const [newAnnuncio, setNewAnnuncio] = useState<NewAnnuncio>({
         titolo: "",
         messaggio: "",
         tipo: "info",
@@ -389,16 +405,17 @@ export default function CerPage() {
                 .eq('cer_id', myCerId);
             
             if (!data) return [];
-            return data.map((row: any) => ({
+            // Cast through unknown first because Supabase returns users as object, not array
+            return (data as unknown as CerMemberRow[]).map((row) => ({
                 id: row.user_id,
-                nome: row.users?.name || "Utente",
-                cognome: row.users?.surname || "",
-                ssn: row.users?.ssn || "",
-                email: row.users?.email || "N/A",
-                avatar_url: row.users?.avatar_url || null,
+                nome: row.users?.name ?? "Utente",
+                cognome: row.users?.surname ?? "",
+                ssn: row.users?.ssn ?? "",
+                email: row.users?.email ?? "N/A",
+                avatar_url: row.users?.avatar_url ?? null,
                 ruolo: row.role === 'admin' ? 'Amministratore' : row.role === 'representative' ? 'Referente' : 'Membro',
-                stato: row.status || 'attivo',
-                joined_at: row.joined_at || "" 
+                stato: row.status ?? 'attivo',
+                joined_at: row.joined_at ?? "" 
             })) as MemberData[];
         },
         enabled: !!myCerId,
@@ -407,7 +424,7 @@ export default function CerPage() {
 
     // --- MUTATION CREAZIONE ANNUNCIO ---
     const createMutation = useMutation({
-        mutationFn: async (annuncio: any) => {
+        mutationFn: async (annuncio: NewAnnuncio) => {
             const { error } = await supabase.from('annunci').insert({
                 ...annuncio,
                 cer_id: myCerId,
@@ -421,7 +438,7 @@ export default function CerPage() {
             setIsCreateOpen(false);
             setNewAnnuncio({ titolo: "", messaggio: "", tipo: "info", is_pinned: false });
         },
-        onError: (e: any) => toast.error("Errore pubblicazione", { description: e.message })
+        onError: (e: Error) => toast.error("Errore pubblicazione", { description: e.message })
     });
 
     // --- MUTATION ELIMINAZIONE ANNUNCIO ---
@@ -442,7 +459,7 @@ export default function CerPage() {
             setDeleteId(null);
             setSelectedAnnouncement(null);
         },
-        onError: (e: any) => toast.error("Errore eliminazione", { description: e.message })
+        onError: (e: Error) => toast.error("Errore eliminazione", { description: e.message })
     });
     // --- MUTATION PER ABBANDONARE LA CER ---
         const leaveCerMutation = useMutation({
@@ -454,7 +471,7 @@ export default function CerPage() {
             onSuccess: () => {
                 toast.success("Simulazione: Impossibile abbandonare la CER", { description: "Per questioni tecniche non è possibile abbandonare la CER al momento." });
             },
-            onError: (error: any) => {
+            onError: (error: Error) => {
                 toast.error("Errore durante l'operazione", {description: "Riprova più tardi"} );
                 console.error(error.message);
             }
@@ -717,7 +734,17 @@ export default function CerPage() {
                                     <Label htmlFor="tipo" className="text-sm font-semibold">Tipo</Label>
                                     <Select 
                                         value={newAnnuncio.tipo} 
-                                        onValueChange={(val) => setNewAnnuncio({...newAnnuncio, tipo: val})}
+                                        onValueChange={(val) => {
+                                            // conversione da stringa generica a tipo corretto
+                                            if (
+                                                val === "info" ||
+                                                val === "alert" ||
+                                                val === "manutenzione" ||
+                                                val === "evento"
+                                            ) {
+                                                setNewAnnuncio({ ...newAnnuncio, tipo: val });
+                                            }
+                                        }}
                                     >
                                         <SelectTrigger className="bg-card text-foreground">
                                             <SelectValue />
