@@ -61,7 +61,7 @@ export function NewPasswordForm({ className, ...props }: React.ComponentProps<"d
         // Redirect al login dopo 1.2 secondi
         setTimeout(() => navigate("/login"), 1200);
 
-    } catch (err: Error) {
+    } catch (err: any) {
         console.error(err);
         toast.error("Errore aggiornamento: " + (err.message || "Sessione scaduta o invalida"));
     }
